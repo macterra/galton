@@ -1,3 +1,5 @@
+$def with (id)
+
 <html>
 
 <script type="text/javascript" src="/static/mootools.js"></script>
@@ -28,7 +30,8 @@
     
     function fetchData()
     {        
-        var jsonRequest = new Request.JSON({method: 'get', url: "http://localhost:8080/project/2/results", onSuccess: showResults}).get();
+        var jsonRequest = new Request.JSON({method: 'get', url: "http://localhost:8080/project/$id/results", onSuccess: showResults});
+        jsonRequest.get();
     }
     
     function drawChart(myData)
@@ -50,7 +53,7 @@
     }
 </script>
 
-<input type="button" value="JSON request" onclick="fetchData()" />
+<input type="button" value="Run Simulation" onclick="fetchData()" />
 </html>
 
 <table border="1">

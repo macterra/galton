@@ -15,7 +15,7 @@ urls = (
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
   '/project/(\d*)/results', 'results',
-  '/test', 'test'
+  '/test/(\d*)', 'test'
 )
 
 render = web.template.render('templates/')
@@ -69,8 +69,8 @@ class project:
             return DumpQuery(q)
         
 class test:
-    def GET(self):
-        return render.test()
+    def GET(self, id):
+        return render.test(id)
         
 class tasks:
     def GET(self, id):
@@ -123,8 +123,6 @@ class login:
         form = loginForm()
         if form.validates():
             web.debug("valid form")
-            #db.insert('users', username=form.d.username, password=form.d.password)
-            #db.select('users', where="username=" + form.d.username)
             q = db.query("select password from users where username='%s'" % (form.d.username))
             res = q[0]
             if res.password == form.d.password:
