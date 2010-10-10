@@ -21,22 +21,8 @@
         setContent('p10', sprintf("%.2f", results.percentile[10]));
         setContent('p50', sprintf("%.2f", results.percentile[50]));
         setContent('p90', sprintf("%.2f", results.percentile[90]));  
-        setContent('result', sprintf("sim took %3.2f s for %d iterations", results.time, results.trials));
+        setContent('result', sprintf("montecarlo simulation took %3.2f s for %d iterations", results.time, results.trials));
         
-        //addContent('result', '<table border="1">');
-        
-        //var myData = [];
-        //for (x=0; x<100; x++)
-        //{
-        //    addContent('result', sprintf("<tr><td width=50>%3d</td><td width=50>%.2f</td></tr>", x, results.percentile[x]));
-        //    myData[x] = [results.percentile[x], x];
-        //}
-        
-        //addContent('result', '</table>');
-        
-        //var myData = new Array([10, 2], [15, 0], [18, 3], [19, 6], [20, 8.5], [25, 10], [30, 9], [35, 8], [40, 5], [45, 6], [50, 2.5]);
-
-        //drawChart(myData);
         drawChart(results.cumprob);
     }
     
@@ -57,6 +43,9 @@
         myChart.setAxisValuesColor('#333639');
         myChart.setAxisNameColor('#333639');
         myChart.setTextPaddingLeft(0);
+        myChart.setAxisNameX("effort");
+        myChart.setAxisNameY("confidence");
+        myChart.setTitle("project");
         myChart.draw();
     }
 </script>
