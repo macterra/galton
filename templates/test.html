@@ -1,0 +1,75 @@
+<html>
+
+<script type="text/javascript" src="/static/mootools.js"></script>
+<script type="text/javascript" src="/static/sprintf.js"></script>
+<script type="text/javascript" src="/static/jscharts.js"></script>
+
+<script type="text/javascript">    
+    function setContent(id, val)
+    {
+        document.getElementById(id).innerHTML = val;
+    }
+    
+    function addContent(id, val)
+    {
+        document.getElementById(id).innerHTML += val;
+    }
+    
+    function showResults(results)
+    {
+        setContent('mean', sprintf("%.2f", results.mean));
+        setContent('p10', sprintf("%.2f", results.percentile[10]));
+        setContent('p50', sprintf("%.2f", results.percentile[50]));
+        setContent('p90', sprintf("%.2f", results.percentile[90]));  
+        setContent('result', sprintf("sim took %3.2f s for %d iterations", results.time, results.trials));
+        
+        //addContent('result', '<table border="1">');
+        
+        //var myData = [];
+        //for (x=0; x<100; x++)
+        //{
+        //    addContent('result', sprintf("<tr><td width=50>%3d</td><td width=50>%.2f</td></tr>", x, results.percentile[x]));
+        //    myData[x] = [results.percentile[x], x];
+        //}
+        
+        //addContent('result', '</table>');
+        
+        //var myData = new Array([10, 2], [15, 0], [18, 3], [19, 6], [20, 8.5], [25, 10], [30, 9], [35, 8], [40, 5], [45, 6], [50, 2.5]);
+
+        //drawChart(myData);
+        drawChart(results.cumprob);
+    }
+    
+    function fetchData()
+    {        
+        var jsonRequest = new Request.JSON({method: 'get', url: "http://localhost:8080/project/2/results", onSuccess: showResults}).get();
+    }
+    
+    function drawChart(myData)
+    {
+        var myChart = new JSChart('graph', 'line');
+        myChart.setDataArray(myData);
+        myChart.setLineColor('#8D9386');
+        myChart.setLineWidth(4);
+        myChart.setTitleColor('#7D7D7D');
+        myChart.setAxisColor('#9F0505');
+        myChart.setGridColor('#a4a4a4');
+        myChart.setAxisValuesColor('#333639');
+        myChart.setAxisNameColor('#333639');
+        myChart.setTextPaddingLeft(0);
+        myChart.draw();
+    }
+</script>
+
+<input type="button" value="JSON request" onclick="fetchData()" />
+</html>
+
+<table border="1">
+    <tr> <td width="50">mean</td> <td width="50"><div id="mean" /></td> </tr>
+    <tr> <td>p10</td> <td><div id="p10" /></td> </tr>
+    <tr> <td>p50</td> <td><div id="p50" /></td> </tr>
+    <tr> <td>p90</td> <td><div id="p90" /></td> </tr>
+</table>
+
+<div id="graph">Loading graph...</div>
+<div id="result">result</div>
