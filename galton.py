@@ -111,6 +111,7 @@ class ProjectTable:
         for r in db.query(q):
             form += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.mean, r.variance)
         form += "</table>"
+        form += "<a href=/project/%s/edit>edit tasks</a>" % (self.id)
         return form
             
 class projectrun:
@@ -150,6 +151,7 @@ class TaskForm:
             form += "</tr>\n"
         form += "</table>"
         form += "<button>Submit</button>\n"
+        form += "<a href=/project/%s/run>run sim</a>" % (self.id)
         return form
 
 def UpdateProject(id, tasks):
@@ -169,18 +171,13 @@ class projectedit:
         return RenderForm(form) #render.edit(id, form)
         
     def POST(self, id):
-        data = web.data()
-        print data
         i = web.input(desc=[], mean=[], var=[], delete=[])
         tasks = zip(i.desc, i.mean, i.var)
-        print tasks
-        print "delete", i.delete
         delete = [int(i) for i in i.delete] 
         for i in delete:
             tasks[i] = ('','','') 
         UpdateProject(id, tasks)
         raise web.seeother("/project/%s/edit" % (id))
-        return "form submitted! id=%s" % (id)
         
 class tasks:
     def GET(self, id):
