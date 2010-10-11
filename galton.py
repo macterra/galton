@@ -41,7 +41,7 @@ urls = (
   '/project/(\d*)/tasks', 'tasks',
   '/project/(\d*)/edit', 'projectedit',
   '/project/(\d*)/results', 'results',
-  '/test/(\d*)', 'test'
+  '/project/(\d*)/run', 'projectrun'
 )
 
 render = web.template.render('templates/')
@@ -113,7 +113,7 @@ class ProjectTable:
         form += "</table>"
         return form
             
-class test:
+class projectrun:
     def GET(self, id):
         form = ProjectTable(id)
         return render.test(id, form)    
@@ -131,15 +131,23 @@ class TaskForm:
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=0 width=50%>\n"
-        form += "<tr><td>task</td><td>median</td><td>variance</td></tr>\n"
+        form += "<tr><td>task</td><td>median</td><td>variance</td><td>delete</td></tr>\n"
+        index = 0
         for r in db.query(q):
-            form += "<tr><td><input name=\"desc\" type=\"text\" value=\"%s\" />\n" % (r.description)
-            form += "</td><td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
-            form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td></tr>\n" % (r.variance)
+            form += "<tr>\n"
+            form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
+            form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
+            form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td>\n" % (r.variance)
+            form += "<td><input name=\"delete\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index)
+            form += "</tr>\n"
+            index += 1
         for i in range(3):    
-            form += "<tr><td><input name=\"desc\" type=\"text\" value=\"\" />\n" 
-            form += "</td><td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
-            form += "<td><input name=\"var\" type=\"text\" value=\"\" /></td></tr>\n"
+            form += "<tr>\n"
+            form += "<td><input name=\"desc\" type=\"text\" value=\"\" /></td>\n" 
+            form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
+            form += "<td><input name=\"var\" type=\"text\" value=\"\" /></td>\n"
+            #form += "<td><input name=\"delete\" type=\"checkbox\" value=\"x\" /></td>\n"
+            form += "</tr>\n"
         form += "</table>"
         form += "<button>Submit</button>\n"
         return form
@@ -163,10 +171,15 @@ class projectedit:
     def POST(self, id):
         data = web.data()
         print data
-        i = web.input(desc=[], mean=[], var=[])
+        i = web.input(desc=[], mean=[], var=[], delete=[])
         tasks = zip(i.desc, i.mean, i.var)
         print tasks
+        print "delete", i.delete
+        delete = [int(i) for i in i.delete] 
+        for i in delete:
+            tasks[i] = ('','','') 
         UpdateProject(id, tasks)
+        raise web.seeother("/project/%s/edit" % (id))
         return "form submitted! id=%s" % (id)
         
 class tasks:
@@ -179,7 +192,7 @@ class results:
         tasks = []
         q = "select * from tasks where project=%s" % (id)
         for r in db.query(q):
-            task = Task(r.mean, r.variance)
+            task = Task(float(r.mean), float(r.variance))
             tasks.append(task)       
             #web.debug("task mode=%f, var=%f, p50=%f, time=%f" % (task.mode, task.sigma, task.p50, task.Time()))
         results = RunMonteCarlo(50000,tasks)    
