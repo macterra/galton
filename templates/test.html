@@ -16,6 +16,11 @@ $def with (id, form)
         document.getElementById(id).innerHTML += val;
     }
     
+    function getContent(id)
+    {
+        return document.getElementById(id).value;
+    }
+    
     function showResults(results)
     {
         setContent('result', sprintf("montecarlo simulation took %3.2fs for %d iterations", results.simtime, results.trials));
@@ -26,11 +31,14 @@ $def with (id, form)
         setContent('risk', sprintf("%.2f", results.risk));  
         
         drawChart(results.cumprob);
+        document.getElementById('run').disabled = false;
     }
     
     function runSim()
-    {        
-        var jsonRequest = new Request.JSON({method: 'get', url: "http://localhost:8080/project/$id/results", onSuccess: showResults});
+    {     
+        document.getElementById('run').disabled = true;
+        var resultsURL = "http://localhost:8080/project/$id/results?trials=" + getContent('trials');
+        var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
     }
     
@@ -57,8 +65,8 @@ $:form.render()
 <p>
 
 <form>
-iterations: <input type="text" value="10000" />
-<input type="button" value="Run Simulation" onclick="runSim()" />
+iterations: <input type="text" id='trials' value="10000" />
+<input type="button" value="Run Simulation" id='run' onclick="runSim()" />
 </form>
 
 </html>

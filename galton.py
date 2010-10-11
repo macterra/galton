@@ -186,13 +186,20 @@ class tasks:
         
 class results:
     def GET(self, id):
+        i = web.input()
+
+        try:
+            trials = int(i.trials)
+        except:
+            trials = 10000
+            
         tasks = []
         q = "select * from tasks where project=%s" % (id)
         for r in db.query(q):
             task = Task(float(r.mean), float(r.variance))
             tasks.append(task)       
             #web.debug("task mode=%f, var=%f, p50=%f, time=%f" % (task.mode, task.sigma, task.p50, task.Time()))
-        results = RunMonteCarlo(50000,tasks)    
+        results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
       
 class login:
