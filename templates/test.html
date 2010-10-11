@@ -19,11 +19,11 @@ $def with (id)
     
     function showResults(results)
     {
-        setContent('mean', sprintf("%.2f", results.mean));
-        setContent('p10', sprintf("%.2f", results.percentile[10]));
-        setContent('p50', sprintf("%.2f", results.percentile[50]));
-        setContent('p90', sprintf("%.2f", results.percentile[90]));  
         setContent('result', sprintf("montecarlo simulation took %3.2f s for %d iterations", results.time, results.trials));
+        setContent('mean', sprintf("%.2f", results.mean));
+        setContent('p10', sprintf("%.2f", results.cumprob[10][0]));
+        setContent('p50', sprintf("%.2f", results.cumprob[50][0]));
+        setContent('p90', sprintf("%.2f", results.cumprob[90][0]));  
         
         drawChart(results.cumprob);
     }

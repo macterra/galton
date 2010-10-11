@@ -1,10 +1,36 @@
 import web
 from web import form
 import json
-import lognormal
 import time
 from numpy import *
+from random import *
 
+class Task:
+    def __init__(self, median, sigma):
+        self.p50 = median
+        self.sigma = sigma
+        self.mode = median / math.exp(sigma*sigma)
+
+    def Time(self): 
+        return self.p50 * lognormvariate(0,self.sigma)
+     
+def RunMonteCarlo(trials, tasks):
+    t = time.time()
+    times = ([])
+    n = 0
+    for x in xrange(trials):
+        sum = 0
+        for task in tasks:
+            sum += task.Time()
+        times = append(times,sum)
+    elapsed = time.time() - t
+    times = sort(times)
+    N = len(times)
+    cumprob = [[times[t*N/100], t] for t in range(100)]
+    mean = times.mean()
+    results = dict(time=elapsed, trials=trials, cumprob=cumprob, mean=mean);
+    return results
+    
 urls = (
   '/', 'index',
   '/login', 'login',
@@ -77,31 +103,12 @@ class tasks:
         q = "select * from tasks where project=%s" % (id)
         return DumpQuery(q)
         
-def RunMonteCarlo(trials, tasks):
-    t = time.time()
-    times = ([])
-    n = 0
-    for x in xrange(trials):
-        sum = 0
-        for task in tasks:
-            sum += task.Time()
-        times = append(times,sum)
-    results = lognormal.Analyze(times,True,True)
-    #results = {}
-    t = time.time() - t
-    results['time'] = t
-    results['trials'] = trials
-    times = sort(times)
-    N = len(times)
-    results['cumprob'] = [[times[t*N/100], t] for t in range(100)]
-    return results
-            
 class results:
     def GET(self, id):
         tasks = []
         q = "select * from tasks where project=%s" % (id)
         for r in db.query(q):
-            task = lognormal.Task(r.mean, r.variance)
+            task = Task(r.mean, r.variance)
             tasks.append(task)       
             #web.debug("task mode=%f, var=%f, p50=%f, time=%f" % (task.mode, task.sigma, task.p50, task.Time()))
         results = RunMonteCarlo(50000,tasks)    
