@@ -100,9 +100,10 @@ class ProjectForm:
     def render(self):
         form = ""
         
-        #q = "select * from projects where id=%s" % (id)
-        #for r in db.query(q):
-        #    form = "<h1>%s</h1>" % (r.name)
+        q = "select * from projects where id=%s" % (self.id)
+        for r in db.query(q):
+            print ">>>> name ", r.name
+            form = "<h1>%s: %s</h1>" % (r.name, r.description)
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1 width=50%>"
