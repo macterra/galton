@@ -39,6 +39,7 @@ urls = (
   '/projects', 'projects',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
+  '/project/(\d*)/edit', 'projectedit',
   '/project/(\d*)/results', 'results',
   '/test/(\d*)', 'test'
 )
@@ -93,7 +94,7 @@ class project:
             q = "select * from projects where id=%s" % (id)
             return DumpQuery(q)
 
-class ProjectForm:
+class ProjectTable:
     def __init__(self, id):
         self.id = id
         
@@ -102,7 +103,6 @@ class ProjectForm:
         
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
-            print ">>>> name ", r.name
             form = "<h1>%s: %s</h1>" % (r.name, r.description)
             
         q = "select * from tasks where project=%s" % (self.id)
@@ -115,8 +115,59 @@ class ProjectForm:
             
 class test:
     def GET(self, id):
-        form = ProjectForm(id)
-        return render.test(id, form)
+        form = ProjectTable(id)
+        return render.test(id, form)    
+        
+class TaskForm:
+    def __init__(self, id):
+        self.id = id
+        
+    def render(self):
+        form = ""
+        
+        q = "select * from projects where id=%s" % (self.id)
+        for r in db.query(q):
+            form = "<h1>%s: %s</h1>" % (r.name, r.description)
+            
+        q = "select * from tasks where project=%s" % (self.id)
+        form += "<table border=0 width=50%>\n"
+        form += "<tr><td>task</td><td>median</td><td>variance</td></tr>\n"
+        for r in db.query(q):
+            form += "<tr><td><input name=\"desc\" type=\"text\" value=\"%s\" />\n" % (r.description)
+            form += "</td><td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
+            form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td></tr>\n" % (r.variance)
+        for i in range(3):    
+            form += "<tr><td><input name=\"desc\" type=\"text\" value=\"\" />\n" 
+            form += "</td><td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
+            form += "<td><input name=\"var\" type=\"text\" value=\"\" /></td></tr>\n"
+        form += "</table>"
+        form += "<button>Submit</button>\n"
+        return form
+
+def UpdateProject(id, tasks):
+    q = "delete from tasks where project=%s" % (id)
+    db.query(q)
+    for task in tasks:
+        desc, mean, var = task
+        if desc and mean and var:
+            print desc, mean, var
+            db.insert('tasks', project=id, description=desc, mean=mean, variance=var)
+        else:
+            print "invalid task", task
+        
+class projectedit:
+    def GET(self, id):
+        form = TaskForm(id)
+        return RenderForm(form) #render.edit(id, form)
+        
+    def POST(self, id):
+        data = web.data()
+        print data
+        i = web.input(desc=[], mean=[], var=[])
+        tasks = zip(i.desc, i.mean, i.var)
+        print tasks
+        UpdateProject(id, tasks)
+        return "form submitted! id=%s" % (id)
         
 class tasks:
     def GET(self, id):

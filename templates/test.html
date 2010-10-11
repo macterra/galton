@@ -23,6 +23,7 @@ $def with (id, form)
         setContent('p10', sprintf("%.2f", results.cumprob[10][0]));
         setContent('p50', sprintf("%.2f", results.cumprob[50][0]));
         setContent('p90', sprintf("%.2f", results.cumprob[90][0]));  
+        setContent('risk', sprintf("%.2f", results.risk));  
         
         drawChart(results.cumprob);
     }
@@ -55,7 +56,11 @@ $def with (id, form)
 $:form.render()
 <p>
 
+<form>
+iterations: <input type="text" value="10000" />
 <input type="button" value="Run Simulation" onclick="runSim()" />
+</form>
+
 </html>
 
 <table border="1">
@@ -63,6 +68,7 @@ $:form.render()
     <tr> <td>p10</td> <td><div id="p10" /></td> </tr>
     <tr> <td>p50</td> <td><div id="p50" /></td> </tr>
     <tr> <td>p90</td> <td><div id="p90" /></td> </tr>
+    <tr> <td>risk</td> <td><div id="risk" /></td> </tr>
 </table>
 
 <div id="graph"></div>
