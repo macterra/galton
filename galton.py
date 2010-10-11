@@ -92,10 +92,30 @@ class project:
         else:
             q = "select * from projects where id=%s" % (id)
             return DumpQuery(q)
+
+class ProjectForm:
+    def __init__(self, id):
+        self.id = id
         
+    def render(self):
+        form = ""
+        
+        #q = "select * from projects where id=%s" % (id)
+        #for r in db.query(q):
+        #    form = "<h1>%s</h1>" % (r.name)
+            
+        q = "select * from tasks where project=%s" % (self.id)
+        form += "<table border=1 width=50%>"
+        form += "<tr><td>task</td><td>median</td><td>variance</td></tr>"
+        for r in db.query(q):
+            form += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.mean, r.variance)
+        form += "</table>"
+        return form
+            
 class test:
     def GET(self, id):
-        return render.test(id)
+        form = ProjectForm(id)
+        return render.test(id, form)
         
 class tasks:
     def GET(self, id):
@@ -111,14 +131,7 @@ class results:
             tasks.append(task)       
             #web.debug("task mode=%f, var=%f, p50=%f, time=%f" % (task.mode, task.sigma, task.p50, task.Time()))
         results = RunMonteCarlo(50000,tasks)    
-        return json.dumps(results)
-        
-    def POST(self, id):
-        return GET(id)
-        
-    def OPTIONS(self, stuff):
-        print stuff
-        return stuff
+        return json.dumps(results)       
       
 class login:
     def GET(self):

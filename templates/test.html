@@ -1,11 +1,10 @@
-$def with (id)
+$def with (id, form)
 
 <html>
 
-<script type="text/javascript" src="/static/mootools.js"></script>
-<script type="text/javascript" src="/static/sprintf.js"></script>
-<script type="text/javascript" src="/static/jscharts.js"></script>
-
+<script type="text/javascript" src="/static/mootools.js"/>
+<script type="text/javascript" src="/static/sprintf.js"/>
+<script type="text/javascript" src="/static/jscharts.js"/>
 <script type="text/javascript">    
     function setContent(id, val)
     {
@@ -28,7 +27,7 @@ $def with (id)
         drawChart(results.cumprob);
     }
     
-    function fetchData()
+    function runSim()
     {        
         var jsonRequest = new Request.JSON({method: 'get', url: "http://localhost:8080/project/$id/results", onSuccess: showResults});
         jsonRequest.get();
@@ -53,7 +52,9 @@ $def with (id)
     }
 </script>
 
-<input type="button" value="Run Simulation" onclick="fetchData()" />
+$:form.render()
+
+<input type="button" value="Run Simulation" onclick="runSim()" />
 </html>
 
 <table border="1">
@@ -63,5 +64,5 @@ $def with (id)
     <tr> <td>p90</td> <td><div id="p90" /></td> </tr>
 </table>
 
-<div id="graph">Loading graph...</div>
-<div id="result">result</div>
+<div id="graph"></div>
+<div id="result"></div>
