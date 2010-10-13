@@ -2,6 +2,8 @@ $def with (id, form)
 
 <html>
 
+<head>
+<link rel="stylesheet" type="text/css" href="/static/muffin.css" /> 
 <script type="text/javascript" src="/static/mootools.js"/>
 <script type="text/javascript" src="/static/sprintf.js"/>
 <script type="text/javascript" src="/static/jscharts.js"/>
@@ -60,7 +62,9 @@ $def with (id, form)
         myChart.draw();
     }
 </script>
+</head>
 
+<body>
 $:form.render()
 <p>
 
@@ -68,8 +72,6 @@ $:form.render()
 iterations: <input type="text" id='trials' value="10000" />
 <input type="button" value="Run Simulation" id='run' onclick="runSim()" />
 </form>
-
-</html>
 
 <table border="1">
     <tr> <td width="50">mean</td> <td width="50"><div id="mean" /></td> </tr>
@@ -81,3 +83,5 @@ iterations: <input type="text" id='trials' value="10000" />
 
 <div id="graph"></div>
 <div id="result"></div>
+</body>
+</html>

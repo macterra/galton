@@ -107,7 +107,7 @@ class ProjectTable:
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1 width=50%>"
-        form += "<tr><td>task</td><td>median</td><td>variance</td></tr>"
+        form += "<thead><tr><th>task</th><th>median</th><th>variance</th></tr></thead>"
         for r in db.query(q):
             form += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.mean, r.variance)
         form += "</table>"
@@ -168,7 +168,7 @@ def UpdateProject(id, tasks):
 class projectedit:
     def GET(self, id):
         form = TaskForm(id)
-        return RenderForm(form) #render.edit(id, form)
+        return render.simple(form)
         
     def POST(self, id):
         i = web.input(desc=[], mean=[], var=[], delete=[])
