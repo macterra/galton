@@ -132,7 +132,7 @@ class TaskForm:
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=0 width=50%>\n"
-        form += "<tr><td>task</td><td>median</td><td>variance</td><td>delete</td></tr>\n"
+        form += "<thead><tr><th>task</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"
