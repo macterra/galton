@@ -37,7 +37,7 @@ $def with (id, form)
     function runSim()
     {     
         document.getElementById('run').disabled = true;
-        var resultsURL = "http://localhost:8080/project/$id/results?trials=" + getContent('trials');
+        var resultsURL = "/project/$id/results?trials=" + getContent('trials');
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
     }
