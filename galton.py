@@ -139,13 +139,8 @@ class TaskForm:
         index = 0
         for r in db.query(q):
             form += "<tr>\n"
-            
-            if r.include:
-                checked = "checked"
-            else:
-                checked = ""
-                
-            form += "<td><input name=\"include\" type=\"checkbox\" value=\"%s\" %s /></td>\n" % (index, checked)
+                            
+            form += "<td><input name=\"include\" type=\"checkbox\" value=\"%s\" %s /></td>\n" % (index, "checked" if r.include else "")
             form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
             form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
             form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
