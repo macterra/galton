@@ -53,6 +53,7 @@ loginForm = form.Form(
     form.Password('password'),
     form.Button('Login'),
 )
+
 signupForm = form.Form(
     form.Textbox('username'),
     form.Password('password'),
@@ -130,7 +131,8 @@ class TaskForm:
         for r in db.query(q):
             form = "<h1>%s: %s</h1>" % (r.name, r.description)
             
-        q = "select * from tasks where project=%s" % (self.id)
+        q = "select * from tasks where project=%s" % (self.id) 
+        form += "<form name=main method=post>\n"
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>task</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
         index = 0
@@ -151,6 +153,7 @@ class TaskForm:
             form += "</tr>\n"
         form += "</table>"
         form += "<button>Submit</button>\n"
+        form += "</form>\n"
         form += "<a href=/project/%s/run>run sim</a>" % (self.id)
         return form
 
