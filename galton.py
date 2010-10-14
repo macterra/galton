@@ -108,9 +108,9 @@ class ProjectTable:
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1 width=50%>"
-        form += "<thead><tr><th>task</th><th>median</th><th>variance</th></tr></thead>"
+        form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th></tr></thead>"
         for r in db.query(q):
-            form += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.mean, r.variance)
+            form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.count, r.mean, r.variance)
         form += "</table>"
         form += "<a href=/project/%s/edit>edit tasks</a>" % (self.id)
         return form
@@ -134,11 +134,12 @@ class TaskForm:
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
         form += "<table border=0 width=50%>\n"
-        form += "<thead><tr><th>task</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
+        form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"
             form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
+            form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
             form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
             form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td>\n" % (r.variance)
             form += "<td><input name=\"delete\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index)
@@ -147,9 +148,10 @@ class TaskForm:
         for i in range(3):    
             form += "<tr>\n"
             form += "<td><input name=\"desc\" type=\"text\" value=\"\" /></td>\n" 
+            form += "<td><input name=\"count\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"var\" type=\"text\" value=\"\" /></td>\n"
-            #form += "<td><input name=\"delete\" type=\"checkbox\" value=\"x\" /></td>\n"
+            form += "<td></td>\n"
             form += "</tr>\n"
         form += "</table>"
         form += "<button>Submit</button>\n"
@@ -161,10 +163,10 @@ def UpdateProject(id, tasks):
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        desc, mean, var = task
+        desc, count, mean, var = task
         if desc and mean and var:
             print desc, mean, var
-            db.insert('tasks', project=id, description=desc, mean=mean, variance=var)
+            db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, include=True)
         else:
             print "invalid task", task
         
@@ -174,11 +176,11 @@ class projectedit:
         return render.simple(form)
         
     def POST(self, id):
-        i = web.input(desc=[], mean=[], var=[], delete=[])
-        tasks = zip(i.desc, i.mean, i.var)
+        i = web.input(desc=[], count=[], mean=[], var=[], delete=[])
+        tasks = zip(i.desc, i.count, i.mean, i.var)
         delete = [int(i) for i in i.delete] 
         for i in delete:
-            tasks[i] = ('','','') 
+            tasks[i] = ('','','','') 
         UpdateProject(id, tasks)
         raise web.seeother("/project/%s/edit" % (id))
         
@@ -199,9 +201,9 @@ class results:
         tasks = []
         q = "select * from tasks where project=%s" % (id)
         for r in db.query(q):
-            task = Task(float(r.mean), float(r.variance))
-            tasks.append(task)       
-            #web.debug("task mode=%f, var=%f, p50=%f, time=%f" % (task.mode, task.sigma, task.p50, task.Time()))
+            for i in range(int(r.count)):
+                task = Task(float(r.mean), float(r.variance))
+                tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
       
