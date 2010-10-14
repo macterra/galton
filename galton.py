@@ -110,7 +110,8 @@ class ProjectTable:
         form += "<table border=1 width=50%>"
         form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th></tr></thead>"
         for r in db.query(q):
-            form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.count, r.mean, r.variance)
+            if r.include:
+                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.count, r.mean, r.variance)
         form += "</table>"
         form += "<a href=/project/%s/edit>edit tasks</a>" % (self.id)
         return form
@@ -134,19 +135,29 @@ class TaskForm:
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
         form += "<table border=0 width=50%>\n"
-        form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
+        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"
+            
+            if r.include:
+                checked = "checked"
+            else:
+                checked = ""
+                
+            form += "<td><input name=\"include\" type=\"checkbox\" value=\"%s\" %s /></td>\n" % (index, checked)
             form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
             form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
             form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
             form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td>\n" % (r.variance)
             form += "<td><input name=\"delete\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index)
             form += "</tr>\n"
+            
             index += 1
+            
         for i in range(3):    
             form += "<tr>\n"
+            form += "<td><input name=\"include\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index+i)
             form += "<td><input name=\"desc\" type=\"text\" value=\"\" /></td>\n" 
             form += "<td><input name=\"count\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
@@ -163,10 +174,10 @@ def UpdateProject(id, tasks):
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        desc, count, mean, var = task
-        if desc and mean and var:
-            print desc, mean, var
-            db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, include=True)
+        desc, count, mean, var, inc, rem = task
+        if desc and mean and var and not rem:
+            print desc, mean, var, inc, rem
+            db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, include=inc)
         else:
             print "invalid task", task
         
@@ -176,11 +187,13 @@ class projectedit:
         return render.simple(form)
         
     def POST(self, id):
-        i = web.input(desc=[], count=[], mean=[], var=[], delete=[])
-        tasks = zip(i.desc, i.count, i.mean, i.var)
-        delete = [int(i) for i in i.delete] 
-        for i in delete:
-            tasks[i] = ('','','','') 
+        wi = web.input(include=[], desc=[], count=[], mean=[], var=[], delete=[])
+        inc = [int(x) for x in wi.include]
+        rem = [int(i) for i in wi.delete] 
+        all = range(len(wi.count))
+        include = [x in inc for x in all]
+        delete = [x in rem for x in all]
+        tasks = zip(wi.desc, wi.count, wi.mean, wi.var, include, delete)
         UpdateProject(id, tasks)
         raise web.seeother("/project/%s/edit" % (id))
         
@@ -201,9 +214,10 @@ class results:
         tasks = []
         q = "select * from tasks where project=%s" % (id)
         for r in db.query(q):
-            for i in range(int(r.count)):
-                task = Task(float(r.mean), float(r.variance))
-                tasks.append(task)       
+            if r.include:
+                for i in range(int(r.count)):
+                    task = Task(float(r.mean), float(r.variance))
+                    tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
       
