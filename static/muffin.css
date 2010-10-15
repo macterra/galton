@@ -3,14 +3,14 @@
 	written by Stuart Colville http://www.muffinresearch.co.uk
 */
 
+*
+{
+    font                 : small "Tahoma", "Bitstream Vera Sans", Verdana, Helvetica, sans-serif;
+}
+
 h1
 {
     font                 : large "Tahoma", "Bitstream Vera Sans", Verdana, Helvetica, sans-serif;
-}
-
-a:link, a:visited
-{
-    font                 : small "Tahoma", "Bitstream Vera Sans", Verdana, Helvetica, sans-serif;
 }
 
 table,td
