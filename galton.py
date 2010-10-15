@@ -104,7 +104,7 @@ class ProjectTable:
         
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
-            form = "<h1>%s: %s</h1>" % (r.name, r.description)
+            form = "<h1>project: %s</h1>" % (r.description)
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1 width=50%>"
@@ -130,10 +130,13 @@ class TaskForm:
         
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
-            form = "<h1>%s: %s</h1>" % (r.name, r.description)
+            desc = r.description
             
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
+        form += "<table border=0>\n"
+        form += "<tr><th>project</th><td><input name=\"project\" size=40 value=\"%s\" /></td></tr>" % (desc)
+        form += "</table><p>"
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
         index = 0
@@ -165,7 +168,9 @@ class TaskForm:
         form += "<a href=/project/%s/run>run sim</a>" % (self.id)
         return form
 
-def UpdateProject(id, tasks):
+def UpdateProject(id, description, tasks):
+    db.update('projects', where="id=%s" % (id), description=description)
+    
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
@@ -182,14 +187,15 @@ class projectedit:
         return render.simple(form)
         
     def POST(self, id):
-        wi = web.input(include=[], desc=[], count=[], mean=[], var=[], delete=[])
+        wi = web.input(project='', include=[], desc=[], count=[], mean=[], var=[], delete=[])
+        #print wi
         inc = [int(x) for x in wi.include]
         rem = [int(i) for i in wi.delete] 
         all = range(len(wi.count))
         include = [x in inc for x in all]
         delete = [x in rem for x in all]
         tasks = zip(wi.desc, wi.count, wi.mean, wi.var, include, delete)
-        UpdateProject(id, tasks)
+        UpdateProject(id, wi.project, tasks)
         raise web.seeother("/project/%s/edit" % (id))
         
 class tasks:
