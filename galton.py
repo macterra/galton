@@ -119,7 +119,7 @@ class ProjectTable:
 class projectrun:
     def GET(self, id):
         form = ProjectTable(id)
-        return render.test(id, form)    
+        return render.sim(id, form)    
 
 def TextField(name, size, val):
     return """
@@ -216,7 +216,7 @@ def UpdateProject(id, description, tasks):
 class projectedit:
     def GET(self, id):
         form = TaskForm(id)
-        return render.simple(form)
+        return render.form(form)
         
     def POST(self, id):
         wi = web.input(include=[], desc=[], count=[], mean=[], risk=[], delete=[])
