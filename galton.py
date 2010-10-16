@@ -111,7 +111,7 @@ class ProjectTable:
         form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th></tr></thead>"
         for r in db.query(q):
             if r.include:
-                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.mean, r.variance, r.risk)
+                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.median, r.variance, r.risk)
         form += "</table>"
         form += "<a href=/project/%s/edit>edit tasks</a>" % (self.id)
         return form
@@ -174,7 +174,7 @@ class TaskForm:
             form += CheckboxField('include', index, r.include)
             form += TextField('desc', 20, r.description)
             form += TextField('count', 5, r.count)
-            form += TextField('mean', 5, r.mean)
+            form += TextField('median', 5, r.median)
             form += RiskField(r.risk)
             form += CheckboxField('delete', index, False)
             form += "</tr>\n"
@@ -186,7 +186,7 @@ class TaskForm:
             form += CheckboxField('include', index+i, False)
             form += TextField('desc', 20, '')
             form += TextField('count', 5, '')
-            form += TextField('mean', 5, '')
+            form += TextField('median', 5, '')
             form += RiskField('')
             form += "<td></td>\n"
             form += "</tr>\n"
@@ -205,11 +205,11 @@ def UpdateProject(id, description, tasks):
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        desc, count, mean, risk, inc, rem = task
-        if desc and mean and risk and not rem:
-            print desc, mean, risk, inc, rem
+        desc, count, median, risk, inc, rem = task
+        if desc and median and risk and not rem:
+            print desc, median, risk, inc, rem
             var = riskmap[risk]
-            db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, risk=risk, include=inc)
+            db.insert('tasks', project=id, description=desc, count=count, median=median, variance=var, risk=risk, include=inc)
         else:
             print "invalid task", task
         
@@ -219,14 +219,14 @@ class projectedit:
         return render.form(form)
         
     def POST(self, id):
-        wi = web.input(include=[], desc=[], count=[], mean=[], risk=[], delete=[])
-        #print wi
+        wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
+        print wi
         inc = [int(x) for x in wi.include]
         rem = [int(i) for i in wi.delete] 
         all = range(len(wi.count))
         include = [x in inc for x in all]
         delete = [x in rem for x in all]
-        tasks = zip(wi.desc, wi.count, wi.mean, wi.risk, include, delete)
+        tasks = zip(wi.desc, wi.count, wi.median, wi.risk, include, delete)
         UpdateProject(id, wi.project, tasks)
         raise web.seeother("/project/%s/edit" % (id))
         
@@ -249,7 +249,7 @@ class results:
         for r in db.query(q):
             if r.include:
                 for i in range(int(r.count)):
-                    task = Task(float(r.mean), float(r.variance))
+                    task = Task(float(r.median), float(r.variance))
                     tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
