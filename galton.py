@@ -139,7 +139,12 @@ def RiskField(risk):
             </select>
         </td>            
         """ % (noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
-    
+
+def CheckboxField(name, val, checked):
+    return """
+        <td><input name="%s" type="checkbox" value="%s" %s /></td>
+        """ % (name, val, "checked" if checked else "")
+        
 class TaskForm:
     def __init__(self, id):
         self.id = id
@@ -154,7 +159,7 @@ class TaskForm:
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
         form += "<table border=0>\n"
-        form += "<tr><th>project</th><td><input name=\"project\" size=40 value=\"%s\" /></td></tr>" % (desc)
+        form += "<tr><th>project</th><td><input name=\"project\" size=80 value=\"%s\" /></td></tr>" % (desc)
         form += "</table><p>"
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
@@ -162,19 +167,19 @@ class TaskForm:
         for r in db.query(q):
             form += "<tr>\n"
                             
-            form += "<td><input name=\"include\" type=\"checkbox\" value=\"%s\" %s /></td>\n" % (index, "checked" if r.include else "")
+            form += CheckboxField('include', index, r.include)
             form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
             form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
             form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
             form += RiskField(r.risk)
-            form += "<td><input name=\"delete\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index)
+            form += CheckboxField('delete', index, False)
             form += "</tr>\n"
             
             index += 1
             
         for i in range(3):    
             form += "<tr>\n"
-            form += "<td><input name=\"include\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index+i)
+            form += CheckboxField('include', index+i, False)
             form += "<td><input name=\"desc\" type=\"text\" value=\"\" /></td>\n" 
             form += "<td><input name=\"count\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
