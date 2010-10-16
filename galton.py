@@ -170,8 +170,7 @@ class TaskForm:
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
-            form += "<tr>\n"
-                            
+            form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
             form += TextField('desc', 20, r.description)
             form += TextField('count', 5, r.count)
@@ -191,10 +190,11 @@ class TaskForm:
             form += RiskField('')
             form += "<td></td>\n"
             form += "</tr>\n"
+            
         form += "</table>"
         form += "<button>Submit</button>\n"
         form += "</form>\n"
-        form += "<a href=/project/%s/run>run sim</a>" % (self.id)
+        form += "<a href=/project/%s/run>Run Simulation</a>" % (self.id)
         return form
 
 def UpdateProject(id, description, tasks):

@@ -4,24 +4,25 @@ $def with (id, form)
 
 <head>
 <link rel="stylesheet" type="text/css" href="/static/muffin.css" /> 
-<script type="text/javascript" src="/static/mootools.js"/>
-<script type="text/javascript" src="/static/sprintf.js"/>
-<script type="text/javascript" src="/static/jscharts.js"/>
-<script type="text/javascript">    
+<script type="text/javascript" src="/static/mootools.js"></script>
+<script type="text/javascript" src="/static/sprintf.js"></script>
+<script type="text/javascript" src="/static/jscharts.js"></script>
+<script type="text/javascript">   
+        
     function setContent(id, val)
     {
         document.getElementById(id).innerHTML = val;
-    }
+    };
     
     function addContent(id, val)
     {
         document.getElementById(id).innerHTML += val;
-    }
+    };
     
     function getContent(id)
     {
         return document.getElementById(id).value;
-    }
+    };
     
     function showResults(results)
     {
@@ -39,7 +40,7 @@ $def with (id, form)
         
         drawChart(results.cumprob);
         document.getElementById('run').disabled = false;
-    }
+    };
     
     function runSim()
     {     
@@ -47,7 +48,7 @@ $def with (id, form)
         var resultsURL = "/project/$id/results?trials=" + getContent('trials');
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
-    }
+    };
     
     function drawChart(myData)
     {
@@ -65,7 +66,8 @@ $def with (id, form)
         myChart.setAxisNameY("confidence");
         myChart.setTitle("project");
         myChart.draw();
-    }
+    };
+  
 </script>
 </head>
 
