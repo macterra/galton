@@ -121,6 +121,16 @@ class projectrun:
         form = ProjectTable(id)
         return render.test(id, form)    
 
+def TextField(name, size, val):
+    return """
+        <td><input name="%s" type="text" size="%s" value="%s" /></td>
+        """ % (name, size, val)
+        
+def CheckboxField(name, val, checked):
+    return """
+        <td><input name="%s" type="checkbox" value="%s" %s /></td>
+        """ % (name, val, "checked" if checked else "")
+
 def RiskField(risk):
     noneSelected = "selected" if risk == "none" else ""
     lowSelected = "selected" if risk == "low" else ""
@@ -140,11 +150,6 @@ def RiskField(risk):
         </td>            
         """ % (noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
 
-def CheckboxField(name, val, checked):
-    return """
-        <td><input name="%s" type="checkbox" value="%s" %s /></td>
-        """ % (name, val, "checked" if checked else "")
-        
 class TaskForm:
     def __init__(self, id):
         self.id = id
@@ -168,9 +173,9 @@ class TaskForm:
             form += "<tr>\n"
                             
             form += CheckboxField('include', index, r.include)
-            form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
-            form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
-            form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
+            form += TextField('desc', 20, r.description)
+            form += TextField('count', 5, r.count)
+            form += TextField('mean', 5, r.mean)
             form += RiskField(r.risk)
             form += CheckboxField('delete', index, False)
             form += "</tr>\n"
@@ -180,9 +185,9 @@ class TaskForm:
         for i in range(3):    
             form += "<tr>\n"
             form += CheckboxField('include', index+i, False)
-            form += "<td><input name=\"desc\" type=\"text\" value=\"\" /></td>\n" 
-            form += "<td><input name=\"count\" type=\"text\" value=\"\" /></td>\n"
-            form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
+            form += TextField('desc', 20, '')
+            form += TextField('count', 5, '')
+            form += TextField('mean', 5, '')
             form += RiskField('')
             form += "<td></td>\n"
             form += "</tr>\n"
