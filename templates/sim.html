@@ -42,6 +42,10 @@ $def with (id, form)
     function runSim()
     {     
         document.getElementById('run').disabled = true;
+        CHART.title = getContent('project');
+        
+        //setContent('trace', sprintf("title = [%s]", getContent('project')));
+        
         var resultsURL = "/project/$id/results?trials=" + getContent('trials');
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
@@ -55,7 +59,6 @@ $def with (id, form)
         var risk = getContent("risk_" + row);
         var resultsURL = sprintf("/montecarlo?trials=10000&count=%s&median=%s&risk=%s", count, median, risk);
         
-        setContent('trace', resultsURL);
         CHART.title = title;
         
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
@@ -85,7 +88,7 @@ $def with (id, form)
 
 <body onload="runSim();">
 $:form.render()
-<div id="trace">trace output</div>
+<div id=trace></div>
 <p>
 
 <form>

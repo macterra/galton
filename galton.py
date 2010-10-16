@@ -31,13 +31,14 @@ def RunMonteCarlo(trials, tasks):
     return results
     
 urls = (
-  '/', 'index',
+  '/', 'projectlist',
   '/login', 'login',
   '/adduser', 'adduser',
   '/list', 'list',
   '/users', 'users',
   '/montecarlo', 'montecarlo',
   '/projects', 'projects',
+  '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
   '/project/(\d*)/edit', 'projectedit',
@@ -105,7 +106,10 @@ class ProjectTable:
         
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
-            form = "<h1>project: %s</h1>" % (r.description)
+            description = r.description
+            
+        form += "<h1>project: %s</h1>" % (description)
+        form += """<input type="hidden" id="project" value="%s"/>""" % (description)
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1 width=50%>"
@@ -121,7 +125,39 @@ class projectrun:
     def GET(self, id):
         form = ProjectTable(id)
         return render.sim(id, form)    
-
+        
+class ProjectList:        
+    def render(self):
+        form = "<h1>Galton Projects</h1>\n" 
+        form += "<table border=1 width=50%>\n"
+        form += "<thead><tr><th>description</th><th>simulation</th><th>edit</th></tr></thead>\n"
+        
+        for r in db.query("select * from projects"):
+            simURL = "<a href=/project/%s/run>run</a>" % (r.id)
+            editURL = "<a href=/project/%s/edit>edit</a>" % (r.id)
+            form += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (r.description, simURL, editURL)            
+            
+        form += "</table>\n"
+        
+        form += "<form name=main method=post>\n"
+        form += "<p><table border=1>\n"
+        form += "<tr><td>description: <input type=text name=desc size=60 /> <button>Add New</button></td></tr>"
+        form += "</table>\n"
+        form == "</form>\n"
+        
+        return form
+        
+class projectlist:
+    def GET(self):
+        form = ProjectList()
+        return render.form(form) 
+        
+    def POST(self):
+        i = web.input()
+        id = db.insert('projects', description=i.desc)
+        db.insert('tasks', project=id, include=True, count=1, median=1.0, risk='medium', variance=0.55, description='task 1')
+        raise web.seeother("/project/%d/edit" % (id))
+        
 def TextField(name, index, size, val):
     return """
         <td><input name="%s" id="%s_%d", type="text" size="%s" value="%s" onchange="taskSim(%d);"/></td>
@@ -165,7 +201,7 @@ class TaskForm:
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
         form += "<table border=0>\n"
-        form += "<tr><th>project</th><td><input name=\"project\" size=80 value=\"%s\" /></td></tr>" % (desc)
+        form += "<tr><th>project</th><td><input name=project id=project size=80 value=\"%s\" /></td></tr>" % (desc)
         form += "</table><p>"
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
