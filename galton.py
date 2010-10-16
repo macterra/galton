@@ -42,6 +42,7 @@ urls = (
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
   '/project/(\d*)/edit', 'projectedit',
+  '/project/(\d*)/delete', 'projectdelete',
   '/project/(\d*)/results', 'results',
   '/project/(\d*)/run', 'projectrun'
 )
@@ -229,7 +230,7 @@ class TaskForm:
             form += "</tr>\n"
             
         form += "</table>"
-        form += "<button>Submit</button>\n"
+        form += "<button>Save</button>\n"
         form += "</form>\n"
         form += "<a href=/project/%s/run>Run Simulation</a>" % (self.id)
         return form
@@ -267,6 +268,33 @@ class projectedit:
         tasks = zip(wi.desc, wi.count, wi.median, wi.risk, include, delete)
         UpdateProject(id, wi.project, tasks)
         raise web.seeother("/project/%s/edit" % (id))
+
+class ProjectDeleteForm:
+    def __init__(self, id):
+        self.id = id
+        
+    def render(self):
+        q = "select * from projects where id=%s" % (self.id)
+        for r in db.query(q):
+            desc = r.description
+            
+        form = """
+            <form method="POST" onSubmit="return confirm('Delete for realz?')">
+                project: %s <button>Delete</button
+            </form>""" % (desc)
+            
+        return form    
+        
+class projectdelete:
+    def GET(self, id):
+        form = ProjectDeleteForm(id)
+        print form.render()
+        return render.form(form)
+        
+    def POST(self, id):
+        db.query("delete from tasks where project=%s" % (id))
+        db.query("delete from projects where id=%s" % (id))
+        raise web.seeother("/")
         
 class tasks:
     def GET(self, id):
