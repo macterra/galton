@@ -111,7 +111,7 @@ class ProjectTable:
         form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th></tr></thead>"
         for r in db.query(q):
             if r.include:
-                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.count, r.mean, r.variance)
+                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.mean, r.variance, r.risk)
         form += "</table>"
         form += "<a href=/project/%s/edit>edit tasks</a>" % (self.id)
         return form
@@ -157,7 +157,7 @@ class TaskForm:
         form += "<tr><th>project</th><td><input name=\"project\" size=40 value=\"%s\" /></td></tr>" % (desc)
         form += "</table><p>"
         form += "<table border=0 width=50%>\n"
-        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>variance</th><th>risk</th><th>delete</th></tr></thead>\n"
+        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"
@@ -166,7 +166,6 @@ class TaskForm:
             form += "<td><input name=\"desc\" type=\"text\" value=\"%s\" /></td>\n" % (r.description)
             form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
             form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
-            form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td>\n" % (r.variance)
             form += RiskField(r.risk)
             form += "<td><input name=\"delete\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index)
             form += "</tr>\n"
@@ -179,7 +178,6 @@ class TaskForm:
             form += "<td><input name=\"desc\" type=\"text\" value=\"\" /></td>\n" 
             form += "<td><input name=\"count\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
-            form += "<td><input name=\"var\" type=\"text\" value=\"\" /></td>\n"
             form += RiskField('')
             form += "<td></td>\n"
             form += "</tr>\n"
@@ -197,9 +195,9 @@ def UpdateProject(id, description, tasks):
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        desc, count, mean, var, risk, inc, rem = task
-        if desc and mean and var and not rem:
-            print desc, mean, var, risk, inc, rem
+        desc, count, mean, risk, inc, rem = task
+        if desc and mean and risk and not rem:
+            print desc, mean, risk, inc, rem
             var = riskmap[risk]
             db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, risk=risk, include=inc)
         else:
@@ -211,14 +209,14 @@ class projectedit:
         return render.simple(form)
         
     def POST(self, id):
-        wi = web.input(include=[], desc=[], count=[], mean=[], var=[], risk=[], delete=[])
-        print wi
+        wi = web.input(include=[], desc=[], count=[], mean=[], risk=[], delete=[])
+        #print wi
         inc = [int(x) for x in wi.include]
         rem = [int(i) for i in wi.delete] 
         all = range(len(wi.count))
         include = [x in inc for x in all]
         delete = [x in rem for x in all]
-        tasks = zip(wi.desc, wi.count, wi.mean, wi.var, wi.risk, include, delete)
+        tasks = zip(wi.desc, wi.count, wi.mean, wi.risk, include, delete)
         UpdateProject(id, wi.project, tasks)
         raise web.seeother("/project/%s/edit" % (id))
         
