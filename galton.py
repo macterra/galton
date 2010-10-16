@@ -120,7 +120,26 @@ class projectrun:
     def GET(self, id):
         form = ProjectTable(id)
         return render.test(id, form)    
-        
+
+def RiskField(risk):
+    noneSelected = "selected" if risk == "none" else ""
+    lowSelected = "selected" if risk == "low" else ""
+    mediumSelected = "selected" if risk == "medium" else ""
+    highSelected = "selected" if risk == "high" else ""
+    veryHighSelected = "selected" if risk == "very high" else ""
+    
+    return """
+        <td>
+            <select name="risk">
+                <option %s>none</option>
+                <option %s>low</option>
+                <option %s>medium</option>
+                <option %s>high</option>
+                <option %s>very high</option>
+            </select>
+        </td>            
+        """ % (noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
+    
 class TaskForm:
     def __init__(self, id):
         self.id = id
@@ -138,7 +157,7 @@ class TaskForm:
         form += "<tr><th>project</th><td><input name=\"project\" size=40 value=\"%s\" /></td></tr>" % (desc)
         form += "</table><p>"
         form += "<table border=0 width=50%>\n"
-        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>variance</th><th>delete</th></tr></thead>\n"
+        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>variance</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"
@@ -148,6 +167,7 @@ class TaskForm:
             form += "<td><input name=\"count\" type=\"text\" value=\"%s\" /></td>\n" % (r.count)
             form += "<td><input name=\"mean\" type=\"text\" value=\"%s\" /></td>\n" % (r.mean)
             form += "<td><input name=\"var\" type=\"text\" value=\"%s\" /></td>\n" % (r.variance)
+            form += RiskField(r.risk)
             form += "<td><input name=\"delete\" type=\"checkbox\" value=\"%s\" /></td>\n" % (index)
             form += "</tr>\n"
             
@@ -160,6 +180,7 @@ class TaskForm:
             form += "<td><input name=\"count\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"mean\" type=\"text\" value=\"\" /></td>\n"
             form += "<td><input name=\"var\" type=\"text\" value=\"\" /></td>\n"
+            form += RiskField('')
             form += "<td></td>\n"
             form += "</tr>\n"
         form += "</table>"
@@ -169,15 +190,18 @@ class TaskForm:
         return form
 
 def UpdateProject(id, description, tasks):
+    riskmap = { 'none' : 0, 'low' : 0.275, 'medium' : 0.55, 'high' : 0.825, 'very high' : 1.0 }
+    
     db.update('projects', where="id=%s" % (id), description=description)
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        desc, count, mean, var, inc, rem = task
+        desc, count, mean, var, risk, inc, rem = task
         if desc and mean and var and not rem:
-            print desc, mean, var, inc, rem
-            db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, include=inc)
+            print desc, mean, var, risk, inc, rem
+            var = riskmap[risk]
+            db.insert('tasks', project=id, description=desc, count=count, mean=mean, variance=var, risk=risk, include=inc)
         else:
             print "invalid task", task
         
@@ -187,14 +211,14 @@ class projectedit:
         return render.simple(form)
         
     def POST(self, id):
-        wi = web.input(project='', include=[], desc=[], count=[], mean=[], var=[], delete=[])
-        #print wi
+        wi = web.input(include=[], desc=[], count=[], mean=[], var=[], risk=[], delete=[])
+        print wi
         inc = [int(x) for x in wi.include]
         rem = [int(i) for i in wi.delete] 
         all = range(len(wi.count))
         include = [x in inc for x in all]
         delete = [x in rem for x in all]
-        tasks = zip(wi.desc, wi.count, wi.mean, wi.var, include, delete)
+        tasks = zip(wi.desc, wi.count, wi.mean, wi.var, wi.risk, include, delete)
         UpdateProject(id, wi.project, tasks)
         raise web.seeother("/project/%s/edit" % (id))
         
