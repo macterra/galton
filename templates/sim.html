@@ -37,10 +37,27 @@ $def with (id, form)
         document.getElementById('run').disabled = false;
     };
     
+    var CHART = { 'title' : 'untitled' };
+    
     function runSim()
     {     
         document.getElementById('run').disabled = true;
         var resultsURL = "/project/$id/results?trials=" + getContent('trials');
+        var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
+        jsonRequest.get();
+    };
+    
+    function taskSim(row)
+    {
+        var title = getContent("desc_" + row);
+        var count = getContent("count_" + row);
+        var median = getContent("median_" + row);
+        var risk = getContent("risk_" + row);
+        var resultsURL = sprintf("/montecarlo?trials=10000&count=%s&median=%s&risk=%s", count, median, risk);
+        
+        setContent('trace', resultsURL);
+        CHART.title = title;
+        
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
     };
@@ -59,7 +76,7 @@ $def with (id, form)
         myChart.setTextPaddingLeft(0);
         myChart.setAxisNameX("effort");
         myChart.setAxisNameY("confidence");
-        myChart.setTitle("project");
+        myChart.setTitle(CHART.title);
         myChart.draw();
     };
   
@@ -68,6 +85,7 @@ $def with (id, form)
 
 <body onload="runSim();">
 $:form.render()
+<div id="trace">trace output</div>
 <p>
 
 <form>

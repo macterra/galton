@@ -36,6 +36,7 @@ urls = (
   '/adduser', 'adduser',
   '/list', 'list',
   '/users', 'users',
+  '/montecarlo', 'montecarlo',
   '/projects', 'projects',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
@@ -121,17 +122,17 @@ class projectrun:
         form = ProjectTable(id)
         return render.sim(id, form)    
 
-def TextField(name, size, val):
+def TextField(name, index, size, val):
     return """
-        <td><input name="%s" type="text" size="%s" value="%s" /></td>
-        """ % (name, size, val)
+        <td><input name="%s" id="%s_%d", type="text" size="%s" value="%s" onchange="taskSim(%d);"/></td>
+        """ % (name, name, index, size, val, index)
         
 def CheckboxField(name, val, checked):
     return """
         <td><input name="%s" type="checkbox" value="%s" %s /></td>
         """ % (name, val, "checked" if checked else "")
 
-def RiskField(risk):
+def RiskField(index, risk):
     noneSelected = "selected" if risk == "none" else ""
     lowSelected = "selected" if risk == "low" else ""
     mediumSelected = "selected" if risk == "medium" else ""
@@ -140,7 +141,7 @@ def RiskField(risk):
     
     return """
         <td>
-            <select name="risk">
+            <select name="risk" id="risk_%d" onchange="taskSim(%s);">
                 <option %s>none</option>
                 <option %s>low</option>
                 <option %s>medium</option>
@@ -148,7 +149,7 @@ def RiskField(risk):
                 <option %s>very high</option>
             </select>
         </td>            
-        """ % (noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
+        """ % (index, index, noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
 
 class TaskForm:
     def __init__(self, id):
@@ -172,10 +173,10 @@ class TaskForm:
         for r in db.query(q):
             form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
-            form += TextField('desc', 20, r.description)
-            form += TextField('count', 5, r.count)
-            form += TextField('median', 5, r.median)
-            form += RiskField(r.risk)
+            form += TextField('desc', index, 20, r.description)
+            form += TextField('count', index, 5, r.count)
+            form += TextField('median', index, 5, r.median)
+            form += RiskField(index, r.risk)
             form += CheckboxField('delete', index, False)
             form += "</tr>\n"
             
@@ -184,10 +185,10 @@ class TaskForm:
         for i in range(3):    
             form += "<tr>\n"
             form += CheckboxField('include', index+i, False)
-            form += TextField('desc', 20, '')
-            form += TextField('count', 5, '')
-            form += TextField('median', 5, '')
-            form += RiskField('')
+            form += TextField('desc', index+i, 20, '')
+            form += TextField('count', index+i, 5, '')
+            form += TextField('median', index+i, 5, '')
+            form += RiskField(index+i, '')
             form += "<td></td>\n"
             form += "</tr>\n"
             
@@ -197,8 +198,9 @@ class TaskForm:
         form += "<a href=/project/%s/run>Run Simulation</a>" % (self.id)
         return form
 
+RiskMap = { 'none' : 0, 'low' : 0.275, 'medium' : 0.55, 'high' : 0.825, 'very high' : 1.1 }
+    
 def UpdateProject(id, description, tasks):
-    riskmap = { 'none' : 0, 'low' : 0.275, 'medium' : 0.55, 'high' : 0.825, 'very high' : 1.0 }
     
     db.update('projects', where="id=%s" % (id), description=description)
     
@@ -207,8 +209,8 @@ def UpdateProject(id, description, tasks):
     for task in tasks:
         desc, count, median, risk, inc, rem = task
         if desc and median and risk and not rem:
-            print desc, median, risk, inc, rem
-            var = riskmap[risk]
+            #print desc, median, risk, inc, rem
+            var = RiskMap[risk]
             db.insert('tasks', project=id, description=desc, count=count, median=median, variance=var, risk=risk, include=inc)
         else:
             print "invalid task", task
@@ -216,7 +218,7 @@ def UpdateProject(id, description, tasks):
 class projectedit:
     def GET(self, id):
         form = TaskForm(id)
-        return render.form(form)
+        return render.sim(id, form)
         
     def POST(self, id):
         wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
@@ -234,6 +236,42 @@ class tasks:
     def GET(self, id):
         q = "select * from tasks where project=%s" % (id)
         return DumpQuery(q)
+
+class montecarlo:
+    def GET(self):
+        i = web.input()
+        
+        try:
+            trials = int(i.trials)
+        except:
+            trials = 10000
+            
+        try:
+            count = int(i.count)
+        except:
+            trials = 1
+            
+        try:
+            median = float(i.median)
+        except:
+            median = 1.0
+            
+        try:
+            risk = i.risk
+        except:
+            risk = 'medium'
+         
+        try:
+            var = RiskMap[risk]
+        except:
+            var = RiskMap['medium']
+        
+        tasks = []
+        for i in range(count):
+            task = Task(median, var)
+            tasks.append(task)       
+        results = RunMonteCarlo(trials,tasks)    
+        return json.dumps(results)       
         
 class results:
     def GET(self, id):
