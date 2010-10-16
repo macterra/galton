@@ -29,7 +29,12 @@ $def with (id, form)
         setContent('mean', sprintf("%.2f", results.mean));
         setContent('p10', sprintf("%.2f", results.cumprob[10][0]));
         setContent('p50', sprintf("%.2f", results.cumprob[50][0]));
+        setContent('p80', sprintf("%.2f", results.cumprob[80][0])); 
         setContent('p90', sprintf("%.2f", results.cumprob[90][0]));  
+        setContent('p95', sprintf("%.2f", results.cumprob[95][0]));  
+        setContent('p99', sprintf("%.2f", results.cumprob[99][0]));  
+        setContent('ratio9010', sprintf("%.2f", results.cumprob[90][0]/results.cumprob[10][0])); 
+        setContent('ratio9050', sprintf("%.2f", results.cumprob[90][0]/results.cumprob[50][0]));  
         setContent('risk', sprintf("%.2f", results.risk));  
         
         drawChart(results.cumprob);
@@ -73,15 +78,27 @@ iterations: <input type="text" id='trials' value="10000" />
 <input type="button" value="Run Simulation" id='run' onclick="runSim()" />
 </form>
 
-<table border="1">
-    <tr> <th width="50">mean</th> <td width="50"><div id="mean" /></td> </tr>
-    <tr> <th>p10</th> <td><div id="p10" /></td> </tr>
-    <tr> <th>p50</th> <td><div id="p50" /></td> </tr>
-    <tr> <th>p90</th> <td><div id="p90" /></td> </tr>
-    <tr> <th>risk</th> <td><div id="risk" /></td> </tr>
+<table border="0">
+    <tr>
+    <td>
+        <table border="1">
+            <tr> <th width="50">mean</th> <td width="50"><div id="mean" /></td> </tr>
+            <tr> <th>p10</th> <td><div id="p10" /></td> </tr>
+            <tr> <th>p50</th> <td><div id="p50" /></td> </tr>
+            <tr> <th>p80</th> <td><div id="p80" /></td> </tr>
+            <tr> <th>p90</th> <td><div id="p90" /></td> </tr>
+            <tr> <th>p95</th> <td><div id="p95" /></td> </tr>
+            <tr> <th>p99</th> <td><div id="p99" /></td> </tr>
+            <tr> <th>p90/p10</th> <td><div id="ratio9010" /></td> </tr>
+            <tr> <th>p90/p50</th> <td><div id="ratio9050" /></td> </tr>
+            <tr> <th>risk</th> <td><div id="risk" /></td> </tr>
+        </table>
+    </td>
+    <td>
+        <div id="graph"></div>
+        <div id="result"></div>
+    </td>
+    </tr>
 </table>
-
-<div id="graph"></div>
-<div id="result"></div>
 </body>
 </html>
