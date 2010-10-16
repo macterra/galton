@@ -109,7 +109,7 @@ class ProjectTable:
         for r in db.query(q):
             description = r.description
             
-        form += "<h1>project: %s</h1>" % (description)
+        form += "<h1>project: %s <a href=/project/%s/edit>(edit)</a></h1>" % (description, self.id)
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
             
         q = "select * from tasks where project=%s" % (self.id)
@@ -119,7 +119,6 @@ class ProjectTable:
             if r.include:
                 form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.median, r.variance, r.risk)
         form += "</table>"
-        form += "<a href=/project/%s/edit>edit tasks</a>" % (self.id)
         return form
             
 class projectrun:
@@ -201,9 +200,13 @@ class TaskForm:
             
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
-        form += "<table border=0>\n"
-        form += "<tr><th>project</th><td><input name=project id=project size=80 value=\"%s\" /></td></tr>" % (desc)
-        form += "</table><p>"
+        form += """
+            <table border=1 width=50%%>
+                <tr>
+                    <th>project</th><td><input name=project id=project size=60 value=\"%s\" />
+                    <td><a href=/project/%s/delete>delete</a></td>
+                </tr>
+            </table><p/>""" % (desc, self.id)
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
@@ -232,7 +235,6 @@ class TaskForm:
         form += "</table>"
         form += "<button>Save</button>\n"
         form += "</form>\n"
-        form += "<a href=/project/%s/run>Run Simulation</a>" % (self.id)
         return form
 
 RiskMap = { 'none' : 0, 'low' : 0.275, 'medium' : 0.55, 'high' : 0.825, 'very high' : 1.1 }
