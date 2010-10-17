@@ -36,6 +36,7 @@ urls = (
   '/adduser', 'adduser',
   '/list', 'list',
   '/users', 'users',
+  '/favicon.ico', 'favicon',
   '/montecarlo', 'montecarlo',
   '/projects', 'projects',
   '/projectlist', 'projectlist',
@@ -68,9 +69,9 @@ signupForm = form.Form(
 def RenderForm(form):
     return "<html><form name=\"main\" method=\"post\">%s</form></html>" % (form.render())
     
-class index:
+class favicon:
     def GET(self):        
-        return "Hello, world!"
+        raise web.seeother('/static/favicon.ico')
 
 def DumpTable(table):
     return json.dumps([t for t in db.select(table)])
