@@ -140,7 +140,7 @@ class ProjectList:
         form += "</table>\n"
         
         form += "<form name=main method=post>\n"
-        form += "<p><table border=1>\n"
+        form += "<p><table border=1 width=50%>\n"
         form += "<tr><td>description: <input type=text name=desc size=60 /> <button>Add New</button></td></tr>"
         form += "</table>\n"
         form == "</form>\n"
