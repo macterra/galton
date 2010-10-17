@@ -87,7 +87,7 @@ $def with (id, form)
 </head>
 
 <body onload="runSim();">
-<a href="/"><img src="/static/galton.jpg"/></a>
+<a href="/"><img src="/static/galton.jpg"/></a><p/>
 $:form.render()
 <div id=trace></div>
 <p>
@@ -114,7 +114,7 @@ iterations: <input type="text" id='trials' value="10000" />
         </table>
     </td>
     <td>
-        <div id="graph"></div>
+        <div id="graph">loading simulation results...</div>
         <div id="result"></div>
     </td>
     </tr>
