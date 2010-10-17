@@ -161,8 +161,8 @@ class projectlist:
         
 def TextField(name, index, size, val):
     return """
-        <td><input name="%s" id="%s_%d", type="text" size="%s" value="%s" onchange="taskSim(%d);"/></td>
-        """ % (name, name, index, size, val, index)
+        <td><input name="%s" id="%s_%d", type="text" size="%s" value="%s" onfocus="taskSim(%d);" onchange="taskSim(%d);"/></td>
+        """ % (name, name, index, size, val, index, index)
         
 def CheckboxField(name, val, checked):
     return """
