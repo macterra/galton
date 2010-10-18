@@ -131,12 +131,12 @@ class ProjectList:
     def render(self):
         form = "<h1>Galton Projects</h1>\n" 
         form += "<table border=1 width=50%>\n"
-        form += "<thead><tr><th>description</th><th>simulation</th><th>edit</th></tr></thead>\n"
+        form += "<thead><tr><th>projects</th></tr></thead>\n"
         
         for r in db.query("select * from projects"):
-            simURL = "<a href=/project/%s/run>run</a>" % (r.id)
+            simURL = "<a href=/project/%s/run>%s</a>" % (r.id, r.description)
             editURL = "<a href=/project/%s/edit>edit</a>" % (r.id)
-            form += "<tr><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (r.description, simURL, editURL)            
+            form += "<tr><td>%s (%s)</td></tr>\n" % (simURL, editURL)            
             
         form += "</table>\n"
         
