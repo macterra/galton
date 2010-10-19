@@ -18,6 +18,14 @@ def RunMonteCarlo(trials, tasks):
     t = time.time()
     times = ([])
     n = 0
+    
+    if trials > 100000:
+        print "RunMonteCarlo: too many trials", trials
+        trials = 10000
+        
+    if trials < 1:
+        trials = 10000
+        
     for x in xrange(trials):
         sum = 0
         for task in tasks:

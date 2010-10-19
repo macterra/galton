@@ -13,15 +13,22 @@ $def with (id, form)
     function setContent(id, val)
     {
         document.getElementById(id).innerHTML = val;
+    };    
+    
+    function setValue(id, val)
+    {
+        document.getElementById(id).value = val;
     };
         
-    function getContent(id)
+    function getValue(id)
     {
         return document.getElementById(id).value;
     };
     
     function showResults(results)
     {
+        setValue('trials', results.trials);
+        
         setContent('result', sprintf("montecarlo simulation took %3.2fs for %d iterations", results.simtime, results.trials));
         setContent('mean', sprintf("%.2f", results.mean));
         setContent('p10', sprintf("%.2f", results.cumprob[10][0]));
@@ -43,21 +50,21 @@ $def with (id, form)
     function runSim()
     {     
         document.getElementById('run').disabled = true;
-        CHART.title = getContent('project');
+        CHART.title = getValue('project');
         
-        //setContent('trace', sprintf("title = [%s]", getContent('project')));
+        //setContent('trace', sprintf("title = [%s]", getValue('project')));
         
-        var resultsURL = "/project/$id/results?trials=" + getContent('trials');
+        var resultsURL = "/project/$id/results?trials=" + getValue('trials');
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
     };
     
     function taskSim(row)
     {
-        var title = getContent("desc_" + row);
-        var count = getContent("count_" + row);
-        var median = getContent("median_" + row);
-        var risk = getContent("risk_" + row);
+        var title = getValue("desc_" + row);
+        var count = getValue("count_" + row);
+        var median = getValue("median_" + row);
+        var risk = getValue("risk_" + row);
         var resultsURL = sprintf("/montecarlo?trials=10000&count=%s&median=%s&risk=%s", count, median, risk);
         
         CHART.title = title;
@@ -94,7 +101,7 @@ $:form.render()
 <p>
 
 <form>
-iterations: <input type="text" id='trials' value="10000" />
+iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000" />
 <input type="button" value="Run Simulation" id='run' onclick="runSim()" />
 </form>
 
