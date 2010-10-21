@@ -9,58 +9,26 @@ $def with (id, form)
 <script type="text/javascript" src="/static/sprintf.js"></script>
 <script type="text/javascript" src="/static/jscharts.js"></script>
 <script type="text/javascript">   
-        
-    function setContent(id, val)
-    {
-        document.getElementById(id).innerHTML = val;
-    };    
+             
+    var CHART = { 'title' : 'untitled' };
     
-    function setValue(id, val)
-    {
-        document.getElementById(id).value = val;
-    };
-        
     function getValue(id)
     {
         return document.getElementById(id).value;
     };
-    
-    function showResults(results)
-    {
-        setValue('trials', results.trials);
-        
-        setContent('result', sprintf("montecarlo simulation took %3.2fs for %d iterations", results.simtime, results.trials));
-        setContent('mean', sprintf("%.2f", results.mean));
-        setContent('p10', sprintf("%.2f", results.cumprob[10][0]));
-        setContent('p50', sprintf("%.2f", results.cumprob[50][0]));
-        setContent('p80', sprintf("%.2f", results.cumprob[80][0])); 
-        setContent('p90', sprintf("%.2f", results.cumprob[90][0]));  
-        setContent('p95', sprintf("%.2f", results.cumprob[95][0]));  
-        setContent('p99', sprintf("%.2f", results.cumprob[99][0]));  
-        setContent('ratio9010', sprintf("%.2f", results.cumprob[90][0]/results.cumprob[10][0])); 
-        setContent('ratio9050', sprintf("%.2f", results.cumprob[90][0]/results.cumprob[50][0]));  
-        setContent('risk', sprintf("%.2f", results.risk));  
-        
-        drawChart(results.cumprob);
-        document.getElementById('run').disabled = false;
-    };
-    
-    var CHART = { 'title' : 'untitled' };
-    
+
     function runSim()
     {     
-        document.getElementById('run').disabled = true;
+        $('run').disabled = true;
         CHART.title = getValue('project');
-        
-        //setContent('trace', sprintf("title = [%s]", getValue('project')));
-        
-        var resultsURL = "/project/$id/results?trials=" + getValue('trials');
+                
+        var resultsURL = "/project/$id/results?trials=" + $('trials').value;
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
     };
     
     function taskSim(row)
-    {
+    {        
         var title = getValue("desc_" + row);
         var count = getValue("count_" + row);
         var median = getValue("median_" + row);
@@ -71,6 +39,26 @@ $def with (id, form)
         
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
+    };
+    
+    function showResults(results)
+    {
+        $('trials').value = results.trials;
+                
+        $('result').innerHTML = sprintf("montecarlo simulation took %3.2fs for %d iterations", results.simtime, results.trials);
+        $('mean').innerHTML = sprintf("%.2f", results.mean);
+        $('p10').innerHTML = sprintf("%.2f", results.cumprob[10][0]);
+        $('p50').innerHTML = sprintf("%.2f", results.cumprob[50][0]);
+        $('p80').innerHTML = sprintf("%.2f", results.cumprob[80][0]); 
+        $('p90').innerHTML = sprintf("%.2f", results.cumprob[90][0]);  
+        $('p95').innerHTML = sprintf("%.2f", results.cumprob[95][0]);  
+        $('p99').innerHTML = sprintf("%.2f", results.cumprob[99][0]);  
+        $('ratio9010').innerHTML = sprintf("%.2f", results.cumprob[90][0]/results.cumprob[10][0]); 
+        $('ratio9050').innerHTML = sprintf("%.2f", results.cumprob[90][0]/results.cumprob[50][0]);  
+        $('risk').innerHTML = sprintf("%.2f", results.risk);  
+        
+        drawChart(results.cumprob);
+        $('run').disabled = false;
     };
     
     function drawChart(myData)
