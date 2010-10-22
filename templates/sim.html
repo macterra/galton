@@ -28,7 +28,7 @@ $def with (id, form)
     };
     
     function taskSim(row)
-    {        
+    {                
         var title = getValue("desc_" + row);
         var count = getValue("count_" + row);
         var median = getValue("median_" + row);
@@ -36,6 +36,16 @@ $def with (id, form)
         var resultsURL = sprintf("/montecarlo?trials=10000&count=%s&median=%s&risk=%s", count, median, risk);
         
         CHART.title = title;
+        
+        var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
+        jsonRequest.get();
+    };
+    
+    function riskSim(risk)
+    {                
+        var resultsURL = sprintf("/montecarlo?trials=10000&count=1&median=10&risk=%s", risk);
+        
+        CHART.title = sprintf("risk=%s for p50=10", risk);
         
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
         jsonRequest.get();
@@ -106,7 +116,7 @@ iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000"
             <tr> <th>p99</th> <td><div id="p99" /></td> </tr>
             <tr> <th>p90/p10</th> <td><div id="ratio9010" /></td> </tr>
             <tr> <th>p90/p50</th> <td><div id="ratio9050" /></td> </tr>
-            <tr> <th>risk</th> <td><div id="risk" /></td> </tr>
+            <tr> <th>variance</th> <td><div id="risk" /></td> </tr>
         </table>
     </td>
     <td>
@@ -115,5 +125,12 @@ iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000"
     </td>
     </tr>
 </table>
+<p/>
+risk categories:
+<button style="width:80" onclick="riskSim('none');">none</button>
+<button style="width:80" onclick="riskSim('low');">low</button>
+<button style="width:80" onclick="riskSim('medium');">medium</button>
+<button style="width:80" onclick="riskSim('high');">high</button>
+<button style="width:80" onclick="riskSim('very high');">very high</button>
 </body>
 </html>
