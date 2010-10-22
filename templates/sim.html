@@ -24,6 +24,7 @@ $def with (id, form)
                 
         var resultsURL = "/project/$id/results?trials=" + $('trials').value;
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
+        document.body.style.cursor = "wait";
         jsonRequest.get();
     };
     
@@ -38,6 +39,7 @@ $def with (id, form)
         CHART.title = title;
         
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
+        document.body.style.cursor = "wait";
         jsonRequest.get();
     };
     
@@ -48,6 +50,7 @@ $def with (id, form)
         CHART.title = sprintf("risk=%s for p50=10", risk);
         
         var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
+        document.body.style.cursor = "wait";
         jsonRequest.get();
     };
     
@@ -69,6 +72,7 @@ $def with (id, form)
         
         drawChart(results.cumprob);
         $('run').disabled = false;
+        document.body.style.cursor = "default";
     };
     
     function drawChart(myData)
@@ -114,6 +118,7 @@ iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000"
             <tr> <th>p90</th> <td><div id="p90" /></td> </tr>
             <tr> <th>p95</th> <td><div id="p95" /></td> </tr>
             <tr> <th>p99</th> <td><div id="p99" /></td> </tr>
+            <tr> <th colspan=2>risk metrics</th></td> </tr>
             <tr> <th>p90/p10</th> <td><div id="ratio9010" /></td> </tr>
             <tr> <th>p90/p50</th> <td><div id="ratio9050" /></td> </tr>
             <tr> <th>variance</th> <td><div id="risk" /></td> </tr>
@@ -126,11 +131,28 @@ iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000"
     </tr>
 </table>
 <p/>
-risk categories:
-<button style="width:80" onclick="riskSim('none');">none</button>
-<button style="width:80" onclick="riskSim('low');">low</button>
-<button style="width:80" onclick="riskSim('medium');">medium</button>
-<button style="width:80" onclick="riskSim('high');">high</button>
-<button style="width:80" onclick="riskSim('very high');">very high</button>
+
+<div id="help">
+</div>
+<table border="0">
+<tr>
+    <th>risk</th>   <th>variance</th>   <th>P90/P10</th>   <th>P90/P50</th> 
+</tr>    
+<tr>
+    <td><button style="width:80" onclick="riskSim('none');">none</button></td>              <td>0.001</td>   <td>1</td>   <td>1</td> 
+</tr>      
+<tr>
+    <td><button style="width:80" onclick="riskSim('low');">low</button></td>                <td>0.27</td>   <td>2</td>   <td>1.4</td> 
+</tr>      
+<tr>
+    <td><button style="width:80" onclick="riskSim('medium');">medium</button></td>          <td>0.54</td>   <td>4</td>   <td>2</td> 
+</tr>      
+<tr>
+    <td><button style="width:80" onclick="riskSim('high');">high</button></td>              <td>0.81</td>   <td>8</td>   <td>2.8</td> 
+</tr>      
+<tr>
+    <td><button style="width:80" onclick="riskSim('very high');">very high</button></td>    <td>1.08</td>   <td>16</td>   <td>4</td> 
+</tr>    
+</table>
 </body>
 </html>
