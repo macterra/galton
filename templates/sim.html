@@ -60,6 +60,7 @@ $def with (id, form)
                 
         $('result').innerHTML = sprintf("montecarlo simulation took %3.2fs for %d iterations", results.simtime, results.trials);
         $('mean').innerHTML = sprintf("%.2f", results.mean);
+        $('mode').innerHTML = sprintf("%.2f", results.mode);
         $('p10').innerHTML = sprintf("%.2f", results.cumprob[10][0]);
         $('p50').innerHTML = sprintf("%.2f", results.cumprob[50][0]);
         $('p80').innerHTML = sprintf("%.2f", results.cumprob[80][0]); 
@@ -111,7 +112,8 @@ iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000"
     <tr>
     <td>
         <table border="1">
-            <tr> <th width="50">mean</th> <td width="50"><div id="mean" /></td> </tr>
+            <tr> <th width="50">mode</th> <td width="50"><div id="mode" /></td> </tr>
+            <tr> <th>mean</th><td><div id="mean" /></td> </tr>
             <tr> <th>p10</th> <td><div id="p10" /></td> </tr>
             <tr> <th>p50</th> <td><div id="p50" /></td> </tr>
             <tr> <th>p80</th> <td><div id="p80" /></td> </tr>
@@ -119,9 +121,9 @@ iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000"
             <tr> <th>p95</th> <td><div id="p95" /></td> </tr>
             <tr> <th>p99</th> <td><div id="p99" /></td> </tr>
             <tr> <th colspan=2>risk metrics</th></td> </tr>
+            <tr> <th>variance</th> <td><div id="risk" /></td> </tr>
             <tr> <th>p90/p10</th> <td><div id="ratio9010" /></td> </tr>
             <tr> <th>p90/p50</th> <td><div id="ratio9050" /></td> </tr>
-            <tr> <th>variance</th> <td><div id="risk" /></td> </tr>
         </table>
     </td>
     <td>

@@ -35,7 +35,9 @@ def RunMonteCarlo(trials, tasks):
     times = sort(times)
     N = len(times)
     cumprob = [[times[t*N/100], t] for t in range(100)]
-    results = dict(simtime=elapsed, trials=trials, cumprob=cumprob, mean=times.mean(), std=times.std(), risk=log(times).std());
+    sigma = log(times).std()
+    mode = times[N/2] * exp(-sigma*sigma)
+    results = dict(simtime=elapsed, trials=trials, cumprob=cumprob, mean=times.mean(), mode=mode, std=times.std(), risk=sigma);
     return results
     
 urls = (
