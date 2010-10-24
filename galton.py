@@ -171,8 +171,8 @@ class projectlist:
         
 def TextField(name, index, size, val):
     return """
-        <td><input name="%s" id="%s_%d", type="text" size="%s" value="%s" onfocus="taskSim(%d);" onchange="taskSim(%d);"/></td>
-        """ % (name, name, index, size, val, index, index)
+        <td><input name="%s" id="%s_%d", type="text" size="%s" maxlength="%s" value="%s" onfocus="taskSim(%d);" onchange="taskSim(%d);"/></td>
+        """ % (name, name, index, size, size, val, index, index)
         
 def CheckboxField(name, val, checked):
     return """
@@ -240,13 +240,13 @@ class TaskForm:
                 </tr>
             </table><p/>""" % (self.id, desc, self.id, TypeField(type), units)
         form += "<table border=0 width=50%>\n"
-        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
+        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
             form += TextField('desc', index, 20, r.description)
-            form += TextField('count', index, 5, r.count)
+            form += TextField('count', index, 3, r.count)
             form += TextField('median', index, 5, r.median)
             form += RiskField(index, r.risk)
             form += CheckboxField('delete', index, False)
@@ -258,7 +258,7 @@ class TaskForm:
             form += "<tr>\n"
             form += CheckboxField('include', index+i, False)
             form += TextField('desc', index+i, 20, '')
-            form += TextField('count', index+i, 5, '')
+            form += TextField('count', index+i, 3, '')
             form += TextField('median', index+i, 5, '')
             form += RiskField(index+i, '')
             form += "<td></td>\n"
