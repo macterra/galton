@@ -198,6 +198,22 @@ def RiskField(index, risk):
         </td>            
         """ % (index, index, noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
 
+def TypeField(type):
+    sel1 = "selected" if type == "mode" else ""
+    sel2 = "selected" if type == "mean" else ""
+    sel3 = "selected" if type == "p50" else ""
+    sel4 = "selected" if type == "p80" else ""
+    sel5 = "selected" if type == "p90" else ""
+    
+    return """
+            <select name="type">
+                <option value="mode" %s>most likely (mode)</option>
+                <option value="mean" %s>average (mean)</option>
+                <option value="p50" %s>50/50 (median)</option>
+                <option value="p80" %s>80%% confident</option>
+                <option value="p90" %s>90%% confident</option>
+            </select>""" % (sel1, sel2, sel3, sel4, sel5)
+
 class TaskForm:
     def __init__(self, id):
         self.id = id
@@ -208,16 +224,21 @@ class TaskForm:
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
             desc = r.description
+            type = r.estimate
+            units = r.units
             
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
         form += """
             <table border=1 width=50%%>
                 <tr>
-                    <th><a href="/project/%s/run">project</a></th><td><input name=project id=project size=60 value=\"%s\" />
+                    <th><a href="/project/%s/run">project</a></th><td colspan=2><input name=project id=project size=60 value="%s" />
                     <td><a href=/project/%s/delete>delete</a></td>
                 </tr>
-            </table><p/>""" % (self.id, desc, self.id)
+                <tr>
+                    <th>estimate</th><td>type: %s</td><td>units: <input name=units value="%s" /></td>
+                </tr>
+            </table><p/>""" % (self.id, desc, self.id, TypeField(type), units)
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>median</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
@@ -250,9 +271,9 @@ class TaskForm:
 
 RiskMap = { 'none' : 0.001, 'low' : 0.27, 'medium' : 0.54, 'high' : 0.81, 'very high' : 1.08 }
     
-def UpdateProject(id, description, tasks):
+def UpdateProject(id, wi, tasks):
     
-    db.update('projects', where="id=%s" % (id), description=description)
+    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units)
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
@@ -279,7 +300,7 @@ class projectedit:
         include = [x in inc for x in all]
         delete = [x in rem for x in all]
         tasks = zip(wi.desc, wi.count, wi.median, wi.risk, include, delete)
-        UpdateProject(id, wi.project, tasks)
+        UpdateProject(id, wi, tasks)
         raise web.seeother("/project/%s/edit" % (id))
 
 class ProjectDeleteForm:
