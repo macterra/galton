@@ -129,7 +129,7 @@ class ProjectTable:
         form += "<thead><tr><th>task</th><th>count</th><th>%s</th><th>variance</th></tr></thead>" % (type)
         for r in db.query(q):
             if r.include:
-                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.median, r.variance, r.risk)
+                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.estimate, r.variance, r.risk)
         form += "</table>"
         return form
             
@@ -241,7 +241,7 @@ class TaskForm:
             form += CheckboxField('include', index, r.include)
             form += TextField('desc', index, 20, r.description)
             form += TextField('count', index, 3, r.count)
-            form += TextField('median', index, 5, r.median)
+            form += TextField('median', index, 5, r.estimate)
             form += RiskField(index, r.risk)
             form += CheckboxField('delete', index, False)
             form += "</tr>\n"
@@ -379,7 +379,7 @@ class results:
         for r in db.query(q):
             if r.include:
                 for i in range(int(r.count)):
-                    task = Task(float(r.median), float(r.variance))
+                    task = Task(float(r.estimate), float(r.variance))
                     tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
