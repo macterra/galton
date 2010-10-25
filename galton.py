@@ -119,13 +119,14 @@ class ProjectTable:
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
             description = r.description
+            type = r.estimate
             
         form += "<h1>%s <a href=/project/%s/edit>(edit)</a></h1>" % (description, self.id)
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1 width=50%>"
-        form += "<thead><tr><th>task</th><th>count</th><th>median</th><th>variance</th></tr></thead>"
+        form += "<thead><tr><th>task</th><th>count</th><th>%s</th><th>variance</th></tr></thead>" % (type)
         for r in db.query(q):
             if r.include:
                 form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.median, r.variance, r.risk)
@@ -179,12 +180,9 @@ def CheckboxField(name, val, checked):
         <td><input name="%s" type="checkbox" value="%s" %s /></td>
         """ % (name, val, "checked" if checked else "")
 
-def RiskField(index, risk):
-    noneSelected = "selected" if risk == "none" else ""
-    lowSelected = "selected" if risk == "low" else ""
-    mediumSelected = "selected" if risk == "medium" else ""
-    highSelected = "selected" if risk == "high" else ""
-    veryHighSelected = "selected" if risk == "very high" else ""
+def RiskField(index, risk):    
+    selected = ["selected" if risk == t else "" for t in ['none', 'low', 'medium', 'high', 'very high']]
+    args = (index, index) + tuple(selected)
     
     return """
         <td>
@@ -196,14 +194,10 @@ def RiskField(index, risk):
                 <option %s>very high</option>
             </select>
         </td>            
-        """ % (index, index, noneSelected, lowSelected, mediumSelected, highSelected, veryHighSelected)
+        """ % args 
 
-def TypeField(type):
-    sel1 = "selected" if type == "mode" else ""
-    sel2 = "selected" if type == "mean" else ""
-    sel3 = "selected" if type == "p50" else ""
-    sel4 = "selected" if type == "p80" else ""
-    sel5 = "selected" if type == "p90" else ""
+def TypeField(type):    
+    selected = ["selected" if type == t else "" for t in ['mode', 'mean', 'p50', 'p80', 'p90']]
     
     return """
             <select name="type">
@@ -212,7 +206,7 @@ def TypeField(type):
                 <option value="p50" %s>50/50 (median)</option>
                 <option value="p80" %s>80%% confident</option>
                 <option value="p90" %s>90%% confident</option>
-            </select>""" % (sel1, sel2, sel3, sel4, sel5)
+            </select>""" %  tuple(selected) 
 
 class TaskForm:
     def __init__(self, id):
