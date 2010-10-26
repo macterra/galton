@@ -263,7 +263,8 @@ class TaskForm:
         form += "</form>\n"
         return form
 
-RiskMap = { 'none' : 0.001, 'low' : 0.27, 'medium' : 0.54, 'high' : 0.81, 'very high' : 1.08 }
+Sigma1 = 0.27043285     
+RiskMap = { 'none' : 0.001, 'low' : Sigma1, 'medium' : 2*Sigma1, 'high' : 3*Sigma1, 'very high' : 4*Sigma1 }
     
 def UpdateProject(id, wi, tasks):
     
