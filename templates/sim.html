@@ -34,7 +34,7 @@ $def with (id, form)
         var count = getValue("count_" + row);
         var median = getValue("median_" + row);
         var risk = getValue("risk_" + row);
-        var resultsURL = sprintf("/montecarlo?trials=10000&count=%s&median=%s&risk=%s", count, median, risk);
+        var resultsURL = sprintf("/montecarlo?trials=10000&count=%s&estimate=%s&risk=%s", count, median, risk);
         
         CHART.title = title;
         
@@ -45,7 +45,7 @@ $def with (id, form)
     
     function riskSim(risk)
     {                
-        var resultsURL = sprintf("/montecarlo?trials=10000&count=1&median=10&risk=%s", risk);
+        var resultsURL = sprintf("/montecarlo?trials=10000&count=1&estimate=10&risk=%s", risk);
         
         CHART.title = sprintf("risk=%s for p50=10", risk);
         

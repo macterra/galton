@@ -6,12 +6,28 @@ from numpy import *
 from numpy.random import lognormal
 from random import *
 
-class Task:
-    def __init__(self, median, sigma):
-        self.p50 = median
-        self.sigma = sigma
-        self.mode = median / math.exp(sigma*sigma)
+Sigma1 = 0.27043285     
+RiskMap = { 'none' : 0.001, 'low' : Sigma1, 'medium' : 2*Sigma1, 'high' : 3*Sigma1, 'very high' : 4*Sigma1 }
 
+class Task:
+    def __init__(self, estimate, type, risk):
+        self.estimate = estimate
+        self.type = type
+        self.sigma = RiskMap[risk]            
+        
+        if type == 'mode':
+            self.p50 = estimate * math.exp(sigma*sigma)
+        elif type == 'mean':
+            self.p50 = estimate / math.exp(sigma*sigma/2)
+        if type == 'p50':
+            self.p50 = estimate
+        elif type == 'p80': 
+            self.p50 = estimate   
+        elif type == 'p90':    
+            self.p50 = estimate
+        else:
+            raise 'unknown estimate type'
+            
     def Time(self): 
         return self.p50 * lognormal(0,self.sigma)
      
@@ -263,9 +279,6 @@ class TaskForm:
         form += "<button>Save</button>\n"
         form += "</form>\n"
         return form
-
-Sigma1 = 0.27043285     
-RiskMap = { 'none' : 0.001, 'low' : Sigma1, 'medium' : 2*Sigma1, 'high' : 3*Sigma1, 'very high' : 4*Sigma1 }
     
 def UpdateProject(id, wi, tasks):
     
@@ -346,23 +359,23 @@ class montecarlo:
             trials = 1
             
         try:
-            median = float(i.median)
+            estimate = float(i.estimate)
         except:
-            median = 1.0
+            estimate = 1.0
+            
+        try:
+            type = i.type
+        except:
+            type = 'p50'
             
         try:
             risk = i.risk
         except:
             risk = 'medium'
-         
-        try:
-            var = RiskMap[risk]
-        except:
-            var = RiskMap['medium']
-        
+                 
         tasks = []
         for i in range(count):
-            task = Task(median, var)
+            task = Task(estimate, type, risk)
             tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
@@ -381,7 +394,7 @@ class results:
         for r in db.query(q):
             if r.include:
                 for i in range(int(r.count)):
-                    task = Task(float(r.estimate), float(r.variance))
+                    task = Task(float(r.estimate), 'p50', r.risk)
                     tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
