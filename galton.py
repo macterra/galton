@@ -293,7 +293,8 @@ def UpdateProject(id, wi, tasks):
             var = RiskMap[risk]
             db.insert('tasks', project=id, description=desc, count=count, estimate=median, variance=var, risk=risk, include=inc)
         else:
-            print "invalid task", task
+            #print "invalid task", task
+            pass
         
 class projectedit:
     def GET(self, id):
@@ -372,10 +373,7 @@ class montecarlo:
             risk = i.risk
         except:
             risk = 'medium'
-                 
-
-        print "montecarlo type=", type
-        
+                        
         tasks = []
         for i in range(count):
             task = Task(estimate, type, risk)
@@ -392,12 +390,16 @@ class results:
         except:
             trials = 10000
             
+        q = "select * from projects where id=%s" % (id)
+        for r in db.query(q):
+            type = r.estimate
+                    
         tasks = []
         q = "select * from tasks where project=%s" % (id)
         for r in db.query(q):
             if r.include:
                 for i in range(int(r.count)):
-                    task = Task(float(r.estimate), 'p50', r.risk)
+                    task = Task(float(r.estimate), type, r.risk)
                     tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
