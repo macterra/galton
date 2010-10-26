@@ -142,11 +142,11 @@ class ProjectTable:
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
             
         q = "select * from tasks where project=%s" % (self.id)
-        form += "<table border=1 width=50%>"
-        form += "<thead><tr><th>task</th><th>count</th><th>%s</th><th>variance</th></tr></thead>" % (type)
+        form += "<table border=1>"
+        form += "<thead><tr><th>task</th><th>count</th><th>estimate (%s)</th><th>risk</th></tr></thead>" % (type)
         for r in db.query(q):
             if r.include:
-                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s (%s)</td></tr>" % (r.description, r.count, r.estimate, r.variance, r.risk)
+                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.count, r.estimate, r.risk)
         form += "</table>"
         return form
             
@@ -243,13 +243,14 @@ class TaskForm:
         form += """
             <table border=1 width=50%%>
                 <tr>
-                    <th><a href="/project/%s/run">project</a></th><td colspan=2><input name=project id=project size=60 value="%s" />
-                    <td><a href=/project/%s/delete>delete</a></td>
+                    <th>project</th><td colspan=2><input name=project id=project size=60 value="%s" />
+                    <td><a href="/project/%s/run">summary</a></td>
                 </tr>
                 <tr>
                     <th>estimate</th><td>type: %s</td><td>units: <input name=units value="%s" /></td>
+                    <td><a href=/project/%s/delete>delete</a></td>
                 </tr>
-            </table><p/>""" % (self.id, desc, self.id, TypeField(type), units)
+            </table><p/>""" % (desc, self.id, TypeField(type), units, self.id)
         form += "<table border=0 width=50%>\n"
         form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th>delete</th></tr></thead>\n"
         index = 0
