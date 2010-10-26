@@ -8,6 +8,8 @@ from random import *
 
 Sigma1 = 0.27043285     
 RiskMap = { 'none' : 0.001, 'low' : Sigma1, 'medium' : 2*Sigma1, 'high' : 3*Sigma1, 'very high' : 4*Sigma1 }
+BaseFactors = { 50 : 1, 60 : 1.07091495269662, 70 : 1.15236358602526, 80 : 1.25558553883723, 90 : 1.41421363539235 }
+RiskExponent = { 'none' : 0, 'low' : 1, 'medium' : 2, 'high' : 3, 'very high' : 4 }
 
 class Task:
     def __init__(self, estimate, type, risk):
@@ -21,13 +23,20 @@ class Task:
             self.p50 = estimate / math.exp(self.sigma*self.sigma/2)
         elif type == 'p50':
             self.p50 = estimate
+        elif type == 'p60': 
+            self.p50 = self.CalcMedian(estimate, 60, risk) 
+        elif type == 'p70': 
+            self.p50 = self.CalcMedian(estimate, 70, risk) 
         elif type == 'p80': 
-            self.p50 = estimate   
+            self.p50 = self.CalcMedian(estimate, 80, risk)   
         elif type == 'p90':    
-            self.p50 = estimate
+            self.p50 = self.CalcMedian(estimate, 90, risk)
         else:
             raise 'unknown estimate type'
             
+    def CalcMedian(self, estimate, confidence, risk):
+        return estimate/(BaseFactors[confidence] ** RiskExponent[risk])        
+        
     def Time(self): 
         return self.p50 * lognormal(0,self.sigma)
      
@@ -241,18 +250,18 @@ class TaskForm:
         q = "select * from tasks where project=%s" % (self.id) 
         form += "<form name=main method=post>\n"
         form += """
-            <table border=1 width=50%%>
+            <table border=1 width=700px>
                 <tr>
-                    <th>project</th><td colspan=2><input name=project id=project size=60 value="%s" />
-                    <td><a href="/project/%s/run">summary</a></td>
+                    <th width=70px>project</th><td colspan=2><input name=project id=project size=60 value="%s" />
+                    <td width=70px><a href="/project/%s/run">summary</a></td>
                 </tr>
                 <tr>
                     <th>estimate</th><td>type: %s</td><td>units: <input name=units value="%s" /></td>
                     <td><a href=/project/%s/delete>delete</a></td>
                 </tr>
             </table><p/>""" % (desc, self.id, TypeField(type), units, self.id)
-        form += "<table border=0 width=50%>\n"
-        form += "<thead><tr><th>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th>delete</th></tr></thead>\n"
+        form += "<table border=0 width=700px>\n"
+        form += "<thead><tr><th width=70px>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th width=70px>delete</th></tr></thead>\n"
         index = 0
         for r in db.query(q):
             form += "<tr>\n"                            
