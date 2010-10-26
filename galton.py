@@ -3,6 +3,7 @@ from web import form
 import json
 import time
 from numpy import *
+from numpy.random import lognormal
 from random import *
 
 class Task:
@@ -12,7 +13,7 @@ class Task:
         self.mode = median / math.exp(sigma*sigma)
 
     def Time(self): 
-        return self.p50 * lognormvariate(0,self.sigma)
+        return self.p50 * lognormal(0,self.sigma)
      
 def RunMonteCarlo(trials, tasks):
     t = time.time()
