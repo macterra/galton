@@ -167,7 +167,7 @@ class projectlist:
     def POST(self):
         i = web.input()
         id = db.insert('projects', description=i.desc)
-        db.insert('tasks', project=id, include=True, count=1, median=1.0, risk='medium', variance=0.55, description='task 1')
+        db.insert('tasks', project=id, include=True, count=1, estimate=1.0, risk='medium', variance=0.55, description='task 1')
         raise web.seeother("/project/%d/edit" % (id))
         
 def TextField(name, index, size, val):
@@ -276,7 +276,7 @@ def UpdateProject(id, wi, tasks):
         if desc and median and risk and not rem:
             #print desc, median, risk, inc, rem
             var = RiskMap[risk]
-            db.insert('tasks', project=id, description=desc, count=count, median=median, variance=var, risk=risk, include=inc)
+            db.insert('tasks', project=id, description=desc, count=count, estimate=median, variance=var, risk=risk, include=inc)
         else:
             print "invalid task", task
         
