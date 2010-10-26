@@ -16,10 +16,10 @@ class Task:
         self.sigma = RiskMap[risk]            
         
         if type == 'mode':
-            self.p50 = estimate * math.exp(sigma*sigma)
+            self.p50 = estimate * math.exp(self.sigma*self.sigma)
         elif type == 'mean':
-            self.p50 = estimate / math.exp(sigma*sigma/2)
-        if type == 'p50':
+            self.p50 = estimate / math.exp(self.sigma*self.sigma/2)
+        elif type == 'p50':
             self.p50 = estimate
         elif type == 'p80': 
             self.p50 = estimate   
@@ -217,7 +217,7 @@ def TypeField(type):
     selected = ["selected" if type == t else "" for t in ['mode', 'mean', 'p50', 'p80', 'p90']]
     
     return """
-            <select name="type">
+            <select name="type" id="type">
                 <option value="mode" %s>most likely (mode)</option>
                 <option value="mean" %s>average (mean)</option>
                 <option value="p50" %s>50/50 (median)</option>
@@ -373,6 +373,9 @@ class montecarlo:
         except:
             risk = 'medium'
                  
+
+        print "montecarlo type=", type
+        
         tasks = []
         for i in range(count):
             task = Task(estimate, type, risk)
