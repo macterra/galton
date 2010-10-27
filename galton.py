@@ -255,14 +255,14 @@ class TaskForm:
         form += """
             <table border=1 width=700px>
                 <tr>
-                    <th width=70px>project</th><td colspan=2><input name=project id=project size=60 value="%s" />
-                    <td width=70px><a href="/project/%s/run">summary</a></td>
+                    <th width=70px><a href="/project/%s/run">project</a></th><td colspan=2><input name=project id=project size=60 value="%s" />
+                    <td width=70px align=center><a href="/project/%s/copy">copy</a></td>
                 </tr>
                 <tr>
                     <th>estimate</th><td>type: %s</td><td>units: <input name=units value="%s" /></td>
-                    <td><a href=/project/%s/delete>delete</a></td>
+                    <td align=center><a href=/project/%s/delete>delete</a></td>
                 </tr>
-            </table><p/>""" % (desc, self.id, TypeField(type), units, self.id)
+            </table><p/>""" % (self.id, desc, self.id, TypeField(type), units, self.id)
         form += "<table border=0 width=700px>\n"
         form += "<thead><tr><th width=70px>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th width=70px>delete</th></tr></thead>\n"
         index = 0
@@ -288,12 +288,9 @@ class TaskForm:
             form += "<td></td>\n"
             form += "</tr>\n"
             
-        form += "</table>"
-        form += """
-            <button>Save</button> </form>
-            <button onClick="window.location='/project/%s/copy';">Copy</button> 
-            <button onClick="window.location='/project/%s/delete';">Delete</button>\n""" % (self.id, self.id)
-        #form += "</form>\n"
+        form += "</table>\n"
+        form += "<button>Save</button>\n"
+        form += "</form>\n"
         return form
     
 def UpdateProject(id, wi, tasks):
@@ -339,7 +336,7 @@ class ProjectDeleteForm:
             desc = r.description
             
         form = """
-            <form method="POST" onSubmit="return confirm('Delete for realz?')">
+            <form method="POST" onSubmit="return confirm('Deletion is permanent. Proceed?')">
                 project: %s <button>Delete</button
             </form>""" % (desc)
             
