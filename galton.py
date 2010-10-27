@@ -80,6 +80,7 @@ urls = (
   '/project/(\d*)/tasks', 'tasks',
   '/project/(\d*)/edit', 'projectedit',
   '/project/(\d*)/delete', 'projectdelete',
+  '/project/(\d*)/copy', 'projectcopy',
   '/project/(\d*)/results', 'results',
   '/project/(\d*)/run', 'projectrun'
 )
@@ -286,8 +287,11 @@ class TaskForm:
             form += "</tr>\n"
             
         form += "</table>"
-        form += "<button>Save</button>\n"
-        form += "</form>\n"
+        form += """
+            <button>Save</button> </form>
+            <button onClick="window.location='/project/%s/copy';">Copy</button> 
+            <button onClick="window.location='/project/%s/delete';">Delete</button>\n""" % (self.id, self.id)
+        #form += "</form>\n"
         return form
     
 def UpdateProject(id, wi, tasks):
@@ -349,6 +353,47 @@ class projectdelete:
         db.query("delete from tasks where project=%s" % (id))
         db.query("delete from projects where id=%s" % (id))
         raise web.seeother("/")
+        
+class ProjectCopyForm:
+    def __init__(self, id):
+        self.id = id
+        
+    def render(self):
+        q = "select * from projects where id=%s" % (self.id)
+        for r in db.query(q):
+            desc = r.description
+            
+        form = """
+            <p/>
+            <form method="POST">
+                <table border="1">
+                <tr><td>project:</td><td>%s</td></tr>
+                <tr><td>copy to:</td><td><input name="desc" type="text" size="60" maxlength="60" value="new name" /> <button>Copy</button></td></tr>
+                </table>
+            </form>""" % (desc)
+            
+        return form    
+        
+class projectcopy:
+    def GET(self, id):
+        form = ProjectCopyForm(id)
+        print form.render()
+        return render.form(form)
+        
+    def POST(self, id):
+        q = "select * from projects where id=%s" % (id)
+        for r in db.query(q):
+            type = r.estimate
+            units = r.units
+            
+        i = web.input()
+        newId = db.insert('projects', description=i.desc, estimate=type, units=units)
+        
+        q = "select * from tasks where project=%s" % (id)
+        with db.transaction():
+            for r in db.query(q):
+                db.insert('tasks', project=newId, include=r.include, count=r.count, estimate=r.estimate, risk=r.risk, variance=r.variance, description=r.description)
+        raise web.seeother("/project/%d/edit" % (newId))
         
 class tasks:
     def GET(self, id):
