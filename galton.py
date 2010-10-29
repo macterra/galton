@@ -149,10 +149,12 @@ class ProjectTable:
         for r in db.query(q):
             description = r.description
             type = r.estimate
+            units = r.units
             
         form += "<h1>%s <a href=/project/%s/edit>(edit)</a></h1>" % (description, self.id)
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
         form += """<input type="hidden" id="type" value="%s"/>""" % (type)
+        form += """<input type="hidden" id="units" value="%s"/>""" % (units)
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1>"
@@ -260,7 +262,7 @@ class TaskForm:
                     <td width=70px align=center><a href="/project/%s/copy">copy</a></td>
                 </tr>
                 <tr>
-                    <th>estimate</th><td>type: %s</td><td>units: <input name=units value="%s" /></td>
+                    <th>estimate</th><td>type: %s</td><td>units: <input id=units name=units value="%s" /></td>
                     <td align=center><a href=/project/%s/delete>delete</a></td>
                 </tr>
             </table><p/>""" % (self.id, desc, self.id, TypeField(type), units, self.id)

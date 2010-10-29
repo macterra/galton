@@ -30,7 +30,8 @@ $def with (id, form)
     
     function taskSim(row)
     {                
-        var type = getValue('type')
+        var type = getValue('type');
+        
         var title = getValue("desc_" + row);
         var count = getValue("count_" + row);
         var median = getValue("median_" + row);
@@ -46,7 +47,7 @@ $def with (id, form)
     
     function riskSim(risk)
     {               
-        var type = getValue('type')
+        var type = getValue('type');
         var resultsURL = sprintf("/montecarlo?trials=10000&count=1&estimate=10&risk=%s&type=%s", risk, type);
         
         CHART.title = sprintf("risk=%s for %s=10", risk, type);
@@ -90,7 +91,7 @@ $def with (id, form)
         myChart.setAxisValuesColor('#333639');
         myChart.setAxisNameColor('#333639');
         myChart.setTextPaddingLeft(0);
-        myChart.setAxisNameX("effort");
+        myChart.setAxisNameX(sprintf("effort (%s)", $('units').value));
         myChart.setAxisNameY("confidence");
         myChart.setTitle(CHART.title);
         myChart.draw();
