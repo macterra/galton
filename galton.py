@@ -152,6 +152,7 @@ class ProjectTable:
             
         form += "<h1>%s <a href=/project/%s/edit>(edit)</a></h1>" % (description, self.id)
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
+        form += """<input type="hidden" id="type" value="%s"/>""" % (type)
             
         q = "select * from tasks where project=%s" % (self.id)
         form += "<table border=1>"
