@@ -55,17 +55,25 @@ def RunMonteCarlo(trials, tasks):
         trials = 10000
         
     for x in xrange(trials):
-        sum = 0
+        total = 0
         for task in tasks:
-            sum += task.Time()
-        times = append(times,sum)
+            total += task.Time()
+        times = append(times,total)
     elapsed = time.time() - t
     times = sort(times)
     N = len(times)
     cumprob = [[times[t*N/100], t] for t in range(100)]
     sigma = log(times).std()
     mode = times[N/2] * exp(-sigma*sigma)
-    results = dict(simtime=elapsed, trials=trials, cumprob=cumprob, mean=times.mean(), mode=mode, std=times.std(), risk=sigma);
+
+    nominal = sum([t.estimate for t in tasks])
+    pnom = 0.0
+    for x in xrange(trials):
+        if times[x] > nominal:
+            pnom = 1. - (1. * x/trials)
+            break
+
+    results = dict(simtime=elapsed, trials=trials, cumprob=cumprob, mean=times.mean(), mode=mode, std=times.std(), risk=sigma, nominal=nominal, pnom=pnom);
     return results
     
 urls = (
