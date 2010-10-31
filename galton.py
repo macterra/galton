@@ -92,7 +92,8 @@ urls = (
   '/project/(\d*)/delete', 'projectdelete',
   '/project/(\d*)/copy', 'projectcopy',
   '/project/(\d*)/results', 'results',
-  '/project/(\d*)/run', 'projectrun'
+  '/project/(\d*)/run', 'projectrun',
+  '/project/(\d*)/report', 'projectreport'
 )
 
 render = web.template.render('templates/')
@@ -176,7 +177,12 @@ class ProjectTable:
 class projectrun:
     def GET(self, id):
         form = ProjectTable(id)
-        return render.sim(id, form)    
+        return render.sim(id, form, 'block')   
+        
+class projectreport:
+    def GET(self, id):
+        form = ProjectTable(id)
+        return render.sim(id, form, 'none')    
         
 class ProjectList:        
     def render(self):
@@ -185,7 +191,7 @@ class ProjectList:
         form += "<thead><tr><th>projects</th></tr></thead>\n"
         
         for r in db.query("select * from projects"):
-            simURL = "<a href=/project/%s/run>%s</a>" % (r.id, r.description)
+            simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
             editURL = "<a href=/project/%s/edit>edit</a>" % (r.id)
             form += "<tr><td>%s (%s)</td></tr>\n" % (simURL, editURL)            
             
@@ -266,7 +272,7 @@ class TaskForm:
         form += """
             <table border=1 width=700px>
                 <tr>
-                    <th width=70px><a href="/project/%s/run">project</a></th><td colspan=2><input name=project id=project size=60 value="%s" />
+                    <th width=70px><a href="/project/%s/report">report</a></th><td colspan=2>project: <input name=project id=project size=60 value="%s" />
                     <td width=70px align=center><a href="/project/%s/copy">copy</a></td>
                 </tr>
                 <tr>
@@ -280,7 +286,7 @@ class TaskForm:
         for r in db.query(q):
             form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
-            form += TextField('desc', index, 20, r.description)
+            form += TextField('desc', index, 30, r.description)
             form += TextField('count', index, 3, r.count)
             form += TextField('median', index, 5, r.estimate)
             form += RiskField(index, r.risk)
@@ -292,7 +298,7 @@ class TaskForm:
         for i in range(3):    
             form += "<tr>\n"
             form += CheckboxField('include', index+i, False)
-            form += TextField('desc', index+i, 20, '')
+            form += TextField('desc', index+i, 30, '')
             form += TextField('count', index+i, 3, '')
             form += TextField('median', index+i, 5, '')
             form += RiskField(index+i, '')
@@ -323,7 +329,7 @@ def UpdateProject(id, wi, tasks):
 class projectedit:
     def GET(self, id):
         form = TaskForm(id)
-        return render.sim(id, form)
+        return render.sim(id, form, 'block')
         
     def POST(self, id):
         wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
