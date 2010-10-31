@@ -92,7 +92,6 @@ urls = (
   '/project/(\d*)/delete', 'projectdelete',
   '/project/(\d*)/copy', 'projectcopy',
   '/project/(\d*)/results', 'results',
-  '/project/(\d*)/run', 'projectrun',
   '/project/(\d*)/report', 'projectreport'
 )
 
@@ -160,7 +159,7 @@ class ProjectTable:
             type = r.estimate
             units = r.units
             
-        form += "<h1>%s <a href=/project/%s/edit>(edit)</a></h1>" % (description, self.id)
+        form += "<h1><a href=/project/%s/edit>%s</a></h1>" % (self.id, description)
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
         form += """<input type="hidden" id="type" value="%s"/>""" % (type)
         form += """<input type="hidden" id="units" value="%s"/>""" % (units)
@@ -174,10 +173,6 @@ class ProjectTable:
         form += "</table>"
         return form
             
-class projectrun:
-    def GET(self, id):
-        form = ProjectTable(id)
-        return render.sim(id, form, 'block')   
         
 class projectreport:
     def GET(self, id):
