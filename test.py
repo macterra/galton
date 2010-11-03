@@ -11,7 +11,6 @@ class TestMonteCarlo(unittest.TestCase):
         
     def assertCloseEnough(self, a, b):
         x = abs(math.log10(a/b))
-        #print x
         self.assert_(x < 0.02, "x = %d" % (x))
         
     def confidenceTest(self, type, confidence):
@@ -22,7 +21,6 @@ class TestMonteCarlo(unittest.TestCase):
             p = results['cumprob'][confidence][0]
             #print i, type, "=", x, p, risk
             self.assertCloseEnough(x, p)
-            #print "risk", risk, results['risk'], galton.RiskMap[risk]
             self.assertCloseEnough(results['risk'], galton.RiskMap[risk])
             
     def test_p50(self):
@@ -40,15 +38,20 @@ class TestMonteCarlo(unittest.TestCase):
     def test_p90(self):
         self.confidenceTest('p90', 90)
         
-    def test_mode(self):
+    def averageTest(self, type):
         for i in range(10):
             x = random.randint(1,100)
             risk = random.choice(self.risks)
-            results = galton.RunMonteCarlo(10000, [galton.Task(x, 'mode', risk)])
-            mode = results['mode']
-            #print i, "mode =", x, mode
-            self.assertCloseEnough(x, mode)
+            results = galton.RunMonteCarlo(10000, [galton.Task(x, type, risk)])
+            avg = results[type]
+            self.assertCloseEnough(x, avg)
             self.assertCloseEnough(results['risk'], galton.RiskMap[risk])
+            
+    def test_mean(self):
+        self.averageTest('mean')
+        
+    def test_mode(self):
+        self.averageTest('mode')
             
 if __name__ == '__main__':
     unittest.main()
