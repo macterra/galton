@@ -6,19 +6,37 @@ import math
 class TestMonteCarlo(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.risks = ['none', 'low', 'medium', 'high', 'very high']
         
     def assertCloseEnough(self, a, b):
         x = abs(math.log10(a/b))
-        self.assert_(x < 0.01)
+        #print x
+        self.assert_(x < 0.02)
         
-    def test_median(self):
+    def confidenceTest(self, type, confidence):
         for i in range(10):
             x = random.randint(1,100)
-            results = galton.RunMonteCarlo(10000, [galton.Task(x, 'p50', 'medium')])
-            p50 = results['cumprob'][50][0]
-            print i, "p50=", x, p50
-            self.assertCloseEnough(x, p50)
+            risk = random.choice(self.risks)
+            results = galton.RunMonteCarlo(10000, [galton.Task(x, type, risk)])
+            p = results['cumprob'][confidence][0]
+            #print i, type, "=", x, p, risk
+            self.assertCloseEnough(x, p)
+            
+    def test_p50(self):
+        self.confidenceTest('p50', 50)
+        
+    def test_p60(self):
+        self.confidenceTest('p60', 60)
+        
+    def test_p70(self):
+        self.confidenceTest('p70', 70)
+        
+    def test_p80(self):
+        self.confidenceTest('p80', 80)
+        
+    def test_p90(self):
+        self.confidenceTest('p90', 90)
         
 if __name__ == '__main__':
     unittest.main()
+    
