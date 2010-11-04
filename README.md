@@ -5,7 +5,8 @@ Projects are late more often than not because the people involved fail to take u
 Galton provides a simple interface to calculate confidence curves for risk-based estimation.
 
 A project consists of any number of tasks. Each task has a description, an estimate of effort, 
-and a risk (low, medium, high). Galton runs a monte carlo simulation on the tasks to derive a 
+and a risk (low, medium, high). Galton runs a 
+[Monte Carlo simulation](http://en.wikipedia.org/wiki/Monte_Carlo_method) on the tasks to derive a 
 probability distribution of possible outcomes, then displays the confidence curve (cumulative 
 distribution function) and related statistics (mode, median, mean, variance, etc).
 
