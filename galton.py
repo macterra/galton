@@ -111,7 +111,7 @@ class projectreport:
 class ProjectList:        
     def render(self):
         form = "<h1>Galton Projects</h1>\n" 
-        form += "<table border=1 width=50%>\n"
+        form += "<table border=1 width=700px>\n"
         form += "<thead><tr><th>projects</th></tr></thead>\n"
         
         for r in db.query("select * from projects"):
@@ -122,8 +122,8 @@ class ProjectList:
         form += "</table>\n"
         
         form += "<form name=main method=post>\n"
-        form += "<p><table border=1 width=50%>\n"
-        form += "<tr><td>description: <input type=text name=desc size=60 /> <button>Add New</button></td></tr>"
+        form += "<p><table border=1 width=700px>\n"
+        form += "<tr><td>description: <input type=text name=desc size=60 maxlength=60 /> <button>Add New</button></td></tr>"
         form += "</table>\n"
         form == "</form>\n"
         
