@@ -8,10 +8,10 @@ class TestMonteCarlo(unittest.TestCase):
     def setUp(self):
         self.risks = montecarlo.RiskMap.keys()
         
-    def assertCloseEnough(self, a, b):
+    def assertCloseEnough(self, a, b, margin):
         x = abs(math.log10(a/b))
         #print a, b, x
-        self.assert_(x < 0.02, "x = %d" % (x))
+        self.assert_(x < margin, "%f/%f = %f < %f" % (a, b, x, margin))
                 
     def simTest(self, type, getResult):
         for i in range(10):
@@ -20,8 +20,8 @@ class TestMonteCarlo(unittest.TestCase):
             results = montecarlo.RunMonteCarlo(10000, [montecarlo.Task(x, type, risk)])
             y = getResult(results)
             #print i, type, "=", x, y, risk
-            self.assertCloseEnough(x, y)
-            self.assertCloseEnough(results['risk'], montecarlo.RiskMap[risk])
+            self.assertCloseEnough(x, y, 0.03)
+            self.assertCloseEnough(results['risk'], montecarlo.RiskMap[risk], 0.01)
         
     def test_mode(self):
         self.simTest('mode', lambda res: res['mode'])
@@ -50,7 +50,7 @@ class TestMonteCarlo(unittest.TestCase):
             tasks = [montecarlo.Task(e, 'mean', random.choice(self.risks)) for e in estimates]
             results = montecarlo.RunMonteCarlo(10000, tasks)
             #print "meanTest", sum(estimates), results['mean']
-            self.assertCloseEnough(sum(estimates), results['mean'])
+            self.assertCloseEnough(sum(estimates), results['mean'], 0.01)
             
 if __name__ == '__main__':
     unittest.main()
