@@ -136,7 +136,7 @@ class projectlist:
         
     def POST(self):
         i = web.input()
-        id = db.insert('projects', description=i.desc)
+        id = db.insert('projects', description=i.desc, estimate='p50', units='days', created=web.SQLLiteral("DATETIME('now','localtime')"), updated=web.SQLLiteral("DATETIME('now','localtime')"))
         db.insert('tasks', project=id, include=True, count=1, estimate=1.0, risk='medium', variance=0.55, description='task 1')
         raise web.seeother("/project/%d/edit" % (id))
         
@@ -236,7 +236,7 @@ class TaskForm:
     
 def UpdateProject(id, wi, tasks):
     
-    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units)
+    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, updated=web.SQLLiteral("DATETIME('now','localtime')"))
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
@@ -257,7 +257,7 @@ class projectedit:
         
     def POST(self, id):
         wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
-        print wi
+        #print wi
         inc = [int(x) for x in wi.include]
         rem = [int(i) for i in wi.delete] 
         all = range(len(wi.count))
@@ -352,7 +352,7 @@ class montecarlo:
         try:
             count = int(i.count)
         except:
-            trials = 1
+            count = 1
             
         try:
             estimate = float(i.estimate)
