@@ -4,6 +4,7 @@ import web
 from web import form
 import json
 from montecarlo import *
+from datetime import *
     
 urls = (
   '/', 'projectlist',
@@ -111,12 +112,22 @@ class projectreport:
 class ProjectList:        
     def render(self):
         form = "<table border=1 width=700px>\n"
-        form += "<thead><tr><th>projects</th></tr></thead>\n"
+        form += "<thead><tr><th>project</th><th>created</th><th>updated</ht></tr></thead>\n"
         
-        for r in db.query("select * from projects"):
+        for r in db.query("select * from projects order by updated desc"):
+            try:
+                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S.%f")
+            except:   
+                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S") 
+            
+            try:
+                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S.%f")
+            except:    
+                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S")
+                
             simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
             editURL = "<a href=/project/%s/edit>edit</a>" % (r.id)
-            form += "<tr><td>%s (%s)</td></tr>\n" % (simURL, editURL)            
+            form += "<tr><td>%s (%s)</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, created.strftime("%Y-%m-%d"), updated.strftime("%Y-%m-%d"))            
             
         form += "</table>\n"
         
