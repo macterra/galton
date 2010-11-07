@@ -13,6 +13,11 @@ h1
     font                 : large "Tahoma", "Bitstream Vera Sans", Verdana, Helvetica, sans-serif;
 }
 
+body
+{
+    font                 : small "Tahoma", "Bitstream Vera Sans", Verdana, Helvetica, sans-serif;
+}
+
 table,td
 {
 	border               : 1px solid #CCC;

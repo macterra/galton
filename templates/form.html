@@ -6,8 +6,20 @@ $def with (form)
 <link rel="stylesheet" type="text/css" href="/static/muffin.css" /> 
 </head>
 <body>
-<a href="/"><img src="/static/galton.jpg"/></a>
+<a href="/"><img src="/static/galton.jpg" align="left" /></a>
+<h1>Galton : estimate with confidence</h1>
+
+<div>
+Projects are late more often than not because the people involved fail to take uncertainty into account. <br/>
+Galton provides a simple interface to calculate confidence curves for risk-based estimation.
+</div>
+
+<br clear=all><p/>
+
+<div id="form">
 $:form.render()
+</div>
+
 <p/>
 <a href="https://github.com/macterra/galton">
     <img src="/static/github.png" width="64" height="64" alt="hosted at github" />

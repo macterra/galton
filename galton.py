@@ -110,8 +110,7 @@ class projectreport:
         
 class ProjectList:        
     def render(self):
-        form = "<h1>Galton Projects</h1>\n" 
-        form += "<table border=1 width=700px>\n"
+        form = "<table border=1 width=700px>\n"
         form += "<thead><tr><th>projects</th></tr></thead>\n"
         
         for r in db.query("select * from projects"):
