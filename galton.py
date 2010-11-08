@@ -114,20 +114,22 @@ class ProjectList:
         form = "<table border=1 width=700px>\n"
         form += "<thead><tr><th>project</th><th>created</th><th>updated</ht></tr></thead>\n"
         
+        timestampFormat = "%Y-%m-%d %H:%M"
+        
         for r in db.query("select * from projects order by updated desc"):
             try:
-                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S.%f")
+                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S.%f").strftime(timestampFormat)
             except:   
-                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S") 
+                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
             
             try:
-                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S.%f")
+                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S.%f").strftime(timestampFormat)
             except:    
-                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S")
+                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
                 
             simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
             editURL = "<a href=/project/%s/edit>edit</a>" % (r.id)
-            form += "<tr><td>%s (%s)</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, created.strftime("%Y-%m-%d"), updated.strftime("%Y-%m-%d"))            
+            form += "<tr><td>%s (%s)</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, created, updated)            
             
         form += "</table>\n"
         
