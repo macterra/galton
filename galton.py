@@ -149,7 +149,7 @@ class projectlist:
     def POST(self):
         i = web.input()
         id = db.insert('projects', description=i.desc, estimate='p50', units='days', created=web.SQLLiteral("DATETIME('now','localtime')"), updated=web.SQLLiteral("DATETIME('now','localtime')"))
-        db.insert('tasks', project=id, include=True, count=1, estimate=1.0, risk='medium', variance=0.55, description='task 1')
+        db.insert('tasks', project=id, include=True, count=1, estimate=1.0, risk='medium', description='task 1')
         raise web.seeother("/project/%d/edit" % (id))
         
 def TextField(name, index, size, val):
@@ -256,8 +256,7 @@ def UpdateProject(id, wi, tasks):
         desc, count, median, risk, inc, rem = task
         if desc and median and risk and not rem:
             #print desc, median, risk, inc, rem
-            var = RiskMap[risk]
-            db.insert('tasks', project=id, description=desc, count=count, estimate=median, variance=var, risk=risk, include=inc)
+            db.insert('tasks', project=id, description=desc, count=count, estimate=median, risk=risk, include=inc)
         else:
             #print "invalid task", task
             pass
@@ -344,7 +343,7 @@ class projectcopy:
         q = "select * from tasks where project=%s" % (id)
         with db.transaction():
             for r in db.query(q):
-                db.insert('tasks', project=newId, include=r.include, count=r.count, estimate=r.estimate, risk=r.risk, variance=r.variance, description=r.description)
+                db.insert('tasks', project=newId, include=r.include, count=r.count, estimate=r.estimate, risk=r.risk, description=r.description)
         raise web.seeother("/project/%d/edit" % (newId))
         
 class tasks:
