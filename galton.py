@@ -5,11 +5,14 @@ from web import form
 import json
 from montecarlo import *
 from datetime import *
+import urllib
+import urllib2
     
 urls = (
   '/', 'projectlist',
   '/login', 'login',
   '/adduser', 'adduser',
+  '/rpx', 'rpx',
   '/list', 'list',
   '/users', 'users',
   '/favicon.ico', 'favicon',
@@ -66,7 +69,46 @@ class users:
         
 class projects:
     def GET(self):
-        return DumpTable('projects')
+        return DumpTable('projects')       
+
+class GreetingsForm():
+    def render(self):
+        token_url = "%s/rpx" % (web.ctx.home)
+        rpx_url = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
+        return """<a class="rpxnow" onclick="return false;" href="%s"> Sign In </a>""" % (rpx_url)
+        
+class rpx:        
+    def POST(self):
+        i = web.input()
+              
+        api_params = {
+            'token': i.token,
+            'apiKey': '1f6c7a19c54ce28502d3e1e7ac7aebe732c9daf6',
+            'format': 'json',
+        }
+
+        http_response = urllib2.urlopen('https://rpxnow.com/api/v2/auth_info', urllib.urlencode(api_params))
+        auth_info_json = http_response.read()
+        auth_info = json.loads(auth_info_json)
+        
+        print auth_info
+            
+        if auth_info['stat'] == 'ok':
+            profile = auth_info['profile']
+           
+            # 'identifier' will always be in the payload
+            # this is the unique idenfifier that you use to sign the user
+            # in to your site
+            identifier = profile['identifier']
+           
+            # these fields MAY be in the profile, but are not guaranteed. it
+            # depends on the provider and their implementation.
+            name = profile.get('displayName')
+            email = profile.get('email')
+        
+            return "welcome %s %s (%s)" % (identifier, name, email)
+        else:
+            return "authentication failed"
         
 class project:
     def GET(self, id):
@@ -144,7 +186,7 @@ class ProjectList:
 class projectlist:
     def GET(self):
         form = ProjectList()
-        return render.form(form) 
+        return render.form(form, GreetingsForm()) 
         
     def POST(self):
         i = web.input()
@@ -297,8 +339,8 @@ class ProjectDeleteForm:
 class projectdelete:
     def GET(self, id):
         form = ProjectDeleteForm(id)
-        print form.render()
-        return render.form(form)
+        #print form.render()
+        return render.form(form, GreetingsForm())
         
     def POST(self, id):
         db.query("delete from tasks where project=%s" % (id))
@@ -328,8 +370,8 @@ class ProjectCopyForm:
 class projectcopy:
     def GET(self, id):
         form = ProjectCopyForm(id)
-        print form.render()
-        return render.form(form)
+        #print form.render()
+        return render.form(form, GreetingsForm())
         
     def POST(self, id):
         q = "select * from projects where id=%s" % (id)
