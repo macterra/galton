@@ -13,11 +13,8 @@ import urllib2
     
 urls = (
   '/', 'projectlist',
-  '/login', 'login',
-  '/adduser', 'adduser',
   '/rpx', 'rpx',
   '/logout', 'logout',
-  '/list', 'list',
   '/users', 'users',
   '/favicon.ico', 'favicon',
   '/montecarlo', 'montecarlo',
@@ -42,22 +39,6 @@ if web.config.get('_session') is None:
 else:
     session = web.config._session
 
-print "session=", session    
-    
-loginForm = form.Form(
-    form.Textbox('username'),
-    form.Password('password'),
-    form.Button('Login'),
-)
-
-signupForm = form.Form(
-    form.Textbox('username'),
-    form.Password('password'),
-    form.Password('password_again'),
-    form.Button('Signup'),
-    validators = [form.Validator("Passwords didn't match.", lambda i: i.password == i.password_again)]
-)
-
 def RenderForm(form):
     return "<html><form name=\"main\" method=\"post\">%s</form></html>" % (form.render())
     
@@ -70,10 +51,6 @@ def DumpTable(table):
     
 def DumpQuery(q):
     return json.dumps([t for t in db.query(q)])
-        
-class list: 
-    def GET(self):
-        return DumpTable('todo')
         
 class users:
     def GET(self):
@@ -487,41 +464,6 @@ class results:
                     tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
-      
-class login:
-    def GET(self):
-        form = loginForm()
-        return RenderForm(form)
-        
-    def POST(self):
-        form = loginForm()
-        if form.validates():
-            web.debug("valid form")
-            q = db.query("select password from users where username='%s'" % (form.d.username))
-            res = q[0]
-            if res.password == form.d.password:
-                return "user %s login OK" % (form.username.value)
-            else:
-                return "user %s login failed" % (form.username.value)
-        else:
-            return RenderForm(form)
-            
-class adduser:
-    def GET(self):
-        form = signupForm()
-        return RenderForm(form)
-        
-    def POST(self):
-        form = signupForm()
-        if form.validates():
-            web.debug("valid form")
-            try:
-                db.insert('users', username=form.d.username, password=form.d.password)
-                return "user %s added OK" % (form.username.value)
-            except:
-                return "user %s failed" % (form.username.value)
-        else:
-            return RenderForm(form)
         
 if __name__ == "__main__": 
     app.run()
