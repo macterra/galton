@@ -161,8 +161,7 @@ class ProjectTable:
         
 class projectreport:
     def GET(self, id):
-        form = ProjectTable(id)
-        return render.sim(id, form, 'none')    
+        return render.sim(GreetingsForm(), id, ProjectTable(id), 'none')    
         
 class ProjectList:        
     def render(self):
@@ -318,8 +317,7 @@ def UpdateProject(id, wi, tasks):
         
 class projectedit:
     def GET(self, id):
-        form = TaskForm(id)
-        return render.sim(id, form, 'block')
+        return render.sim(GreetingsForm(), id, TaskForm(id), 'block')
         
     def POST(self, id):
         wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
