@@ -13,7 +13,7 @@ import urllib2
     
 urls = (
   '/', 'projectlist',
-  '/rpx', 'rpx',
+  '/login', 'login',
   '/logout', 'logout',
   '/users', 'users',
   '/favicon.ico', 'favicon',
@@ -69,11 +69,11 @@ class GreetingsForm():
         except:
             pass
         
-        token_url = "%s/rpx" % (web.ctx.home)
+        token_url = "%s/login" % (web.ctx.home)
         rpx_url = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
         return """<a class="rpxnow" onclick="return false;" href="%s"> Sign In </a>""" % (rpx_url)
         
-class rpx:
+class login:
     def GET(self):
         return session        
         
@@ -89,30 +89,15 @@ class rpx:
         http_response = urllib2.urlopen('https://rpxnow.com/api/v2/auth_info', urllib.urlencode(api_params))
         auth_info_json = http_response.read()
         auth_info = json.loads(auth_info_json)
-        
-        #print auth_info
             
         if auth_info['stat'] == 'ok':
             profile = auth_info['profile']
-           
-            # 'identifier' will always be in the payload
-            # this is the unique idenfifier that you use to sign the user
-            # in to your site
-            identifier = profile['identifier']
-           
-            # these fields MAY be in the profile, but are not guaranteed. it
-            # depends on the provider and their implementation.
-            name = profile.get('displayName')
-            email = profile.get('email')
-            
-            print "rpx session=", session
+
             session.loggedin = True
-            session.id = identifier
-            session.name = name
-            session.email = email
+            session.id = profile['identifier']
+            session.name = profile.get('displayName')
+            session.email = profile.get('email')
             
-            print session
-                    
         raise web.seeother("/")
 
 class logout:
