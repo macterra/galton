@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import web
+
+web.config.debug = False
+
 from web import form
 import json
 from montecarlo import *
@@ -31,6 +34,8 @@ urls = (
 render = web.template.render('templates/')
 app = web.application(urls, globals())
 db = web.database(dbn='sqlite', db='test.db')
+
+session = web.session.Session(app, web.session.DiskStore('sessions'), initializer=dict(loggedin=False))
 
 loginForm = form.Form(
     form.Textbox('username'),
@@ -73,11 +78,21 @@ class projects:
 
 class GreetingsForm():
     def render(self):
+        try:
+            #print session
+            if session.loggedin:
+                return "Welcome, %s" % (session.name)
+        except:
+            pass
+        
         token_url = "%s/rpx" % (web.ctx.home)
         rpx_url = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
         return """<a class="rpxnow" onclick="return false;" href="%s"> Sign In </a>""" % (rpx_url)
         
-class rpx:        
+class rpx:
+    def GET(self):
+        return session        
+        
     def POST(self):
         i = web.input()
               
@@ -91,7 +106,7 @@ class rpx:
         auth_info_json = http_response.read()
         auth_info = json.loads(auth_info_json)
         
-        print auth_info
+        #print auth_info
             
         if auth_info['stat'] == 'ok':
             profile = auth_info['profile']
@@ -105,10 +120,15 @@ class rpx:
             # depends on the provider and their implementation.
             name = profile.get('displayName')
             email = profile.get('email')
-        
-            return "welcome %s %s (%s)" % (identifier, name, email)
-        else:
-            return "authentication failed"
+            
+            session.loggedin = True
+            session.id = identifier
+            session.name = name
+            session.email = email
+            
+            print session
+                    
+        raise web.seeother("/")
         
 class project:
     def GET(self, id):
