@@ -197,8 +197,7 @@ class ProjectList:
         
 class projectlist:
     def GET(self):
-        form = ProjectList()
-        return render.form(form, GreetingsForm()) 
+        return render.form(GreetingsForm(), ProjectList()) 
         
     def POST(self):
         i = web.input()
@@ -349,9 +348,7 @@ class ProjectDeleteForm:
         
 class projectdelete:
     def GET(self, id):
-        form = ProjectDeleteForm(id)
-        #print form.render()
-        return render.form(form, GreetingsForm())
+        return render.form(GreetingsForm(), ProjectDeleteForm(id))
         
     def POST(self, id):
         db.query("delete from tasks where project=%s" % (id))
@@ -380,9 +377,7 @@ class ProjectCopyForm:
         
 class projectcopy:
     def GET(self, id):
-        form = ProjectCopyForm(id)
-        #print form.render()
-        return render.form(form, GreetingsForm())
+        return render.form(GreetingsForm(), ProjectCopyForm(id))
         
     def POST(self, id):
         q = "select * from projects where id=%s" % (id)
