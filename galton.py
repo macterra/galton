@@ -2,7 +2,7 @@
 
 import web
 
-web.config.debug = False
+#web.config.debug = False
 
 from web import form
 import json
@@ -16,6 +16,7 @@ urls = (
   '/login', 'login',
   '/adduser', 'adduser',
   '/rpx', 'rpx',
+  '/logout', 'logout',
   '/list', 'list',
   '/users', 'users',
   '/favicon.ico', 'favicon',
@@ -35,8 +36,14 @@ render = web.template.render('templates/')
 app = web.application(urls, globals())
 db = web.database(dbn='sqlite', db='test.db')
 
-session = web.session.Session(app, web.session.DiskStore('sessions'), initializer=dict(loggedin=False))
+if web.config.get('_session') is None:
+    session = web.session.Session(app, web.session.DiskStore('sessions'), initializer=dict(loggedin=False))
+    web.config._session = session
+else:
+    session = web.config._session
 
+print "session=", session    
+    
 loginForm = form.Form(
     form.Textbox('username'),
     form.Password('password'),
@@ -79,9 +86,9 @@ class projects:
 class GreetingsForm():
     def render(self):
         try:
-            #print session
+            print session
             if session.loggedin:
-                return "Welcome, %s" % (session.name)
+                return """Welcome, %s <a href="/logout">(Sign out)</a>""" % (session.name)
         except:
             pass
         
@@ -121,6 +128,7 @@ class rpx:
             name = profile.get('displayName')
             email = profile.get('email')
             
+            print "rpx session=", session
             session.loggedin = True
             session.id = identifier
             session.name = name
@@ -128,6 +136,14 @@ class rpx:
             
             print session
                     
+        raise web.seeother("/")
+
+class logout:
+    def GET(self):
+        session.loggedin = False
+        session.id = ''
+        session.name = ''
+        session.email = ''
         raise web.seeother("/")
         
 class project:
