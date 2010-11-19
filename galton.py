@@ -38,9 +38,6 @@ if web.config.get('_session') is None:
     web.config._session = session
 else:
     session = web.config._session
-
-def RenderForm(form):
-    return "<html><form name=\"main\" method=\"post\">%s</form></html>" % (form.render())
     
 class favicon:
     def GET(self):        
@@ -60,6 +57,19 @@ class projects:
     def GET(self):
         return DumpTable('projects')       
 
+def CurrentUser():
+    try:
+        if session.loggedin:
+            return session.id
+    except:
+        return ''
+
+def CheckOwner(id):
+    q = "select * from projects where id=%s" % (id)
+    for r in db.query(q):
+        if CurrentUser() != r.owner:
+            raise web.seeother("/")
+            
 class GreetingsForm():
     def render(self):
         try:
@@ -128,8 +138,13 @@ class ProjectTable:
             description = r.description
             type = r.estimate
             units = r.units
+            owner = r.owner
             
-        form += "<h1><a href=/project/%s/edit>%s</a></h1>" % (self.id, description)
+        if CurrentUser() == owner:    
+            form += "<h1><a href=/project/%s/edit>%s</a></h1>" % (self.id, description)
+        else:
+            form += "<h1>%s</h1>" % (description)
+            
         form += """<input type="hidden" id="project" value="%s"/>""" % (description)
         form += """<input type="hidden" id="type" value="%s"/>""" % (type)
         form += """<input type="hidden" id="units" value="%s"/>""" % (units)
@@ -167,8 +182,8 @@ class ProjectList:
                 updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
                 
             simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
-            editURL = "<a href=/project/%s/edit>edit</a>" % (r.id)
-            form += "<tr><td>%s (%s)</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, created, updated)            
+            editURL = "(<a href=/project/%s/edit>edit</a>)" % (r.id) if CurrentUser() == r.owner else ''
+            form += "<tr><td>%s %s</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, created, updated)            
             
         form += "</table>\n"
         
@@ -286,7 +301,7 @@ class TaskForm:
     
 def UpdateProject(id, wi, tasks):
     
-    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, updated=web.SQLLiteral("DATETIME('now','localtime')"))
+    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, owner=CurrentUser(), updated=web.SQLLiteral("DATETIME('now','localtime')"))
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
@@ -301,9 +316,11 @@ def UpdateProject(id, wi, tasks):
         
 class projectedit:
     def GET(self, id):
+        CheckOwner(id)
         return render.sim(GreetingsForm(), id, TaskForm(id), 'block')
         
     def POST(self, id):
+        CheckOwner(id)
         wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
         #print wi
         inc = [int(x) for x in wi.include]
@@ -333,9 +350,11 @@ class ProjectDeleteForm:
         
 class projectdelete:
     def GET(self, id):
+        CheckOwner(id)
         return render.form(GreetingsForm(), ProjectDeleteForm(id))
         
     def POST(self, id):
+        CheckOwner(id)
         db.query("delete from tasks where project=%s" % (id))
         db.query("delete from projects where id=%s" % (id))
         raise web.seeother("/")
@@ -362,16 +381,18 @@ class ProjectCopyForm:
         
 class projectcopy:
     def GET(self, id):
+        CheckOwner(id)
         return render.form(GreetingsForm(), ProjectCopyForm(id))
         
     def POST(self, id):
+        CheckOwner(id)
         q = "select * from projects where id=%s" % (id)
         for r in db.query(q):
             type = r.estimate
             units = r.units
             
         i = web.input()
-        newId = db.insert('projects', description=i.desc, estimate=type, units=units)
+        newId = db.insert('projects', description=i.desc, estimate=type, units=units, owner=CurrentUser(), created=web.SQLLiteral("DATETIME('now','localtime')"))
         
         q = "select * from tasks where project=%s" % (id)
         with db.transaction():
