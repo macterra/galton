@@ -221,7 +221,7 @@ class projectlist:
         
     def POST(self):
         i = web.input()
-        id = db.insert('projects', description=i.desc, estimate='p50', units='days', created=web.SQLLiteral("DATETIME('now','localtime')"), updated=web.SQLLiteral("DATETIME('now','localtime')"))
+        id = db.insert('projects', description=i.desc, estimate='p50', units='days', userid=CurrentUser(), created=web.SQLLiteral("DATETIME('now','localtime')"), updated=web.SQLLiteral("DATETIME('now','localtime')"))
         db.insert('tasks', project=id, include=True, count=1, estimate=1.0, risk='medium', description='task 1')
         raise web.seeother("/project/%d/edit" % (id))
         
