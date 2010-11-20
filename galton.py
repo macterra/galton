@@ -77,7 +77,7 @@ class GreetingsForm():
         try:
             print session
             if session.loggedin:
-                return """Welcome, %s (%d) <a href="/logout">(Sign out)</a>""" % (session.name, session.userid)
+                return """Welcome, %s <font color=white>[%d]</font> <a href="/logout">(Sign out)</a>""" % (session.name, session.userid)
         except:
             pass
         
