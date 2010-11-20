@@ -60,14 +60,16 @@ class projects:
 def CurrentUser():
     try:
         if session.loggedin:
-            return session.identifier
+            return session.userid
+        else:
+            return 0
     except:
-        return ''
+        return 0    
 
 def CheckOwner(id):
     q = "select * from projects where id=%s" % (id)
     for r in db.query(q):
-        if CurrentUser() != r.owner:
+        if CurrentUser() != r.userid:
             raise web.seeother("/")
             
 class GreetingsForm():
@@ -155,9 +157,9 @@ class ProjectTable:
             description = r.description
             type = r.estimate
             units = r.units
-            owner = r.owner
+            userid = r.userid
             
-        if CurrentUser() == owner:    
+        if CurrentUser() == userid:    
             form += "<h1><a href=/project/%s/edit>%s</a></h1>" % (self.id, description)
         else:
             form += "<h1>%s</h1>" % (description)
@@ -183,11 +185,12 @@ class projectreport:
 class ProjectList:        
     def render(self):
         form = "<table border=1 width=700px>\n"
-        form += "<thead><tr><th>project</th><th>created</th><th>updated</ht></tr></thead>\n"
+        form += "<thead><tr><th>project</th><th>owner</th><th>created</th><th>updated</ht></tr></thead>\n"
         
         timestampFormat = "%Y-%m-%d %H:%M"
         
-        for r in db.query("select * from projects order by updated desc"):
+        q = "select p.*, u.name from projects p left outer join users u on p.userid=u.id order by updated desc"        
+        for r in db.query(q):
             try:
                 created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S.%f").strftime(timestampFormat)
             except:   
@@ -199,8 +202,8 @@ class ProjectList:
                 updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
                 
             simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
-            editURL = "(<a href=/project/%s/edit>edit</a>)" % (r.id) if CurrentUser() == r.owner else ''
-            form += "<tr><td>%s %s</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, created, updated)            
+            editURL = "(<a href=/project/%s/edit>edit</a>)" % (r.id) if CurrentUser() == r.userid else ''
+            form += "<tr><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, r.name, created, updated)            
             
         form += "</table>\n"
         
@@ -318,7 +321,7 @@ class TaskForm:
     
 def UpdateProject(id, wi, tasks):
     
-    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, owner=CurrentUser(), updated=web.SQLLiteral("DATETIME('now','localtime')"))
+    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, userid=CurrentUser(), updated=web.SQLLiteral("DATETIME('now','localtime')"))
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
@@ -409,7 +412,7 @@ class projectcopy:
             units = r.units
             
         i = web.input()
-        newId = db.insert('projects', description=i.desc, estimate=type, units=units, owner=CurrentUser(), created=web.SQLLiteral("DATETIME('now','localtime')"))
+        newId = db.insert('projects', description=i.desc, estimate=type, units=units, userid=CurrentUser(), created=web.SQLLiteral("DATETIME('now','localtime')"))
         
         q = "select * from tasks where project=%s" % (id)
         with db.transaction():
