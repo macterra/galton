@@ -60,7 +60,7 @@ class projects:
 def CurrentUser():
     try:
         if session.loggedin:
-            return session.id
+            return session.identifier
     except:
         return ''
 
@@ -75,14 +75,37 @@ class GreetingsForm():
         try:
             print session
             if session.loggedin:
-                return """Welcome, %s <a href="/logout">(Sign out)</a>""" % (session.name)
+                return """Welcome, %s (%d) <a href="/logout">(Sign out)</a>""" % (session.name, session.userid)
         except:
             pass
         
         token_url = "%s/login" % (web.ctx.home)
         rpx_url = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
         return """<a class="rpxnow" onclick="return false;" href="%s"> Sign In </a>""" % (rpx_url)
+ 
+def SessionLogin(profile):
+    print "SessionLogin", profile
+    session.loggedin = True
+    session.identifier = profile['identifier']
+    session.name = profile.get('displayName')
+    session.email = profile.get('email')
+    session.userid = 0
+    
+    q = "select * from users where identifier='%s'" % (session.identifier)
+    for r in db.query(q):
+        session.userid = r.id
         
+    if session.userid == 0:   
+        session.userid = db.insert('users', identifier=session.identifier, name=session.name, email=session.email)
+
+def SessionLogout():
+    print "SessionLogout"
+    session.loggedin = False
+    session.identifier = ''
+    session.name = ''
+    session.email = ''
+    session.userid = 0
+    
 class login:
     def GET(self):
         return session        
@@ -101,21 +124,15 @@ class login:
         auth_info = json.loads(auth_info_json)
             
         if auth_info['stat'] == 'ok':
-            profile = auth_info['profile']
-
-            session.loggedin = True
-            session.id = profile['identifier']
-            session.name = profile.get('displayName')
-            session.email = profile.get('email')
+            SessionLogin(auth_info['profile'])
+        else:
+            SessionLogout()
             
         raise web.seeother("/")
 
 class logout:
     def GET(self):
-        session.loggedin = False
-        session.id = ''
-        session.name = ''
-        session.email = ''
+        SessionLogout()
         raise web.seeother("/")
         
 class project:
