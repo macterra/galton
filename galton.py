@@ -201,8 +201,14 @@ class ProjectList:
             except:    
                 updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
                 
-            simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
-            editURL = "(<a href=/project/%s/edit>edit</a>)" % (r.id) if CurrentUser() == r.userid else ''
+            
+            if CurrentUser() == r.userid:
+                simURL = "<a href=/project/%s/report><b>%s</b></a>" % (r.id, r.description)
+                editURL = "(<a href=/project/%s/edit>edit</a>)" % (r.id)
+            else:
+                simURL = "<a href=/project/%s/report>%s</a>" % (r.id, r.description)
+                editURL = "(<a href=/project/%s/copy>copy</a>)" % (r.id)
+            
             form += "<tr><td>%s %s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n" % (simURL, editURL, r.name, created, updated)            
             
         form += "</table>\n"
@@ -401,11 +407,9 @@ class ProjectCopyForm:
         
 class projectcopy:
     def GET(self, id):
-        CheckOwner(id)
         return render.form(GreetingsForm(), ProjectCopyForm(id))
         
     def POST(self, id):
-        CheckOwner(id)
         q = "select * from projects where id=%s" % (id)
         for r in db.query(q):
             type = r.estimate
