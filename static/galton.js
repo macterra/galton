@@ -50,7 +50,7 @@ function showResults(results)
 {
     $('trials').value = results.trials;
             
-    $('result').innerHTML = sprintf("montecarlo simulation took %3.2fs for %d iterations", results.simtime, results.trials);
+    $('result').innerHTML = sprintf("Monte Carlo simulation took %3.2fs for %d iterations", results.simtime, results.trials);
     $('nominal').innerHTML = sprintf("%.2f", results.nominal);
     $('mean').innerHTML = sprintf("%.2f", results.mean);
     $('mode').innerHTML = sprintf("%.2f", results.mode);
@@ -82,8 +82,8 @@ function drawChart(myData)
     myChart.setAxisValuesColor('#333639');
     myChart.setAxisNameColor('#333639');
     myChart.setTextPaddingLeft(0);
-    myChart.setAxisNameX(sprintf("effort (%s)", $('units').value));
-    myChart.setAxisNameY("confidence");
+    myChart.setAxisNameX(sprintf("Effort (%s)", $('units').value));
+    myChart.setAxisNameY("Confidence");
     myChart.setTitle(CHART.title);
     myChart.draw();
 };
