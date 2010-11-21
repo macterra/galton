@@ -75,7 +75,7 @@ def CheckOwner(id):
 class GreetingsForm():
     def render(self):
         try:
-            print session
+            #print session
             if session.loggedin:
                 return """Welcome, %s <font color=white>[%d]</font> <a href="/logout">(Sign out)</a>""" % (session.name, session.userid)
         except:
@@ -191,6 +191,10 @@ class ProjectList:
         
         q = "select p.*, u.name from projects p left outer join users u on p.userid=u.id order by updated desc"        
         for r in db.query(q):
+        
+            if CurrentUser() != r.userid and not r.publish:
+                continue
+            
             try:
                 created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S.%f").strftime(timestampFormat)
             except:   
@@ -227,7 +231,7 @@ class projectlist:
         
     def POST(self):
         i = web.input()
-        id = db.insert('projects', description=i.desc, estimate='p50', units='days', userid=CurrentUser(), created=web.SQLLiteral("DATETIME('now','localtime')"), updated=web.SQLLiteral("DATETIME('now','localtime')"))
+        id = db.insert('projects', description=i.desc, estimate='p50', units='days', userid=CurrentUser(), publish=False, created=web.SQLLiteral("DATETIME('now','localtime')"), updated=web.SQLLiteral("DATETIME('now','localtime')"))
         db.insert('tasks', project=id, include=True, count=1, estimate=1.0, risk='medium', description='task 1')
         raise web.seeother("/project/%d/edit" % (id))
         
@@ -281,23 +285,26 @@ class TaskForm:
             desc = r.description
             type = r.estimate
             units = r.units
-            
-        q = "select * from tasks where project=%s" % (self.id) 
+            publish = r.publish
+                
         form += "<form name=main method=post>\n"
         form += """
             <table border=1 width=700px>
                 <tr>
-                    <th width=70px><a href="/project/%s/report">report</a></th><td colspan=2>project: <input name=project id=project size=60 value="%s" />
+                    <th width=70px><a href="/project/%s/report">report</a></th>
+                    <td colspan=2>project: <input name=project id=project size=50 maxlength=60 value="%s" /> publish: <input type="checkbox" name="publish" %s /></td>
                     <td width=70px align=center><a href="/project/%s/copy">copy</a></td>
                 </tr>
                 <tr>
                     <th>estimate</th><td>type: %s</td><td>units: <input id=units name=units value="%s" /></td>
                     <td align=center><a href=/project/%s/delete>delete</a></td>
                 </tr>
-            </table><p/>""" % (self.id, desc, self.id, TypeField(type), units, self.id)
+            </table><p/>""" % (self.id, desc, "checked" if publish else "", self.id, TypeField(type), units, self.id)
         form += "<table border=0 width=700px>\n"
         form += "<thead><tr><th width=70px>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th width=70px>delete</th></tr></thead>\n"
         index = 0
+        
+        q = "select * from tasks where project=%s" % (self.id) 
         for r in db.query(q):
             form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
@@ -326,19 +333,16 @@ class TaskForm:
         return form
     
 def UpdateProject(id, wi, tasks):
-    
-    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, userid=CurrentUser(), updated=web.SQLLiteral("DATETIME('now','localtime')"))
+    pub =  bool(wi.get('publish'))
+    now = web.SQLLiteral("DATETIME('now','localtime')")
+    db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, userid=CurrentUser(), publish=pub, updated=now)
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
         desc, count, median, risk, inc, rem = task
         if desc and median and risk and not rem:
-            #print desc, median, risk, inc, rem
             db.insert('tasks', project=id, description=desc, count=count, estimate=median, risk=risk, include=inc)
-        else:
-            #print "invalid task", task
-            pass
         
 class projectedit:
     def GET(self, id):
@@ -416,7 +420,8 @@ class projectcopy:
             units = r.units
             
         i = web.input()
-        newId = db.insert('projects', description=i.desc, estimate=type, units=units, userid=CurrentUser(), created=web.SQLLiteral("DATETIME('now','localtime')"))
+        now = web.SQLLiteral("DATETIME('now','localtime')")
+        newId = db.insert('projects', description=i.desc, estimate=type, units=units, userid=CurrentUser(), publish=False, created=now, updated=now)
         
         q = "select * from tasks where project=%s" % (id)
         with db.transaction():
