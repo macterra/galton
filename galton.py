@@ -26,6 +26,7 @@ urls = (
   '/project/(\d*)/delete', 'projectdelete',
   '/project/(\d*)/copy', 'projectcopy',
   '/project/(\d*)/results', 'results',
+  '/project/(\d*)/resultscsv', 'resultscsv',
   '/project/(\d*)/report', 'projectreport'
 )
 
@@ -492,6 +493,30 @@ class results:
                     tasks.append(task)       
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
+        
+class resultscsv:
+    def GET(self, id):
+        i = web.input()
+
+        try:
+            trials = int(i.trials)
+        except:
+            trials = 10000
+            
+        q = "select * from projects where id=%s" % (id)
+        for r in db.query(q):
+            type = r.estimate
+                    
+        tasks = []
+        q = "select * from tasks where project=%s" % (id)
+        for r in db.query(q):
+            if r.include:
+                for i in range(int(r.count)):
+                    task = Task(float(r.estimate), type, r.risk)
+                    tasks.append(task)       
+        results = RunMonteCarlo(trials,tasks)    
+        pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
+        return 'prob,effort\n' + ''.join(pairs)
         
 if __name__ == "__main__": 
     app.run()
