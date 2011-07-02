@@ -17,6 +17,13 @@ function runSim(pid)
     jsonRequest.get();
 };
 
+function exportSim(pid)
+{                 
+    var resultsURL = sprintf("/project/%d/resultscsv?trials=", pid) + $('trials').value;
+    //alert(resultsURL);
+    window.location.href = resultsURL;
+};
+
 function taskSim(row)
 {                
     var type = getValue('type');
