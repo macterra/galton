@@ -30,9 +30,13 @@ $:form.render()
 
 <div style="display: $display">
 <form>
-iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000" />
 <input type="button" value="Run Simulation" id='run' onclick="runSim($id)" />
 <input type="button" value="Export to CSV" id='export' onclick="exportSim($id)" />
+iterations: <input type="text" id='trials' size="5"  maxlength="5" value="10000" />
+<br>
+<input type="button" value="Generate Schedule" id='schedule' onclick="generateSchedule($id)" />
+start date: <input type="text" id='start' size="11"  maxlength="11" value="yyyy/mm/dd" />
+team velocity: <input type="text" id='velocity' size="5"  maxlength="5" value="1" /> (effort/week)
 </form>
 </div>
 

@@ -27,6 +27,7 @@ urls = (
   '/project/(\d*)/copy', 'projectcopy',
   '/project/(\d*)/results', 'results',
   '/project/(\d*)/resultscsv', 'resultscsv',
+  '/project/(\d*)/schedule', 'schedule',
   '/project/(\d*)/report', 'projectreport'
 )
 
@@ -517,6 +518,43 @@ class resultscsv:
         results = RunMonteCarlo(trials,tasks)    
         pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
         return 'prob,effort\n' + ''.join(pairs)
+        
+        
+class schedule:
+    def GET(self, id):
+        i = web.input()
+        
+        print i
+
+        try:
+            trials = int(i.trials)
+        except:
+            trials = 10000
+            
+        try:
+            start = i.start
+        except:
+            start = 'error'
+            
+        try:
+            velocity = float(i.velocity)
+        except:
+            velocity = 1.
+            
+        q = "select * from projects where id=%s" % (id)
+        for r in db.query(q):
+            type = r.estimate
+                    
+        tasks = []
+        q = "select * from tasks where project=%s" % (id)
+        for r in db.query(q):
+            if r.include:
+                for i in range(int(r.count)):
+                    task = Task(float(r.estimate), type, r.risk)
+                    tasks.append(task)       
+        results = RunMonteCarlo(trials,tasks)    
+        pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
+        return 'prob,effort\n' + ''.join(pairs) + "\n\nstart=%s velocity=%f" % (start, velocity)
         
 if __name__ == "__main__": 
     app.run()

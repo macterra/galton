@@ -19,8 +19,14 @@ function runSim(pid)
 
 function exportSim(pid)
 {                 
-    var resultsURL = sprintf("/project/%d/resultscsv?trials=", pid) + $('trials').value;
+    var resultsURL = sprintf("/project/%d/resultscsv?trials=%s", pid, $('trials').value);
     //alert(resultsURL);
+    window.location.href = resultsURL;
+};
+
+function generateSchedule(pid)
+{                 
+    var resultsURL = sprintf("/project/%d/schedule?trials=%s&start=%s&velocity=%s", pid, $('trials').value, $('start').value, $('velocity').value);
     window.location.href = resultsURL;
 };
 
@@ -80,6 +86,9 @@ function showResults(results)
 function drawChart(myData)
 {
     var myChart = new JSChart('graph', 'line');
+    
+    //var myData = new Array(['unit', 20], ['unit two', 10], ['unit three', 30], ['other unit', 10], ['last unit', 30]);
+        
     myChart.setDataArray(myData);
     myChart.setLineColor('#8D9386');
     myChart.setLineWidth(4);
