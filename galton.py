@@ -10,6 +10,8 @@ from montecarlo import *
 from datetime import *
 import urllib
 import urllib2
+
+import numpy
     
 urls = (
   '/', 'projectlist',
@@ -518,8 +520,6 @@ class schedule:
     def GET(self, id):
         i = web.input()
         
-        print i
-
         try:
             trials = int(i.trials)
         except:
@@ -538,8 +538,25 @@ class schedule:
             
         results = GetResults(id, trials)
         
-        pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
-        return 'prob,effort\n' + ''.join(pairs) + "\n\nstart=%s velocity=%f" % (start, velocity)
+        effort, prob = zip(*results["cumprob"])
+                
+        cumprob = 0
+        cumeffort = 0
+        schedule = []
+        
+        while cumprob < 100:
+            cumeffort += velocity
+            cumprob = numpy.interp(cumeffort, effort, prob, 0, 100)
+            start += timedelta(7)
+            #print start, cumeffort, cumprob
+            schedule.append([str(start), cumprob])
+            #schedule.append([cumprob, str(start)])
+       
+        print schedule
+        results["schedule"] = schedule
+        return json.dumps(results)
+        #pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
+        #return 'prob,effort\n' + ''.join(pairs) + "\n\nstart=%s velocity=%f" % (start, velocity)
         
 if __name__ == "__main__": 
     app.run()

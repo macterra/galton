@@ -25,9 +25,14 @@ function exportSim(pid)
 };
 
 function generateSchedule(pid)
-{                 
+{                
+    CHART.title = 'Estimated Schedule';
+    
     var resultsURL = sprintf("/project/%d/schedule?trials=%s&start=%s&velocity=%s", pid, $('trials').value, $('start').value, $('velocity').value);
-    window.location.href = resultsURL;
+    //window.location.href = resultsURL;
+    var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
+    //document.body.style.cursor = "wait";
+    jsonRequest.get();
 };
 
 function taskSim(row)
@@ -60,7 +65,7 @@ function riskSim(risk)
 };
 
 function showResults(results)
-{
+{    
     $('trials').value = results.trials;
             
     $('result').innerHTML = sprintf("Monte Carlo simulation took %3.2fs for %d iterations", results.simtime, results.trials);
@@ -76,9 +81,15 @@ function showResults(results)
     $('ratio9010').innerHTML = sprintf("%.2f", results.cumprob[90][0]/results.cumprob[10][0]); 
     $('ratio9050').innerHTML = sprintf("%.2f", results.cumprob[90][0]/results.cumprob[50][0]);  
     $('risk').innerHTML = sprintf("%.2f", results.risk);  
-    $('pnom').innerHTML = sprintf("%.2f", results.pnom);
+    $('pnom').innerHTML = sprintf("%.2f", results.pnom);    
     
-    drawChart(results.cumprob);
+    if (results.schedule) {
+        drawSchedule(results.schedule);
+    }
+    else {
+        drawChart(results.cumprob);
+    }
+        
     $('run').disabled = false;
     document.body.style.cursor = "default";
 };
@@ -86,10 +97,9 @@ function showResults(results)
 function drawChart(myData)
 {
     var myChart = new JSChart('graph', 'line');
-    
-    //var myData = new Array(['unit', 20], ['unit two', 10], ['unit three', 30], ['other unit', 10], ['last unit', 30]);
-        
+            
     myChart.setDataArray(myData);
+    myChart.setLineSpeed(100);
     myChart.setLineColor('#8D9386');
     myChart.setLineWidth(4);
     myChart.setTitleColor('#7D7D7D');
@@ -99,6 +109,29 @@ function drawChart(myData)
     myChart.setAxisNameColor('#333639');
     myChart.setTextPaddingLeft(0);
     myChart.setAxisNameX(sprintf("Effort (%s)", $('units').value));
+    myChart.setAxisNameY("Confidence");
+    myChart.setTitle(CHART.title);
+    myChart.draw();
+};
+
+function drawSchedule(myData)
+{
+    var myChart = new JSChart('graph', 'line');
+        
+    //var myData = new Array(['unit', 20], ['unit two', 10], ['unit three', 30], ['other unit', 10], ['last unit', 30]);
+        
+    myChart.setDataArray(myData);
+    myChart.setLineSpeed(100);
+    myChart.setLineColor('#8D9386');
+    myChart.setLineWidth(4);
+    myChart.setTitleColor('#7D7D7D');
+    myChart.setAxisColor('#9F0505');
+    myChart.setGridColor('#a4a4a4');
+    myChart.setAxisValuesColor('#333639');
+    myChart.setAxisNameColor('#333639');
+    myChart.setTextPaddingLeft(0);
+    myChart.setAxisNameX('Date');
+    myChart.setAxisValuesAngle(45);
     myChart.setAxisNameY("Confidence");
     myChart.setTitle(CHART.title);
     myChart.draw();
