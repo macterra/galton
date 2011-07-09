@@ -472,6 +472,22 @@ class montecarlo:
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
         
+        
+def GetResults(id, trials):
+    q = "select * from projects where id=%s" % (id)
+    for r in db.query(q):
+        type = r.estimate
+                
+    tasks = []
+    q = "select * from tasks where project=%s" % (id)
+    for r in db.query(q):
+        if r.include:
+            for i in range(int(r.count)):
+                task = Task(float(r.estimate), type, r.risk)
+                tasks.append(task)   
+                
+    return RunMonteCarlo(trials,tasks)    
+    
 class results:
     def GET(self, id):
         i = web.input()
@@ -481,19 +497,7 @@ class results:
         except:
             trials = 10000
             
-        q = "select * from projects where id=%s" % (id)
-        for r in db.query(q):
-            type = r.estimate
-                    
-        tasks = []
-        q = "select * from tasks where project=%s" % (id)
-        for r in db.query(q):
-            if r.include:
-                for i in range(int(r.count)):
-                    task = Task(float(r.estimate), type, r.risk)
-                    tasks.append(task)       
-        results = RunMonteCarlo(trials,tasks)    
-        return json.dumps(results)       
+        return json.dumps(GetResults(id, trials))       
         
 class resultscsv:
     def GET(self, id):
@@ -504,22 +508,12 @@ class resultscsv:
         except:
             trials = 10000
             
-        q = "select * from projects where id=%s" % (id)
-        for r in db.query(q):
-            type = r.estimate
-                    
-        tasks = []
-        q = "select * from tasks where project=%s" % (id)
-        for r in db.query(q):
-            if r.include:
-                for i in range(int(r.count)):
-                    task = Task(float(r.estimate), type, r.risk)
-                    tasks.append(task)       
-        results = RunMonteCarlo(trials,tasks)    
+        results = GetResults(id, trials)
+        
         pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
         return 'prob,effort\n' + ''.join(pairs)
         
-        
+
 class schedule:
     def GET(self, id):
         i = web.input()
@@ -532,27 +526,18 @@ class schedule:
             trials = 10000
             
         try:
-            start = i.start
+            year, month, day = [int(x) for x in i.start.split('/')]
+            start = date(year, month, day)
         except:
-            start = 'error'
+            start = date.today()
             
         try:
             velocity = float(i.velocity)
         except:
             velocity = 1.
             
-        q = "select * from projects where id=%s" % (id)
-        for r in db.query(q):
-            type = r.estimate
-                    
-        tasks = []
-        q = "select * from tasks where project=%s" % (id)
-        for r in db.query(q):
-            if r.include:
-                for i in range(int(r.count)):
-                    task = Task(float(r.estimate), type, r.risk)
-                    tasks.append(task)       
-        results = RunMonteCarlo(trials,tasks)    
+        results = GetResults(id, trials)
+        
         pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
         return 'prob,effort\n' + ''.join(pairs) + "\n\nstart=%s velocity=%f" % (start, velocity)
         
