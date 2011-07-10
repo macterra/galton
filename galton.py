@@ -536,8 +536,7 @@ class schedule:
         except:
             velocity = 1.
             
-        results = GetResults(id, trials)
-        
+        results = GetResults(id, trials)        
         effort, prob = zip(*results["cumprob"])
                 
         cumprob = 0
@@ -545,18 +544,14 @@ class schedule:
         schedule = []
         
         while cumprob < 100:
-            cumeffort += velocity
             cumprob = numpy.interp(cumeffort, effort, prob, 0, 100)
-            start += timedelta(7)
-            #print start, cumeffort, cumprob
             schedule.append([str(start), cumprob])
-            #schedule.append([cumprob, str(start)])
+            cumeffort += velocity
+            start += timedelta(7)
        
         print schedule
         results["schedule"] = schedule
         return json.dumps(results)
-        #pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
-        #return 'prob,effort\n' + ''.join(pairs) + "\n\nstart=%s velocity=%f" % (start, velocity)
         
 if __name__ == "__main__": 
     app.run()

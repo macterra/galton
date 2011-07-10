@@ -29,9 +29,8 @@ function generateSchedule(pid)
     CHART.title = 'Estimated Schedule';
     
     var resultsURL = sprintf("/project/%d/schedule?trials=%s&start=%s&velocity=%s", pid, $('trials').value, $('start').value, $('velocity').value);
-    //window.location.href = resultsURL;
     var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
-    //document.body.style.cursor = "wait";
+    document.body.style.cursor = "wait";
     jsonRequest.get();
 };
 
