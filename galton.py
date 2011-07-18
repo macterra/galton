@@ -532,24 +532,33 @@ class schedule:
             start = date.today()
             
         try:
-            velocity = float(i.velocity)
+            velocities = [float(x) for x in i.velocity.split(',')]
         except:
-            velocity = 1.
+            velocities = [1.]
             
         results = GetResults(id, trials)        
         effort, prob = zip(*results["cumprob"])
                 
         cumprob = 0
         cumeffort = 0
+        week = 0
         schedule = []
         
-        while cumprob < 100:
+        while cumprob < 100:            
             cumprob = numpy.interp(cumeffort, effort, prob, 0, 100)
+            #print week, cumeffort, cumprob           
             schedule.append([str(start), cumprob])
+            
+            if week < len(velocities):
+                velocity = velocities[week]
+            else:
+                velocity = velocities[-1]                   
+                
             cumeffort += velocity
             start += timedelta(7)
+            week += 1
        
-        print schedule
+        #print schedule
         results["schedule"] = schedule
         return json.dumps(results)
         

@@ -97,6 +97,7 @@ function drawChart(myData)
 {
     var myChart = new JSChart('graph', 'line');
             
+    myChart.setSize(800,600);
     myChart.setDataArray(myData);
     myChart.setLineSpeed(100);
     myChart.setLineColor('#8D9386');
@@ -117,6 +118,7 @@ function drawSchedule(myData)
 {
     var myChart = new JSChart('graph', 'line');
                 
+    myChart.setSize(800,600);         
     myChart.setDataArray(myData);
     myChart.setLineSpeed(100);
     myChart.setLineColor('#8D9386');
@@ -131,6 +133,9 @@ function drawSchedule(myData)
     myChart.setAxisNameX('Date');
     myChart.setAxisValuesAngle(45);
     myChart.setAxisNameY("Confidence");
+    //myChart.setAxisValuesNumberX(10);
+    //myChart.setShowXValues(false);
+    myChart.setAxisValuesNumberY(11);
     myChart.setTitle(CHART.title);
     myChart.draw();
 };
