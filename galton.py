@@ -185,7 +185,7 @@ class ProjectTable:
                 description = r.description
                 if r.estimate < 0.01:
                     task = rallyTasks.tasks[description]
-                    estimate = task.ToDo
+                    estimate = task.Estimate # task.ToDo
                     description = "%s: %s" % (description, task.Name)
                 form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (description, r.count, estimate, r.risk)
         form += "</table>"
@@ -447,10 +447,13 @@ class RallyTasks:
         user = 'davidmc@synaptivemedical.com'
         password = 'fr00tl00ps'
         rally = pyral.Rally(server, user, password, workspace='Synaptive', project='Neuro')
-        response = rally.get('Task', fetch=True, query='(Owner.Name = %s) AND (State != Completed)' % user)
+        #query = '(Owner.Name = %s) AND (State != Completed)' % user
+        query = '(Owner.Name = %s)' % user
+        response = rally.get('Task', fetch=True, query=query)
         self.tasks = {}
         for task in response:
             self.tasks[task.FormattedID] = task
+            print "task %s: %s" % (task.FormattedID, task.Name), task.Estimate
         
 class rallytest:
     def GET(self):
@@ -523,7 +526,7 @@ def GetResults(id, trials):
             estimate = float(r.estimate)
             if estimate < 0.1:
                 task = rallyTasks.tasks[r.description]
-                estimate = task.ToDo
+                estimate = task.Estimate #task.ToDo
                 print "%s estimate = %f" % (r.description, estimate)
             for i in range(int(r.count)):
                 task = Task(estimate, type, r.risk)
