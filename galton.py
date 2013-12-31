@@ -10,11 +10,13 @@ from montecarlo import *
 from datetime import *
 import urllib
 import urllib2
+import pyral
 
 import numpy
     
 urls = (
   '/', 'projectlist',
+  '/rallytest', 'rallytest',
   '/login', 'login',
   '/logout', 'logout',
   '/users', 'users',
@@ -156,6 +158,8 @@ class ProjectTable:
     def render(self):
         form = ""
         
+        rallyTasks = RallyTasks()
+        
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
             description = r.description
@@ -177,7 +181,13 @@ class ProjectTable:
         form += "<thead><tr><th>task</th><th>count</th><th>estimate (%s)</th><th>risk</th></tr></thead>" % (type)
         for r in db.query(q):
             if r.include:
-                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (r.description, r.count, r.estimate, r.risk)
+                estimate = r.estimate
+                description = r.description
+                if r.estimate < 0.01:
+                    task = rallyTasks.tasks[description]
+                    estimate = task.ToDo
+                    description = "%s: %s" % (description, task.Name)
+                form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (description, r.count, estimate, r.risk)
         form += "</table>"
         return form
             
@@ -429,6 +439,38 @@ class tasks:
     def GET(self, id):
         q = "select * from tasks where project=%s" % (id)
         return DumpQuery(q)
+        
+class RallyTasks:
+    def __init__(self):
+        defaultOptions = pyral.rallySettings([])
+        server = defaultOptions[0]
+        user = 'davidmc@synaptivemedical.com'
+        password = 'fr00tl00ps'
+        rally = pyral.Rally(server, user, password, workspace='Synaptive', project='Neuro')
+        response = rally.get('Task', fetch=True, query='(Owner.Name = %s) AND (State != Completed)' % user)
+        self.tasks = {}
+        for task in response:
+            self.tasks[task.FormattedID] = task
+        
+class rallytest:
+    def GET(self):
+    
+        rallyTasks = RallyTasks()
+        
+        resp =  '<pre>'
+        for id in rallyTasks.tasks.keys():
+            task = rallyTasks.tasks[id]
+            
+            resp +=  'task:         %s\n' % task.FormattedID
+            resp +=  'name:         %s\n' % task.Name
+            resp +=  'state:        %s\n' % task.State
+            resp +=  'estimate:     %s\n' % task.Estimate
+            resp +=  'todo:         %s\n' % task.ToDo
+            resp +=  'owner:        %s\n' % task.Owner.Name
+            resp +=  '---\n'
+        resp +=  '</pre>'
+        
+        return resp
 
 class montecarlo:
     def GET(self):
@@ -471,13 +513,20 @@ def GetResults(id, trials):
     q = "select * from projects where id=%s" % (id)
     for r in db.query(q):
         type = r.estimate
-                
+               
+    rallyTasks = RallyTasks()
     tasks = []
     q = "select * from tasks where project=%s" % (id)
     for r in db.query(q):
         if r.include:
+            # print "GetResults", r.description, r.estimate
+            estimate = float(r.estimate)
+            if estimate < 0.1:
+                task = rallyTasks.tasks[r.description]
+                estimate = task.ToDo
+                print "%s estimate = %f" % (r.description, estimate)
             for i in range(int(r.count)):
-                task = Task(float(r.estimate), type, r.risk)
+                task = Task(estimate, type, r.risk)
                 tasks.append(task)   
                 
     return RunMonteCarlo(trials,tasks)    
