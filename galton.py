@@ -294,8 +294,6 @@ class TaskForm:
     def render(self):
         form = ""
         
-        tasks = GetRallyTasks()
-
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
             desc = r.description
@@ -336,12 +334,12 @@ class TaskForm:
             
         for i in range(3):    
             form += "<tr>\n"
-            form += CheckboxField('include', index+i, False)
+            form += CheckboxField('include', index+i, True)
             form += TextField('rallyid', index+i, 6, 6, '')
             form += TextField('desc', index+i, 30, 60, '')
             form += TextField('count', index+i, 3, 3, '')
             form += TextField('median', index+i, 5, 5, '')
-            form += RiskField(index+i, '')
+            form += RiskField(index+i, 'medium')
             form += "<td></td>\n"
             form += "</tr>\n"
             
@@ -364,7 +362,7 @@ def UpdateProject(id, wi, tasks):
                 
         if rallyid in rallyTasks:
             task = rallyTasks[rallyid]
-            description = task.name
+            description = task.description
             count = 1
             estimate = task.estimate
 
