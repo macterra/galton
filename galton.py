@@ -6,6 +6,7 @@ import web
 
 from web import form
 import json
+from session import *
 from montecarlo import *
 from datetime import *
 import urllib
@@ -91,29 +92,6 @@ class GreetingsForm():
         rpx_url = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
         return """<a class="rpxnow" onclick="return false;" href="%s"> Sign In </a>""" % (rpx_url)
  
-def SessionLogin(profile):
-    print "SessionLogin", profile
-    session.loggedin = True
-    session.identifier = profile['identifier']
-    session.name = profile.get('displayName')
-    session.email = profile.get('email')
-    session.userid = 0
-    
-    q = "select * from users where identifier='%s'" % (session.identifier)
-    for r in db.query(q):
-        session.userid = r.id
-        
-    if session.userid == 0:   
-        session.userid = db.insert('users', identifier=session.identifier, name=session.name, email=session.email)
-
-def SessionLogout():
-    print "SessionLogout"
-    session.loggedin = False
-    session.identifier = ''
-    session.name = ''
-    session.email = ''
-    session.userid = 0
-    
 class login:
     def GET(self):
         return session        
@@ -346,9 +324,13 @@ def UpdateProject(id, wi, tasks):
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        desc, count, median, risk, inc, rem = task
-        if desc and median and risk and not rem:
-            db.insert('tasks', project=id, description=desc, count=count, estimate=median, risk=risk, include=inc)
+        description, count, estimate, risk, include, remove = task
+        if not count:
+            count = 1
+        if not estimate:
+            estimate = 1
+        if description and estimate and risk and not remove:
+            db.insert('tasks', project=id, description=description, count=count, estimate=estimate, risk=risk, include=include)
         
 class projectedit:
     def GET(self, id):

@@ -4,3 +4,7 @@ sessions
 # https://intellij-support.jetbrains.com/entries/23393067
 workspace.xml
 tasks.xml
+
+# visual studio
+*.suo
+
