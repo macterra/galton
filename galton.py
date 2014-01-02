@@ -317,27 +317,17 @@ class TaskForm:
                 </tr>
             </table><p/>""" % (self.id, desc, "checked" if publish else "", self.id, TypeField(type), units, self.id)
         form += "<table border=0 width=700px>\n"
-        form += "<thead><tr><th width=70px>include</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th width=70px>delete</th></tr></thead>\n"
+        form += "<thead><tr><th width=70px>include</th><th>Rally ID</th><th>task</th><th>count</th><th>estimate</th><th>risk</th><th width=70px>delete</th></tr></thead>\n"
         index = 0
         
         q = "select * from tasks where project=%s" % (self.id) 
         for r in db.query(q):
-
-            if r.description in tasks:
-                task = tasks[r.description]
-                description = task.description
-                count = 1
-                estimate = task.estimate
-            else:
-                description = r.description
-                count = r.count
-                estimate = r.estimate
-
             form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
-            form += TextField('desc', index, 30, 60, description)
-            form += TextField('count', index, 3, 3, count)
-            form += TextField('median', index, 5, 5, estimate)
+            form += TextField('rallyid', index, 6, 6, r.rallyid)
+            form += TextField('desc', index, 30, 60, r.description)
+            form += TextField('count', index, 3, 3, r.count)
+            form += TextField('median', index, 5, 5, r.estimate)
             form += RiskField(index, r.risk)
             form += CheckboxField('delete', index, False)
             form += "</tr>\n"
@@ -347,6 +337,7 @@ class TaskForm:
         for i in range(3):    
             form += "<tr>\n"
             form += CheckboxField('include', index+i, False)
+            form += TextField('rallyid', index+i, 6, 6, '')
             form += TextField('desc', index+i, 30, 60, '')
             form += TextField('count', index+i, 3, 3, '')
             form += TextField('median', index+i, 5, 5, '')
@@ -363,17 +354,28 @@ def UpdateProject(id, wi, tasks):
     pub =  bool(wi.get('publish'))
     now = web.SQLLiteral("DATETIME('now','localtime')")
     db.update('projects', where="id=%s" % (id), description=wi.project, estimate=wi.type, units=wi.units, userid=CurrentUser(), publish=pub, updated=now)
+
+    rallyTasks = GetRallyTasks()
     
     q = "delete from tasks where project=%s" % (id)
     db.query(q)
     for task in tasks:
-        description, count, estimate, risk, include, remove = task
+        rallyid, description, count, estimate, risk, include, remove = task
+                
+        if rallyid in rallyTasks:
+            task = rallyTasks[rallyid]
+            description = task.name
+            count = 1
+            estimate = task.estimate
+
         if not count:
             count = 1
+
         if not estimate:
             estimate = 1
+
         if description and estimate and risk and not remove:
-            db.insert('tasks', project=id, description=description, count=count, estimate=estimate, risk=risk, include=include)
+            db.insert('tasks', project=id, rallyid=rallyid, description=description, count=count, estimate=estimate, risk=risk, include=include)
         
 class projectedit:
     def GET(self, id):
@@ -382,14 +384,14 @@ class projectedit:
         
     def POST(self, id):
         CheckOwner(id)
-        wi = web.input(include=[], desc=[], count=[], median=[], risk=[], delete=[])
+        wi = web.input(include=[], rallyid=[], desc=[], count=[], median=[], risk=[], delete=[])
         #print wi
         inc = [int(x) for x in wi.include]
         rem = [int(i) for i in wi.delete] 
         all = range(len(wi.count))
         include = [x in inc for x in all]
         delete = [x in rem for x in all]
-        tasks = zip(wi.desc, wi.count, wi.median, wi.risk, include, delete)
+        tasks = zip(wi.rallyid, wi.desc, wi.count, wi.median, wi.risk, include, delete)
         UpdateProject(id, wi, tasks)
         raise web.seeother("/project/%s/edit" % (id))
 
