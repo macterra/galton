@@ -6,7 +6,6 @@ import web
 
 from web import form
 import json
-from session import *
 from montecarlo import *
 from datetime import *
 import urllib
@@ -45,7 +44,7 @@ if web.config.get('_session') is None:
     web.config._session = session
 else:
     session = web.config._session
-    
+
 class favicon:
     def GET(self):        
         raise web.seeother('/static/favicon.ico')
@@ -91,7 +90,32 @@ class GreetingsForm():
         token_url = "%s/login" % (web.ctx.home)
         rpx_url = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
         return """<a class="rpxnow" onclick="return false;" href="%s"> Sign In </a>""" % (rpx_url)
- 
+
+def SessionLogin(profile):
+    print "SessionLogin", profile
+    session.loggedin = True
+    session.identifier = profile['identifier']
+    session.name = profile.get('displayName')
+    session.email = profile.get('email')
+    session.userid = 0
+    
+    q = "select * from users where identifier='%s'" % (session.identifier)
+    for r in db.query(q):
+        session.userid = r.id
+        
+    if session.userid == 0:   
+        session.userid = db.insert('users', identifier=session.identifier, name=session.name, email=session.email)
+
+def SessionLogout():
+    print "SessionLogout"
+    session.loggedin = False
+    session.identifier = ''
+    session.name = ''
+    session.email = ''
+    session.userid = 0
+    session.count = 0
+    del session.tasks
+
 class login:
     def GET(self):
         return session        
@@ -136,7 +160,7 @@ class ProjectTable:
     def render(self):
         form = ""
         
-        rallyTasks = RallyTasks()
+        tasks = GetRallyTasks()
         
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
@@ -162,9 +186,9 @@ class ProjectTable:
                 estimate = r.estimate
                 description = r.description
                 if r.estimate < 0.01:
-                    task = rallyTasks.tasks[description]
-                    estimate = task.Estimate # task.ToDo
-                    description = "%s: %s" % (description, task.Name)
+                    task = tasks[description]
+                    estimate = task.estimate
+                    description = "%s: %s" % (description, task.name)
                 form += "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>" % (description, r.count, estimate, r.risk)
         form += "</table>"
         return form
@@ -172,6 +196,12 @@ class ProjectTable:
         
 class projectreport:
     def GET(self, id):
+        try:
+            session.count += 1
+        except AttributeError:
+            session.count = 1
+        print "session.count=", session.count
+
         return render.sim(GreetingsForm(), id, ProjectTable(id), 'none')    
         
 class ProjectList:        
@@ -422,8 +452,22 @@ class tasks:
         q = "select * from tasks where project=%s" % (id)
         return DumpQuery(q)
         
-class RallyTasks:
-    def __init__(self):
+class RallyTask:
+    def __init__(self, task):
+        self.id = task.FormattedID
+        self.name = task.Name
+        self.estimate = task.Estimate
+        self.todo = task.ToDo
+        self.state = task.State
+        self.owner = task.Owner.Name
+
+    def description(self):
+        return "%s: %s" % (self.id, self.name)
+
+def GetRallyTasks():
+    try:
+        return session.tasks
+    except AttributeError:
         defaultOptions = pyral.rallySettings([])
         server = defaultOptions[0]
         user = 'davidmc@synaptivemedical.com'
@@ -432,26 +476,30 @@ class RallyTasks:
         #query = '(Owner.Name = %s) AND (State != Completed)' % user
         query = '(Owner.Name = %s)' % user
         response = rally.get('Task', fetch=True, query=query)
-        self.tasks = {}
+        tasks = {}
         for task in response:
-            self.tasks[task.FormattedID] = task
-            print "task %s: %s" % (task.FormattedID, task.Name), task.Estimate
-        
+            rallyTask = RallyTask(task)
+            tasks[rallyTask.id] = rallyTask
+            print "task", rallyTask.description()
+        session.tasks = tasks
+        return session.tasks
+                
 class rallytest:
     def GET(self):
     
-        rallyTasks = RallyTasks()
+        del session.tasks
+        rallyTasks = GetRallyTasks()
         
         resp =  '<pre>'
-        for id in rallyTasks.tasks.keys():
-            task = rallyTasks.tasks[id]
+        for id in rallyTasks.keys():
+            task = rallyTasks[id]
             
-            resp +=  'task:         %s\n' % task.FormattedID
-            resp +=  'name:         %s\n' % task.Name
-            resp +=  'state:        %s\n' % task.State
-            resp +=  'estimate:     %s\n' % task.Estimate
-            resp +=  'todo:         %s\n' % task.ToDo
-            resp +=  'owner:        %s\n' % task.Owner.Name
+            resp +=  'task:         %s\n' % task.id
+            resp +=  'name:         %s\n' % task.name
+            resp +=  'state:        %s\n' % task.state
+            resp +=  'estimate:     %s\n' % task.estimate
+            resp +=  'todo:         %s\n' % task.todo
+            resp +=  'owner:        %s\n' % task.owner
             resp +=  '---\n'
         resp +=  '</pre>'
         
@@ -493,13 +541,12 @@ class montecarlo:
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
         
-        
 def GetResults(id, trials):
     q = "select * from projects where id=%s" % (id)
     for r in db.query(q):
         type = r.estimate
                
-    rallyTasks = RallyTasks()
+    rallyTasks = GetRallyTasks()
     tasks = []
     q = "select * from tasks where project=%s" % (id)
     for r in db.query(q):
@@ -507,8 +554,8 @@ def GetResults(id, trials):
             # print "GetResults", r.description, r.estimate
             estimate = float(r.estimate)
             if estimate < 0.1:
-                task = rallyTasks.tasks[r.description]
-                estimate = task.Estimate #task.ToDo
+                task = rallyTasks[r.description]
+                estimate = task.estimate #task.ToDo
                 print "%s estimate = %f" % (r.description, estimate)
             for i in range(int(r.count)):
                 task = Task(estimate, type, r.risk)

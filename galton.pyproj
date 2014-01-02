@@ -25,7 +25,6 @@
     <Compile Include="galton.py" />
     <Compile Include="manage.py" />
     <Compile Include="montecarlo.py" />
-    <Compile Include="session.py" />
     <Compile Include="unittests.py" />
     <Compile Include="dbrepo\manage.py" />
     <Compile Include="dbrepo\__init__.py" />
