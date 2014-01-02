@@ -5,15 +5,14 @@ import web
 #web.config.debug = False
 
 from web import form
-import json
-import re
 from montecarlo import *
 from datetime import *
 import urllib
 import urllib2
 import pyral
-
 import numpy
+import time
+import json
     
 urls = (
   '/', 'projectlist',
@@ -474,26 +473,40 @@ class RallyTask:
         self.estimate = task.Estimate
         self.todo = task.ToDo
         self.state = task.State
-        self.owner = task.Owner.Name
+        if task.Owner:
+            self.owner = task.Owner.Name
+        else:
+            self.owner = ""
 
 def GetRallyTasks():
     try:
         return session.tasks
     except AttributeError:
+        now = time.time()
         defaultOptions = pyral.rallySettings([])
         server = defaultOptions[0]
         user = 'davidmc@synaptivemedical.com'
         password = 'fr00tl00ps'
         rally = pyral.Rally(server, user, password, workspace='Synaptive', project='Neuro')
         #query = '(Owner.Name = %s) AND (State != Completed)' % user
-        query = '(Owner.Name = %s)' % user
+        #query = '(Owner.Name = %s)' % user
+        query = ""
         response = rally.get('Task', fetch=True, query=query)
+
+        elapsed = time.time() - now
+        print "fetched tasks in", elapsed, "s"
+
         tasks = {}
         for task in response:
             rallyTask = RallyTask(task)
             tasks[rallyTask.id] = rallyTask
             print "task", rallyTask.description
+            
         session.tasks = tasks
+
+        elapsed = time.time() - now        
+        print "cached", len(tasks), "rally tasks in", elapsed, "s"
+
         return session.tasks
              
 class rallytest:
@@ -518,7 +531,7 @@ class rallytest:
             resp +=  'owner:        %s\n' % task.owner
             resp +=  '---\n'
         resp +=  '</pre>'
-        
+                
         return resp
 
 class montecarlo:
