@@ -6,6 +6,7 @@ import web
 
 from web import form
 import json
+import re
 from montecarlo import *
 from datetime import *
 import urllib
@@ -294,6 +295,8 @@ class TaskForm:
     def render(self):
         form = ""
         
+        tasks = GetRallyTasks()
+
         q = "select * from projects where id=%s" % (self.id)
         for r in db.query(q):
             desc = r.description
@@ -320,11 +323,22 @@ class TaskForm:
         
         q = "select * from tasks where project=%s" % (self.id) 
         for r in db.query(q):
+
+            if r.description in tasks:
+                task = tasks[r.description]
+                description = task.description
+                count = 1
+                estimate = task.estimate
+            else:
+                description = r.description
+                count = r.count
+                estimate = r.estimate
+
             form += "<tr>\n"                            
             form += CheckboxField('include', index, r.include)
-            form += TextField('desc', index, 30, 60, r.description)
-            form += TextField('count', index, 3, 3, r.count)
-            form += TextField('median', index, 5, 5, r.estimate)
+            form += TextField('desc', index, 30, 60, description)
+            form += TextField('count', index, 3, 3, count)
+            form += TextField('median', index, 5, 5, estimate)
             form += RiskField(index, r.risk)
             form += CheckboxField('delete', index, False)
             form += "</tr>\n"
@@ -456,13 +470,11 @@ class RallyTask:
     def __init__(self, task):
         self.id = task.FormattedID
         self.name = task.Name
+        self.description = "%s: %s" % (self.id, self.name)
         self.estimate = task.Estimate
         self.todo = task.ToDo
         self.state = task.State
         self.owner = task.Owner.Name
-
-    def description(self):
-        return "%s: %s" % (self.id, self.name)
 
 def GetRallyTasks():
     try:
@@ -480,14 +492,18 @@ def GetRallyTasks():
         for task in response:
             rallyTask = RallyTask(task)
             tasks[rallyTask.id] = rallyTask
-            print "task", rallyTask.description()
+            print "task", rallyTask.description
         session.tasks = tasks
         return session.tasks
-                
+             
 class rallytest:
     def GET(self):
     
-        del session.tasks
+        try:
+            del session.tasks
+        except:
+            pass
+
         rallyTasks = GetRallyTasks()
         
         resp =  '<pre>'
