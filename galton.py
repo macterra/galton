@@ -17,6 +17,7 @@ import json
 urls = (
   '/', 'projectlist',
   '/rallytest', 'rallytest',
+  '/rallytasks', 'rallytasks',
   '/login', 'login',
   '/logout', 'logout',
   '/users', 'users',
@@ -533,6 +534,11 @@ class rallytest:
         resp +=  '</pre>'
                 
         return resp
+
+class rallytasks:
+    def GET(self):
+        tasks = GetRallyTasks()
+        return json.dumps([t.__dict__ for t in tasks.values()])
 
 class montecarlo:
     def GET(self):
