@@ -1,0 +1,49 @@
+<html>
+<body>
+
+  <div ng-app="galton">
+    
+    <div ng-controller="TasksCtrl">
+        Rally tasks:
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>task</th>
+                <th>owner</th>
+                <th>state</th>
+                <th>estimate</th>
+            </tr>
+            <tr ng-repeat="task in rally.tasks">
+                <td>{{task.id}}</td>
+                <td>{{task.name}}<td/>
+                <td>{{task.owner}}<td/>
+                <td>{{task.state}}<td/>
+                <td>{{task.estimate}}<td/>
+            </tr>
+        </table>
+    </div>    
+    
+  </div>
+  
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script>
+
+<script>
+var myApp = angular.module('galton', []);
+
+myApp.controller('TasksCtrl', ['$scope', '$http', function ($scope, $http) {
+    $scope.rally = {};
+    
+    $http({
+        method: 'GET',
+        url: 'http://localhost:8080/rallytasks'
+    })
+    .success(function (data, status, headers, config) {
+        $scope.rally.tasks = data;
+    })
+    .error(function (data, status, headers, config) {
+    });
+}]);
+
+</script>
+</body>
+</html>
