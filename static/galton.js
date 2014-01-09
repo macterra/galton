@@ -27,8 +27,12 @@ function exportSim(pid)
 function generateSchedule(pid)
 {                
     CHART.title = 'Estimated Schedule';
-    
-    var resultsURL = sprintf("/project/%d/schedule?trials=%s&start=%s&velocity=%s", pid, $('trials').value, $('start').value, $('velocity').value);
+
+    var teamsize = $('teamsize').value;
+    var effortperday = $('effortperday').value;
+    var velocity = teamsize * effortperday * 5;
+
+    var resultsURL = sprintf("/project/%d/schedule?trials=%s&start=%s&velocity=%s", pid, $('trials').value, $('start').value, velocity); // $('velocity').value);
     var jsonRequest = new Request.JSON({method: 'get', url: resultsURL, onSuccess: showResults});
     document.body.style.cursor = "wait";
     jsonRequest.get();
