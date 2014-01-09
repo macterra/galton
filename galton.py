@@ -197,18 +197,10 @@ class ProjectList:
         for r in db.query(q):
         
             if CurrentUser() != r.userid and not r.publish:
-                continue
-            
-            try:
-                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S.%f").strftime(timestampFormat)
-            except:   
-                created = datetime.strptime(r.created, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
-            
-            try:
-                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S.%f").strftime(timestampFormat)
-            except:    
-                updated = datetime.strptime(r.updated, "%Y-%m-%d %H:%M:%S").strftime(timestampFormat)
-                
+                continue            
+
+            created = r.created.strftime(timestampFormat)
+            updated = r.updated.strftime(timestampFormat)                
             
             if CurrentUser() == r.userid:
                 simURL = "<a href=/project/%s/report><b>%s</b></a>" % (r.id, r.description)
