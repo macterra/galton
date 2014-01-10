@@ -8,13 +8,14 @@ from web import form
 import json
 from montecarlo import *
 from datetime import *
-import urllib
-import urllib2
+from time import mktime, strftime
+import urllib, urllib2
 
 import numpy
     
 urls = (
   '/', 'projectlist',
+  '/test/', 'angular',
   '/login', 'login',
   '/logout', 'logout',
   '/users', 'users',
@@ -43,15 +44,25 @@ if web.config.get('_session') is None:
 else:
     session = web.config._session
     
+class angular:
+    def GET(self):        
+        raise web.seeother('/static/index.html')
+
 class favicon:
     def GET(self):        
         raise web.seeother('/static/favicon.ico')
 
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return strftime("%Y-%m-%d %H:%M", obj.timetuple())
+        return json.JSONEncoder.default(self, obj)
+
 def DumpTable(table):
-    return json.dumps([t for t in db.select(table)])
+    return json.dumps([t for t in db.select(table)], cls=MyEncoder)
     
 def DumpQuery(q):
-    return json.dumps([t for t in db.query(q)])
+    return json.dumps([t for t in db.query(q)], cls=MyEncoder)
         
 class users:
     def GET(self):

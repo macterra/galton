@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{c77ff27a-b9d4-40b6-ba12-6f367d9d4e79}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>galton.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <InterpreterId>{2af0f10d-7135-4994-9156-5d01c9c11b7e}</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>0.0.0.0:8080</CommandLineArguments>
+    <InterpreterPath />
+    <InterpreterArguments />
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Compile Include="galton.py" />
+    <Compile Include="manage.py" />
+    <Compile Include="montecarlo.py" />
+    <Compile Include="unittests.py" />
+    <Compile Include="dbrepo\manage.py" />
+    <Compile Include="dbrepo\__init__.py" />
+    <Content Include="static\core.js" />
+    <Content Include="static\index.html" />
+    <Content Include="static\muffin.css" />
+    <Content Include="static\galton.js" />
+    <Content Include="static\jscharts.js" />
+    <Content Include="static\mootools.js" />
+    <Content Include="static\rpx.js" />
+    <Content Include="static\sprintf.js" />
+    <Content Include="static\fork-me-on-github.png" />
+    <Content Include="static\github.png" />
+    <Content Include="static\github_logo.png" />
+    <Content Include="static\RiskProfiles.png" />
+    <Content Include="static\galton.jpg" />
+    <Content Include="static\th_bck.gif" />
+    <Content Include="static\tr_bck.gif" />
+    <Content Include="static\favicon.ico" />
+    <Content Include="templates\form.html" />
+    <Content Include="templates\sim.html" />
+    <Compile Include="dbrepo\versions\001_Drop_project_name.py" />
+    <Compile Include="dbrepo\versions\002_Add_estimate_type.py" />
+    <Compile Include="dbrepo\versions\003_Rename_task_estimate.py" />
+    <Compile Include="dbrepo\versions\004_Add_project_timestamps.py" />
+    <Compile Include="dbrepo\versions\005_Drop_variance.py" />
+    <Compile Include="dbrepo\versions\006_Add_project_owner.py" />
+    <Compile Include="dbrepo\versions\007_Add_project_publish.py" />
+    <Compile Include="dbrepo\versions\008_Drop_old_users.py" />
+    <Compile Include="dbrepo\versions\009_Create_new_users.py" />
+    <Compile Include="dbrepo\versions\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="dbrepo" />
+    <Folder Include="dbrepo\versions" />
+    <Folder Include="static" />
+    <Folder Include="templates" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{2af0f10d-7135-4994-9156-5d01c9c11b7e}\2.7" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>
