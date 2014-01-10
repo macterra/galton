@@ -1,13 +1,13 @@
 // public/core.js
-var scotchTodo = angular.module('scotchTodo', []);
+var galton = angular.module('galton', []);
 
 function mainController($scope, $http) {
     $scope.formData = {};
 
     // when landing on the page, get all todos and show them
-    $http.get('/api/todos')
+    $http.get('/projects')
 		.success(function (data) {
-		    $scope.todos = data;
+		    $scope.projects = data;
 		    console.log(data);
 		})
 		.error(function (data) {

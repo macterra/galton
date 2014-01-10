@@ -46,7 +46,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="project in projects">
-                    <td><a href=/project/{{ project.id }}/report><b>{{ project.title }}</b></a> (<a href=/project/{{ project.id }}/>edit</a>)</td>
+                    <td><a href="/project/{{ project.id }}/report"><b>{{ project.description }}</b></a> (<a href="/project/{{ project.id }}"/>edit</a>)</td>
                     <td>{{ project.owner }}</td>
                     <td>{{ project.created }}</td>
                     <td>{{ project.updated }}</td>

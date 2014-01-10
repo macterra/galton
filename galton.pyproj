@@ -28,6 +28,8 @@
     <Compile Include="unittests.py" />
     <Compile Include="dbrepo\manage.py" />
     <Compile Include="dbrepo\__init__.py" />
+    <Content Include=".gitignore" />
+    <Content Include="README.md" />
     <Content Include="static\core.js" />
     <Content Include="static\index.html" />
     <Content Include="static\muffin.css" />
