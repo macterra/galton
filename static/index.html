@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="muffin.css">
 
     <!-- SPELLS -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script><!-- load angular -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular.min.js"></script><!-- load angular -->
     <script type="text/javascript" src="core.js"></script>
     <script type="text/javascript" src="rpx.js"></script>
 </head>
@@ -42,14 +42,17 @@
                     <th>owner</th>
                     <th>created</th>
                     <th>updated</th>
+                    <th>link</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="project in projects">
-                    <td><a href="/project/{{ project.id }}/report"><b>{{ project.description }}</b></a> (<a href="/project/{{ project.id }}"/>edit</a>)</td>
+                    <td><a href="/project/{{ project.id }}/report">{{ project.description }}</a></td>
                     <td>{{ project.owner }}</td>
                     <td>{{ project.created }}</td>
                     <td>{{ project.updated }}</td>
+                    <td ng-if="project.mine"><a href="/project/{{ project.id }}" />edit</a></td>
+                    <td ng-if="!project.mine"><a href="/project/{{ project.id }}" />copy</a></td>
                 </tr>
             </tbody>
             <tr>

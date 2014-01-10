@@ -21,7 +21,7 @@ urls = (
   '/users', 'users',
   '/favicon.ico', 'favicon',
   '/montecarlo', 'montecarlo',
-  '/projects', 'projects',
+  '/api/projects', 'projects',
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
@@ -70,7 +70,15 @@ class users:
         
 class projects:
     def GET(self):
-        return DumpTable('projects')       
+        user = CurrentUser()
+        q = """
+            select p.*, u.name as owner,            
+            case when p.userid=%d then 1 else 0 end as mine
+            from projects p left outer join users u on p.userid=u.id
+            where (p.publish=1 or p.userid=%d)
+            order by updated desc
+            """ % (user, user)
+        return DumpQuery(q)       
 
 def CurrentUser():
     try:
