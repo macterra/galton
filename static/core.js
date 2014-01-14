@@ -5,7 +5,7 @@ function mainController($scope, $http) {
     $scope.formData = {};
 
     // when landing on the page, get all todos and show them
-    $http.get('/projects')
+    $http.get('/api/projects')
 		.success(function (data) {
 		    $scope.projects = data;
 		    console.log(data);
