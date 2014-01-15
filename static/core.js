@@ -50,11 +50,20 @@ galton.controller('reportController',
                 console.log('Error: ' + data);
             });
 
-
         $http.get('/api/tasks/' + $routeParams.projectId)
             .success(function (data) {
                 $scope.tasks = data;
                 console.log('tasks...');
+                console.log(data);
+            })
+            .error(function (data) {
+                console.log('Error: ' + data);
+            });
+
+        $http.get('/api/results/' + $routeParams.projectId)
+            .success(function (data) {
+                $scope.results = data;
+                console.log('results...');
                 console.log(data);
             })
             .error(function (data) {

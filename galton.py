@@ -24,6 +24,7 @@ urls = (
   '/api/projects', 'GetProjects',
   '/api/project/(\d*)', 'GetProject',
   '/api/tasks/(\d*)', 'GetTasks',
+  '/api/results/(\d*)', 'results',
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
