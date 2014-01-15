@@ -56,7 +56,7 @@
             </td>
             <td>
                 <div id="graph">loading simulation results...</div>
-                <div id="result">Monte Carlo simulation took {{ results.simtime | number:2 }}s for {{ results.trials }} iterations</div>
+                <div ng-show="results">Monte Carlo simulation took {{ results.simtime | number:2 }}s for {{ results.trials }} iterations</div>
             </td>
         </tr>
     </table>

@@ -37,16 +37,20 @@ galton.controller('mainController',
 galton.controller('reportController',
     function ($scope, $http, $routeParams) {
 
+        var title;
+        var units;
+
         $http.get('/api/project/' + $routeParams.projectId)
             .success(function (data) {
                 if (data.length == 1) {
                     $scope.project = data[0];
 
-                    console.log('project...');
-                    console.log(data[0]);
+                    //console.log('project...');
+                    //console.log(data[0]);
 
-                    CHART.title = $scope.project.description;
-                    CHART.units = $scope.project.units;
+                    // chart config
+                    title = $scope.project.description;
+                    units = $scope.project.units;
                 }
             })
             .error(function (data) {
@@ -56,8 +60,9 @@ galton.controller('reportController',
         $http.get('/api/tasks/' + $routeParams.projectId)
             .success(function (data) {
                 $scope.tasks = data;
-                console.log('tasks...');
-                console.log(data);
+
+                //console.log('tasks...');
+                //console.log(data);
             })
             .error(function (data) {
                 console.log('Error: ' + data);
@@ -66,19 +71,18 @@ galton.controller('reportController',
         $http.get('/api/results/' + $routeParams.projectId)
             .success(function (data) {
                 $scope.results = data;
-                console.log('results...');
-                console.log(data);
 
-                drawChart(data.cumprob);
+                //console.log('results...');
+                //console.log(data);
+
+                drawChart(title, units, data.cumprob);
             })
             .error(function (data) {
                 console.log('Error: ' + data);
             });
     });
 
-var CHART = { 'title': 'untitled', 'units': 'TBD' };
-
-function drawChart(myData) {
+function drawChart(title, units, myData) {
     var myChart = new JSChart('graph', 'line');
 
     myChart.setSize(800, 600);
@@ -92,8 +96,8 @@ function drawChart(myData) {
     myChart.setAxisValuesColor('#333639');
     myChart.setAxisNameColor('#333639');
     myChart.setTextPaddingLeft(0);
-    myChart.setAxisNameX(sprintf("Effort (%s)", CHART.units));
+    myChart.setAxisNameX(sprintf("Effort (%s)", units));
     myChart.setAxisNameY("Confidence");
-    myChart.setTitle(CHART.title);
+    myChart.setTitle(title);
     myChart.draw();
 };
