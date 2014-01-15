@@ -21,8 +21,9 @@ urls = (
   '/users', 'users',
   '/favicon.ico', 'favicon',
   '/montecarlo', 'montecarlo',
-  '/api/projects', 'getprojects',
-  '/api/project/(\d*)', 'getproject',
+  '/api/projects', 'GetProjects',
+  '/api/project/(\d*)', 'GetProject',
+  '/api/tasks/(\d*)', 'GetTasks',
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
@@ -71,7 +72,7 @@ class users:
     def GET(self):
         return DumpTable('users')
         
-class getprojects:
+class GetProjects:
     def GET(self):
         user = CurrentUser()
         q = """
@@ -83,7 +84,7 @@ class getprojects:
             """ % (user, user)
         return DumpQuery(q)
 
-class getproject:
+class GetProject:
     def GET(self, id):
         user = CurrentUser()
         id = int(id)
@@ -92,6 +93,15 @@ class getproject:
             from projects p left outer join users u on p.userid=u.id
             where (p.publish=1 or p.userid=%d) and p.id=%d
             """ % (user, id)
+        return DumpQuery(q)
+
+class GetTasks:
+    def GET(self, id):
+        user = CurrentUser()
+        id = int(id)
+        q = """
+            select * from tasks where project=%d           
+            """ % (id)
         return DumpQuery(q)
 
 def CurrentUser():
