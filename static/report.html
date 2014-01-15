@@ -1,4 +1,24 @@
 
 <div id="project-report">
-    report for project "{{ project.description }}" (id={{ project.id }}) last updated on {{ project.updated }}
+
+    <h1>{{ project.description }}</h1>
+
+    <table border=1>
+        <thead>
+            <tr>
+                <th>task</th>
+                <th>count</th>
+                <th>estimate ({{ project.estimate }})</th>
+                <th>risk</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="task in tasks">
+                <td>{{ task.description }}</td>
+                <td>{{ task.count }}</td>
+                <td>{{ task.estimate }}</td>
+                <td>{{ task.risk }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
