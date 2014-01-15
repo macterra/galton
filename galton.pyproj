@@ -36,6 +36,7 @@
     <Content Include="static\galton.js" />
     <Content Include="static\jscharts.js" />
     <Content Include="static\mootools.js" />
+    <Content Include="static\projects.html" />
     <Content Include="static\rpx.js" />
     <Content Include="static\sprintf.js" />
     <Content Include="static\fork-me-on-github.png" />

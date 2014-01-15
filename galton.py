@@ -15,7 +15,7 @@ import numpy
     
 urls = (
   '/', 'projectlist',
-  '/test', 'angular',
+  '/ng/', 'angular',
   '/login', 'login',
   '/logout', 'logout',
   '/users', 'users',
@@ -45,8 +45,10 @@ else:
     session = web.config._session
     
 class angular:
-    def GET(self):        
-        raise web.seeother('/static/index.html')
+    def GET(self):
+        web.header('Content-Type', 'text/html')
+        f = open('static/index.html', 'r')
+        return f.read()
 
 class favicon:
     def GET(self):        
@@ -70,14 +72,14 @@ class users:
         
 class projects:
     def GET(self):
-        userid = CurrentUser()
+        user = CurrentUser()
         q = """
-            select p.*, u.name as owner,
+            select p.*, u.name as owner,            
             case when p.userid=%d then 1 else 0 end as mine
             from projects p left outer join users u on p.userid=u.id
             where (p.publish=1 or p.userid=%d)
             order by updated desc
-            """ % (userid, userid)
+            """ % (user, user)
         return DumpQuery(q)       
 
 def CurrentUser():

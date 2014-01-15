@@ -1,0 +1,38 @@
+
+<div id="project-list">
+    <table border=1 width=700px>
+        <thead>
+            <tr>
+                <th>project</th>
+                <th>owner</th>
+                <th>created</th>
+                <th>updated</th>
+                <th>link</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="project in projects">
+                <td><a href="/project/{{ project.id }}/report">{{ project.description }}</a></td>
+                <td>{{ project.owner }}</td>
+                <td>{{ project.created }}</td>
+                <td>{{ project.updated }}</td>
+                <td ng-if="project.mine"><a href="/project/{{ project.id }}" />edit</a></td>
+                <td ng-if="!project.mine"><a href="/project/{{ project.id }}" />copy</a></td>
+            </tr>
+        </tbody>
+        <tr>
+    </table>
+</div>
+
+<div id="add-project-form">
+    <form>
+        <table border=1 width="700px">
+            <tr>
+                <td>
+                    description: <input type=text name=desc size=60 maxlength=60 placeholder="new project name" ng-model="formData.text" required />
+                    <button ng-click="createProject()">Add New</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>

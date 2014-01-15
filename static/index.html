@@ -10,12 +10,12 @@
     <title>Galton - estimate with confidence</title>
 
     <!-- SCROLLS -->
-    <link rel="stylesheet" href="muffin.css">
+    <link rel="stylesheet" href="/static/muffin.css">
 
     <!-- SPELLS -->
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script><!-- load angular -->
-    <script type="text/javascript" src="core.js"></script>
-    <script type="text/javascript" src="rpx.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+    <script type="text/javascript" src="/static/core.js"></script>
+    <script type="text/javascript" src="/static/rpx.js"></script>
 </head>
 <body ng-controller="mainController">
     <div style="position:absolute;right:0px;top:0px">
@@ -25,48 +25,17 @@
     <a class="rpxnow" onclick="return false;" href="https://galton.rpxnow.com/openid/v2/signin?token_url=http%3A//localhost%3A8080/login"> Sign In </a>
 
     <a href="/"><img src="/static/galton.jpg" align="left" border="0" /></a>
-    <h1>Galton : estimate with confidence</h1>
 
-    <div>
-        Projects are late more often than not because the people involved fail to take uncertainty into account. <br />
-        Galton provides a simple interface to calculate confidence curves for risk-based estimation.
-    </div>
 
-    <br clear=all><p />
+    <h1>Galton/Angular : estimate with confidence</h1>
 
-    <div id="project-list">
-        <table border=1 width=700px>
-            <thead>
-                <tr>
-                    <th>project</th>
-                    <th>owner</th>
-                    <th>created</th>
-                    <th>updated</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="project in projects">
-                    <td><a href="/project/{{ project.id }}/report"><b>{{ project.description }}</b></a> (<a href="/project/{{ project.id }}"/>edit</a>)</td>
-                    <td>{{ project.owner }}</td>
-                    <td>{{ project.created }}</td>
-                    <td>{{ project.updated }}</td>
-                </tr>
-            </tbody>
-            <tr>
-        </table>
-    </div>
-
-    <div id="add-project-form">
-        <form>
-            <table border=1 width="700px">
-                <tr>
-                    <td>
-                        description: <input type=text name=desc size=60 maxlength=60 placeholder ="new project name" ng-model="formData.text" required /> 
-                        <button ng-click="createProject()">Add New</button>
-                    </td>
-                </tr>
-            </table>
-        </form>
+    <br clear=all />
+    
+    <!-- MAIN CONTENT AND INJECTED VIEWS -->
+    <div id="main">       
+        <!-- angular templating -->
+        <!-- this is where content will be injected -->
+        <div ng-view></div>
     </div>
 </body>
 </html>

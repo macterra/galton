@@ -1,67 +1,41 @@
 // public/core.js
 var galton = angular.module('galton', []);
 
-function mainController($scope, $http) {
-    $scope.formData = {};
+// configure our routes
+galton.config(function ($routeProvider)
+    {
+        $routeProvider
 
-    // when landing on the page, get all todos and show them
-    $http.get('/api/projects')
-		.success(function (data) {
-		    $scope.projects = data;
-		    console.log(data);
-		})
-		.error(function (data) {
-		    console.log('Error: ' + data);
-		});
+        // route for the projects page
+        .when('/', {
+            templateUrl: '/static/projects.html',
+            controller: 'mainController'
+        })
 
-    // when submitting the add form, send the text to the node API
-    $scope.createTodo = function () {
-        $http.post('/api/todos/', $scope.formData)
-			.success(function (data) {
-			    $scope.formData = {}; // clear the form so our user is ready to enter another
-			    $scope.todos = data;
-			    console.log(data);
-			})
-			.error(function (data) {
-			    console.log('Error: ' + data);
-			});
-    };
+        // route for the projects page
+        .when('/report/:projectId', {
+            templateUrl: 'report.html',
+            controller: 'reportController'
+        });
+    });
 
-    // update a todo done state
-    $scope.updateTodo = function (id, done) {
-        //console.log('client updateTodo ' + id + ' = ' + done);
+galton.controller('mainController',
+    function($scope, $http)
+    {
+        $scope.formData = {};
 
-        $http.post('/api/todos/' + id, { done: done })
-			.success(function (data) {
-			    $scope.todos = data;
-			    console.log(data);
-			})
-			.error(function (data) {
-			    console.log('Error: ' + data);
-			});
-    };
+        // when landing on the page, get all todos and show them
+        $http.get('/api/projects')
+            .success(function (data)
+            {
+                $scope.projects = data;
+                console.log(data);
+            })
+            .error(function (data)
+            {
+                console.log('Error: ' + data);
+            });
+    });
 
-    // delete a todo after checking it
-    $scope.deleteTodo = function (id) {
-        $http.delete('/api/todos/' + id)
-			.success(function (data) {
-			    $scope.todos = data;
-			    console.log(data);
-			})
-			.error(function (data) {
-			    console.log('Error: ' + data);
-			});
-    };
 
-    // remove completed todos
-    $scope.removeCompleted = function () {
-        $http.get('/api/todos/cleanup')
-			.success(function (data) {
-			    $scope.todos = data;
-			    console.log(data);
-			})
-			.error(function (data) {
-			    console.log('Error: ' + data);
-			});
-    };
-}
+
