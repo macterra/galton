@@ -89,10 +89,11 @@ class GetProject:
         user = CurrentUser()
         id = int(id)
         q = """
-            select p.*, u.name as owner          
+            select p.*, u.name as owner,            
+            case when p.userid=%d then 1 else 0 end as mine     
             from projects p left outer join users u on p.userid=u.id
             where (p.publish=1 or p.userid=%d) and p.id=%d
-            """ % (user, id)
+            """ % (user, user, id)
         return DumpQuery(q)
 
 class GetTasks:

@@ -2,7 +2,17 @@
 <div id="project-report">
 
     <h1>{{ project.description }}</h1>
+    
+    <div ng-if ="project.mine">
+        <a href="#/edit/{{ project.id }}">edit</a> project
+    </div>
 
+    <div ng-if="!project.mine">
+        <a href="#/copy/{{ project.id }}">copy</a> {{ project.owner }}'s project
+    </div>
+
+    <p />
+    
     <table border=1>
         <thead>
             <tr>
