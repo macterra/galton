@@ -12,9 +12,15 @@ galton.config(function ($routeProvider)
             controller: 'mainController'
         })
 
-        // route for the projects page
+        // route for the project report
         .when('/report/:projectId', {
             templateUrl: '/static/report.html',
+            controller: 'reportController'
+        })
+
+        // route for the project editor
+        .when('/edit/:projectId', {
+            templateUrl: '/static/editor.html',
             controller: 'reportController'
         });
     });
@@ -82,6 +88,7 @@ galton.controller('reportController',
             });
     });
 
+
 function drawChart(title, units, myData) {
     var myChart = new JSChart('graph', 'line');
 
@@ -98,6 +105,31 @@ function drawChart(title, units, myData) {
     myChart.setTextPaddingLeft(0);
     myChart.setAxisNameX(sprintf("Effort (%s)", units));
     myChart.setAxisNameY("Confidence");
+    myChart.setTitle(title);
+    myChart.draw();
+};
+
+function drawSchedule(title, myData) {
+    var myChart = new JSChart('graph', 'line');
+
+    myChart.setSize(800, 600);
+    myChart.setDataArray(myData);
+    myChart.setLineSpeed(100);
+    myChart.setLineColor('#8D9386');
+    myChart.setLineWidth(4);
+    myChart.setTitleColor('#7D7D7D');
+    myChart.setAxisColor('#9F0505');
+    myChart.setGridColor('#a4a4a4');
+    myChart.setAxisValuesColor('#333639');
+    myChart.setAxisNameColor('#333639');
+    myChart.setTextPaddingLeft(0);
+    myChart.setAxisPaddingBottom(80);
+    myChart.setAxisNameX('Date');
+    myChart.setAxisValuesAngle(45);
+    myChart.setAxisNameY("Confidence");
+    //myChart.setAxisValuesNumberX(10);
+    //myChart.setShowXValues(false);
+    myChart.setAxisValuesNumberY(11);
     myChart.setTitle(title);
     myChart.draw();
 };
