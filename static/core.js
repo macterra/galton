@@ -39,8 +39,10 @@ galton.controller('reportController',
 
         $http.get('/api/project/' + $routeParams.projectId)
             .success(function (data) {
-                $scope.project = data;
-                console.log(data);
+                if (data.length == 1) {
+                    $scope.project = data[0];
+                    console.log(data[0]);
+                }
             })
             .error(function (data) {
                 console.log('Error: ' + data);
