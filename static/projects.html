@@ -12,12 +12,12 @@
         </thead>
         <tbody>
             <tr ng-repeat="project in projects">
-                <td><a href="/project/{{ project.id }}/report">{{ project.description }}</a></td>
+                <td><a href="#/report/{{ project.id }}">{{ project.description }}</a></td>
                 <td>{{ project.owner }}</td>
                 <td>{{ project.created }}</td>
                 <td>{{ project.updated }}</td>
-                <td ng-if="project.mine"><a href="/project/{{ project.id }}" />edit</a></td>
-                <td ng-if="!project.mine"><a href="/project/{{ project.id }}" />copy</a></td>
+                <td ng-if="project.mine"><a href="#/edit/{{ project.id }}" />edit</a></td>
+                <td ng-if="!project.mine"><a href="#/copy/{{ project.id }}" />copy</a></td>
             </tr>
         </tbody>
         <tr>
