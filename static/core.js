@@ -44,6 +44,9 @@ galton.controller('reportController',
 
                     console.log('project...');
                     console.log(data[0]);
+
+                    CHART.title = $scope.project.description;
+                    CHART.units = $scope.project.units;
                 }
             })
             .error(function (data) {
@@ -65,11 +68,32 @@ galton.controller('reportController',
                 $scope.results = data;
                 console.log('results...');
                 console.log(data);
+
+                drawChart(data.cumprob);
             })
             .error(function (data) {
                 console.log('Error: ' + data);
             });
     });
 
+var CHART = { 'title': 'untitled', 'units': 'TBD' };
 
+function drawChart(myData) {
+    var myChart = new JSChart('graph', 'line');
 
+    myChart.setSize(800, 600);
+    myChart.setDataArray(myData);
+    myChart.setLineSpeed(100);
+    myChart.setLineColor('#8D9386');
+    myChart.setLineWidth(4);
+    myChart.setTitleColor('#7D7D7D');
+    myChart.setAxisColor('#9F0505');
+    myChart.setGridColor('#a4a4a4');
+    myChart.setAxisValuesColor('#333639');
+    myChart.setAxisNameColor('#333639');
+    myChart.setTextPaddingLeft(0);
+    myChart.setAxisNameX(sprintf("Effort (%s)", CHART.units));
+    myChart.setAxisNameY("Confidence");
+    myChart.setTitle(CHART.title);
+    myChart.draw();
+};

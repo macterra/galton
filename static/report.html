@@ -38,25 +38,25 @@
         <tr>
             <td>
                 <table border="1">
-                    <tr> <th width="50">nominal</th> <td width="50" align="right">{{ results.nominal }}</td> </tr>
-                    <tr> <th>mode</th> <td align="right">{{ results.mode }}</td> </tr>
-                    <tr> <th>mean</th><td align="right">{{ results.mean }}</td> </tr>
-                    <tr> <th>p10</th> <td align="right">{{ results.cumprob[10][0] }}</td> </tr>
-                    <tr> <th>p50</th> <td align="right">{{ results.cumprob[50][0] }}</td> </tr>
-                    <tr> <th>p80</th> <td align="right">{{ results.cumprob[80][0] }}</td> </tr>
-                    <tr> <th>p90</th> <td align="right">{{ results.cumprob[90][0] }}</td> </tr>
-                    <tr> <th>p95</th> <td align="right">{{ results.cumprob[95][0] }}</td> </tr>
-                    <tr> <th>p99</th> <td align="right">{{ results.cumprob[99][0] }}</td> </tr>
+                    <tr> <th width="50">nominal</th> <td width="50" align="right">{{ results.nominal | number:2 }}</td> </tr>
+                    <tr> <th>mode</th> <td align="right">{{ results.mode | number:2 }}</td> </tr>
+                    <tr> <th>mean</th><td align="right">{{ results.mean | number:2 }}</td> </tr>
+                    <tr> <th>p10</th> <td align="right">{{ results.cumprob[10][0] | number:2 }}</td> </tr>
+                    <tr> <th>p50</th> <td align="right">{{ results.cumprob[50][0] | number:2 }}</td> </tr>
+                    <tr> <th>p80</th> <td align="right">{{ results.cumprob[80][0] | number:2 }}</td> </tr>
+                    <tr> <th>p90</th> <td align="right">{{ results.cumprob[90][0] | number:2 }}</td> </tr>
+                    <tr> <th>p95</th> <td align="right">{{ results.cumprob[95][0] | number:2 }}</td> </tr>
+                    <tr> <th>p99</th> <td align="right">{{ results.cumprob[99][0] | number:2 }}</td> </tr>
                     <tr> <th colspan=2>risk metrics</th></tr>
-                    <tr> <th>variance</th> <td align="right">{{ results.risk }}</td> </tr>
-                    <tr> <th>p90/p10</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[10][0] }}</td> </tr>
-                    <tr> <th>p90/p50</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[50][0] }}</td> </tr>
-                    <tr> <th>P(>nom)</th> <td align="right">{{ results.pnom }}</td> </tr>
+                    <tr> <th>variance</th> <td align="right">{{ results.risk | number:2 }}</td> </tr>
+                    <tr> <th>p90/p10</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[10][0] | number:2 }}</td> </tr>
+                    <tr> <th>p90/p50</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[50][0] | number:2 }}</td> </tr>
+                    <tr> <th>P(>nom)</th> <td align="right">{{ results.pnom | number:2 }}</td> </tr>
                 </table>
             </td>
             <td>
                 <div id="graph">loading simulation results...</div>
-                <div id="result"></div>
+                <div id="result">Monte Carlo simulation took {{ results.simtime | number:2 }}s for {{ results.trials }} iterations</div>
             </td>
         </tr>
     </table>
