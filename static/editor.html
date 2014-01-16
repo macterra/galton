@@ -54,6 +54,29 @@
                 </td>
             </tr>
             <tr>
+                <th>tasks</th>
+                <td colspan="2">
+                    <table border=1>
+                        <thead>
+                            <tr>
+                                <th>task</th>
+                                <th>count</th>
+                                <th>estimate ({{ project.estimate }})</th>
+                                <th>risk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="task in tasks">
+                                <td>{{ task.description }}</td>
+                                <td>{{ task.count }}</td>
+                                <td>{{ task.estimate }}</td>
+                                <td>{{ task.risk }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
                 <th>actions</th>                
                 <td colspan="2">
                     <button ng-click="saveProject()">Save and Run</button>
@@ -66,28 +89,7 @@
         </table>
     </form>
         
-    <p />
-        
-    <table border=1>
-        <thead>
-            <tr>
-                <th>task</th>
-                <th>count</th>
-                <th>estimate ({{ project.estimate }})</th>
-                <th>risk</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="task in tasks">
-                <td>{{ task.description }}</td>
-                <td>{{ task.count }}</td>
-                <td>{{ task.estimate }}</td>
-                <td>{{ task.risk }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p/>
+    <p />       
 
     <table border="0">
         <tr>
