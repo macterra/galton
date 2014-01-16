@@ -3,12 +3,16 @@
 
     <table border=1>
         <tr>
-            <th width=70px>description</th>
-            <td><input name=project id=project size=50 maxlength=60 value="{{ project.description }}" /> </td>
+            <th>project</th>
+            <td>
+                title: <input name=project id=project size=50 maxlength=60 value="{{ project.description }}" /> 
+                <input type="checkbox" name="publish" checked />publish
+            </td>
         </tr>
         <tr>
             <th>estimate</th>
-            <td>                
+            <td>   
+                type:       
                 <select name="type" id="type">
                     <option value="mode">most likely (mode)</option>
                     <option value="mean">average (mean)</option>
@@ -16,15 +20,15 @@
                     <option value="p80">80% confident</option>
                     <option value="p90">90% confident</option>
                 </select>
+                units: <input id=units name=units value="{{ project.units }}" />
             </td>
         </tr>
         <tr>
-            <th>units</th>
-            <td><input id=units name=units value="{{ project.units }}" /></td>
-        </tr>
-        <tr>
-            <th>publish</th>
-            <td><input type="checkbox" name="publish" checked /></td>
+            <th>schedule</th>
+            <td>
+                start date: <input name=project id=project size=12 maxlength=12 value="YYYY.MM.DD" />
+                team capacity: <input name=capacity id=capacity size=5 maxlength=10 value="" /> (effort/week)
+            </td>
         </tr>
     </table>
         
