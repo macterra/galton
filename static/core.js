@@ -58,6 +58,8 @@ galton.controller('reportController',
                         // chart config
                         title = $scope.project.description;
                         units = $scope.project.units;
+
+                        $scope.status = "";
                     }
                 })
                 .error(function(data) {
@@ -101,6 +103,10 @@ galton.controller('reportController',
         $scope.getProject();
         $scope.getTasks();
         $scope.runSimulation();
+
+        $scope.projectChanged = function() {
+            $scope.status = "changes pending";
+        };
 
         $scope.saveProject = function () {
 
