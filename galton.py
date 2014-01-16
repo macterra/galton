@@ -24,7 +24,7 @@ urls = (
   '/api/projects', 'GetProjects',
   '/api/project/(\d*)', 'GetProject',
   '/api/tasks/(\d*)', 'GetTasks',
-  '/api/results/(\d*)', 'results',
+  '/api/results/(\d*)', 'RunSimulation',
   '/api/project/save', 'SaveProject',
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
@@ -108,6 +108,10 @@ class GetTasks:
             select * from tasks where project=%d           
             """ % (id)
         return DumpQuery(q)
+
+class RunSimulation:
+    def GET(self, id):            
+        return json.dumps(GetResults(id, 0))       
 
 class SaveProject:
     def POST(self):
@@ -551,6 +555,9 @@ def GetResults(id, trials):
     q = "select * from projects where id=%s" % (id)
     for r in db.query(q):
         type = r.estimate
+
+    if trials == 0:
+        trials = r.trials
                 
     tasks = []
     q = "select * from tasks where project=%s" % (id)

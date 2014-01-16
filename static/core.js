@@ -46,33 +46,37 @@ galton.controller('reportController',
         var title;
         var units;
 
-        $http.get('/api/project/' + $routeParams.projectId)
-            .success(function (data) {
-                if (data.length == 1) {
-                    $scope.project = data[0];
+        $scope.getProject = function() {
+            $http.get('/api/project/' + $routeParams.projectId)
+                .success(function(data) {
+                    if (data.length == 1) {
+                        $scope.project = data[0];
 
-                    console.log('project...');
-                    console.log(data[0]);
+                        console.log('project...');
+                        console.log(data[0]);
 
-                    // chart config
-                    title = $scope.project.description;
-                    units = $scope.project.units;
-                }
-            })
-            .error(function (data) {
-                console.log('Error: ' + data);
-            });
+                        // chart config
+                        title = $scope.project.description;
+                        units = $scope.project.units;
+                    }
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+        };
 
-        $http.get('/api/tasks/' + $routeParams.projectId)
-            .success(function (data) {
-                $scope.tasks = data;
+        $scope.getTasks = function() {
+            $http.get('/api/tasks/' + $routeParams.projectId)
+                .success(function(data) {
+                    $scope.tasks = data;
 
-                //console.log('tasks...');
-                //console.log(data);
-            })
-            .error(function (data) {
-                console.log('Error: ' + data);
-            });
+                    //console.log('tasks...');
+                    //console.log(data);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+        };
 
         $scope.runSimulation = function() {
             $http.get('/api/results/' + $routeParams.projectId)
@@ -89,7 +93,9 @@ galton.controller('reportController',
                 });
         };
 
-        // Run the simulation on entry
+        // Run project, tasks and run the simulation on entry
+        $scope.getProject();
+        $scope.getTasks();
         $scope.runSimulation();
 
         $scope.saveProject = function () {
