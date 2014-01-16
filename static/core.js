@@ -86,6 +86,10 @@ galton.controller('reportController',
             .error(function (data) {
                 console.log('Error: ' + data);
             });
+
+        $scope.saveProject = function () {
+            console.log($scope.project);
+        };
     });
 
 

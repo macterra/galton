@@ -1,44 +1,46 @@
 
 <div id="project-editor">
 
-    <table border=1>
-        <tr>
-            <th>project</th>
-            <td>
-                title: <input name=project id=project size=50 maxlength=60 value="{{ project.description }}" /> 
-                <input type="checkbox" name="publish" checked />publish
-            </td>
-        </tr>
-        <tr>
-            <th>estimate</th>
-            <td>   
-                type:       
-                <select name="type" id="type">
-                    <option value="mode">most likely (mode)</option>
-                    <option value="mean">average (mean)</option>
-                    <option value="p50" selected>50/50 (median)</option>
-                    <option value="p80">80% confident</option>
-                    <option value="p90">90% confident</option>
-                </select>
-                units: <input id=units name=units value="{{ project.units }}" />
-            </td>
-        </tr>
-        <tr>
-            <th>schedule</th>
-            <td>
-                start date: <input name=project id=project size=12 maxlength=12 value="YYYY.MM.DD" />
-                team capacity: <input name=capacity id=capacity size=5 maxlength=10 value="" /> (effort/week)
-            </td>
-        </tr>
-        <tr>
-            <th>actions</th>
-            <td align="right">
-                <button>Save</button>
-                <button>Copy</button>
-                <button>Delete</button>
-            </td>
-        </tr>
-    </table>
+    <form>
+        <table border=1>
+            <tr>
+                <th>project</th>
+                <td>
+                    title: <input ng-model="project.description" name=project id=project size=50 maxlength=60" />
+                    <input ng-model="project.publish" type="checkbox" name="publish" checked />publish
+                </td>
+            </tr>
+            <tr>
+                <th>estimate</th>
+                <td>
+                    type:
+                    <select ng-model="project.estimate" name="type" id="type">
+                        <option value="mode">most likely (mode)</option>
+                        <option value="mean">average (mean)</option>
+                        <option value="p50" selected>50/50 (median)</option>
+                        <option value="p80">80% confident</option>
+                        <option value="p90">90% confident</option>
+                    </select>
+                    units: <input ng-model="project.units" id=units name=units />
+                </td>
+            </tr>
+            <tr>
+                <th>schedule</th>
+                <td>
+                    start date: <input ng-model="project.startDate" name=project id=project size=12 maxlength=12" />
+                    team capacity: <input ng-model="project.capacity" name=capacity id=capacity size=5 maxlength=10 /> (effort/week)
+                </td>
+            </tr>
+            <tr>
+                <th>actions</th>
+                <td align="right">
+                    <button ng-click="saveProject()">Save</button>
+                    <button>Copy</button>
+                    <button>Delete</button>
+                </td>
+            </tr>
+        </table>
+    </form>
         
     <p />
         
