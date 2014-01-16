@@ -6,7 +6,9 @@
             <tr>
                 <th>project</th>
                 <td>
-                    title: <input ng-model="project.description" name=project id=project size=50 maxlength=60" />
+                    title: <input ng-model="project.description" name=project id=project size=20 maxlength=60" />
+                </td>
+                <td>
                     <input ng-model="project.publish" type="checkbox" name="publish" checked />publish
                 </td>
             </tr>
@@ -21,19 +23,33 @@
                         <option value="p80">80% confident</option>
                         <option value="p90">90% confident</option>
                     </select>
-                    units: <input ng-model="project.units" id=units name=units />
+                </td>
+                <td>
+                    units: <input ng-model="project.units" size="20" />
+                </td>
+            </tr>
+            <tr>
+                <th>simulation</th>
+                <td>
+                    <input ng-model="project.schedule" ng-value="false" type="radio" />effort
+                    <input ng-model="project.schedule" ng-value="true" type="radio" />schedule
+                </td>                
+                <td>
+                    trials: <input ng-model="project.trials" size=5 maxlength=5 />
                 </td>
             </tr>
             <tr>
                 <th>schedule</th>
                 <td>
                     start date: <input ng-model="project.startDate" name=project id=project size=12 maxlength=12" />
-                    team capacity: <input ng-model="project.capacity" name=capacity id=capacity size=5 maxlength=10 /> (effort/week)
+                </td>
+                <td>
+                    capacity: <input ng-model="project.capacity" name=capacity id=capacity size=5 maxlength=10 /> (effort/week)
                 </td>
             </tr>
             <tr>
-                <th>actions</th>
-                <td align="right">
+                <th>actions</th>                
+                <td align="right" colspan="2">
                     <button ng-click="saveProject()">Save</button>
                     <button>Copy</button>
                     <button>Delete</button>

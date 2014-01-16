@@ -51,8 +51,8 @@ galton.controller('reportController',
                 if (data.length == 1) {
                     $scope.project = data[0];
 
-                    //console.log('project...');
-                    //console.log(data[0]);
+                    console.log('project...');
+                    console.log(data[0]);
 
                     // chart config
                     title = $scope.project.description;
@@ -89,6 +89,17 @@ galton.controller('reportController',
 
         $scope.saveProject = function () {
             console.log($scope.project);
+
+            $http.post('/api/project/save', $scope.project)
+                .success(function (data) {
+                    if (data.length == 1) {
+                        $scope.project = data[0];
+                        
+                        // chart config
+                        title = $scope.project.description;
+                        units = $scope.project.units;
+                    }
+                });
         };
     });
 

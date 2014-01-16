@@ -25,6 +25,7 @@ urls = (
   '/api/project/(\d*)', 'GetProject',
   '/api/tasks/(\d*)', 'GetTasks',
   '/api/results/(\d*)', 'results',
+  '/api/project/save', 'SaveProject',
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
@@ -59,6 +60,8 @@ class favicon:
 
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
+        if isinstance(obj, date):
+            return strftime("%Y-%m-%d", obj.timetuple())
         if isinstance(obj, datetime):
             return strftime("%Y-%m-%d %H:%M", obj.timetuple())
         return json.JSONEncoder.default(self, obj)
@@ -105,6 +108,30 @@ class GetTasks:
             select * from tasks where project=%d           
             """ % (id)
         return DumpQuery(q)
+
+class SaveProject:
+    def POST(self):
+        web.input() # init web.ctx.data
+        p = json.loads(web.ctx.data)
+        print web.ctx.data
+        print p, type(p)        
+
+        id = p['id']
+        description = p['description']
+        estimate = p['estimate']
+        units = p['units']
+        schedule = 1 if p['schedule'] else 0
+        try:
+            trials = int(p['trials'])
+        except:
+            trials = 10000
+        publish = 1 if p['publish'] else 0
+        now = web.SQLLiteral("DATETIME('now','localtime')")
+
+        db.update('projects', where="id=%d" % (id), description=description, estimate=estimate, units=units, publish=publish, schedule=schedule, trials=trials, updated=now)
+
+        getProject = GetProject()
+        return getProject.GET(id)
 
 def CurrentUser():
     try:
