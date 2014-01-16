@@ -83,10 +83,14 @@ galton.controller('reportController',
                 .success(function(data) {
                     $scope.results = data;
 
-                    //console.log('results...');
-                    //console.log(data);
+                    console.log('results...');
+                    console.log(data);
 
-                    drawChart(title, units, data.cumprob);
+                    if (data.schedule) {
+                        drawSchedule(title, data.schedule);
+                    } else {
+                        drawChart(title, units, data.cumprob);
+                    }
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);

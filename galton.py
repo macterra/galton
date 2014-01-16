@@ -21,11 +21,13 @@ urls = (
   '/users', 'users',
   '/favicon.ico', 'favicon',
   '/montecarlo', 'montecarlo',
+
   '/api/projects', 'GetProjects',
   '/api/project/(\d*)', 'GetProject',
   '/api/tasks/(\d*)', 'GetTasks',
   '/api/results/(\d*)', 'RunSimulation',
   '/api/project/save', 'SaveProject',
+
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
@@ -108,10 +110,10 @@ class GetTasks:
             select * from tasks where project=%d           
             """ % (id)
         return DumpQuery(q)
-
+    
 class RunSimulation:
     def GET(self, id):            
-        return json.dumps(GetResults(id, 0))       
+        return json.dumps(GetResults(id, 0))
 
 class SaveProject:
     def POST(self):
@@ -135,11 +137,23 @@ class SaveProject:
         except:
             trials = 10000
 
+        try:
+            capacity = float(p['capacity'])
+        except:
+            capacity = 1.0
+
         publish = 1 if p['publish'] else 0
         now = web.SQLLiteral("DATETIME('now','localtime')")
 
         db.update('projects', where="id=%d" % (id), 
-                  description=description, estimate=estimate, units=units, publish=publish, schedule=schedule, trials=trials, updated=now)
+                  description=description, 
+                  estimate=estimate, 
+                  units=units, 
+                  publish=publish, 
+                  schedule=schedule, 
+                  trials=trials, 
+                  capacity=capacity, 
+                  updated=now)
 
         getProject = GetProject()
         return getProject.GET(id)
@@ -558,7 +572,11 @@ def GetResults(id, trials):
 
     if trials == 0:
         trials = r.trials
-                
+
+    schedule = r.schedule
+    start = r.start
+    capacity = r.capacity
+                    
     tasks = []
     q = "select * from tasks where project=%s" % (id)
     for r in db.query(q):
@@ -567,7 +585,29 @@ def GetResults(id, trials):
                 task = Task(float(r.estimate), type, r.risk)
                 tasks.append(task)   
                 
-    return RunMonteCarlo(trials,tasks)    
+    results = RunMonteCarlo(trials,tasks)
+
+    if schedule:      
+        effort, prob = zip(*results["cumprob"])
+                
+        cumprob = 0
+        cumeffort = 0
+        week = 0
+        schedule = []
+        
+        while cumprob < 100:            
+            cumprob = numpy.interp(cumeffort, effort, prob, 0, 100)
+            #print week, cumeffort, cumprob           
+            schedule.append([str(start), cumprob])                          
+                
+            cumeffort += capacity
+            start += timedelta(7)
+            week += 1
+       
+        #print schedule
+        results["schedule"] = schedule
+        
+    return results
     
 class results:
     def GET(self, id):
@@ -593,7 +633,7 @@ class resultscsv:
         
         pairs = ["%s,%s\n" % (pair[1], pair[0]) for pair in results["cumprob"]]
         return 'prob,effort\n' + ''.join(pairs)
-        
+    
 
 class schedule:
     def GET(self, id):
@@ -638,7 +678,7 @@ class schedule:
             week += 1
        
         #print schedule
-        results["schedule"] = schedule
+        results["schedule"] = schedule          
         return json.dumps(results)
         
 if __name__ == "__main__": 
