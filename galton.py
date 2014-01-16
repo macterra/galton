@@ -60,10 +60,10 @@ class favicon:
 
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, date):
-            return strftime("%Y-%m-%d", obj.timetuple())
         if isinstance(obj, datetime):
             return strftime("%Y-%m-%d %H:%M", obj.timetuple())
+        if isinstance(obj, date):
+            return strftime("%Y-%m-%d", obj.timetuple())
         return json.JSONEncoder.default(self, obj)
 
 def DumpTable(table):
@@ -123,12 +123,19 @@ class SaveProject:
         schedule = 1 if p['schedule'] else 0
         try:
             trials = int(p['trials'])
+
+            if trials < 1:
+                trials = 100
+            if trials > 100000:
+                trials = 100000
         except:
             trials = 10000
+
         publish = 1 if p['publish'] else 0
         now = web.SQLLiteral("DATETIME('now','localtime')")
 
-        db.update('projects', where="id=%d" % (id), description=description, estimate=estimate, units=units, publish=publish, schedule=schedule, trials=trials, updated=now)
+        db.update('projects', where="id=%d" % (id), 
+                  description=description, estimate=estimate, units=units, publish=publish, schedule=schedule, trials=trials, updated=now)
 
         getProject = GetProject()
         return getProject.GET(id)

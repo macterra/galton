@@ -74,31 +74,51 @@ galton.controller('reportController',
                 console.log('Error: ' + data);
             });
 
-        $http.get('/api/results/' + $routeParams.projectId)
-            .success(function (data) {
-                $scope.results = data;
+        $scope.runSimulation = function() {
+            $http.get('/api/results/' + $routeParams.projectId)
+                .success(function(data) {
+                    $scope.results = data;
 
-                //console.log('results...');
-                //console.log(data);
+                    //console.log('results...');
+                    //console.log(data);
 
-                drawChart(title, units, data.cumprob);
-            })
-            .error(function (data) {
-                console.log('Error: ' + data);
-            });
+                    drawChart(title, units, data.cumprob);
+                })
+                .error(function(data) {
+                    console.log('Error: ' + data);
+                });
+        };
+
+        // Run the simulation on entry
+        $scope.runSimulation();
 
         $scope.saveProject = function () {
+
+            $scope.status = "saving project...";
+
+            console.log('saving...');
             console.log($scope.project);
 
             $http.post('/api/project/save', $scope.project)
                 .success(function (data) {
                     if (data.length == 1) {
                         $scope.project = data[0];
+                        $scope.status = "project saved";
+
+                        console.log('saved...');
+                        console.log($scope.project);
                         
                         // chart config
                         title = $scope.project.description;
                         units = $scope.project.units;
+
+                        // Run the simulation on save
+                        $scope.runSimulation();
                     }
+                })
+                .error(function (data) {
+                    console.log('Error: ' + data);
+                    $scope.status = 'Error: ' + data;
                 });
         };
     });

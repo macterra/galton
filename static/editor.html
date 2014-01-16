@@ -6,11 +6,16 @@
             <tr>
                 <th>project</th>
                 <td>
-                    title: <input ng-model="project.description" name=project id=project size=20 maxlength=60" />
+                    title: <input ng-model="project.description" size="20" maxlength="60" />
                 </td>
                 <td>
-                    <input ng-model="project.publish" type="checkbox" name="publish" checked />publish
+                    <input ng-model="project.publish" ng-true-value="1" ng-false-value="0" type="checkbox" />publish
                 </td>
+            </tr>
+            <tr>
+                <th>timestamps</th>
+                <td>created: {{ project.created }}</td>
+                <td>updated: {{ project.updated }}</td>
             </tr>
             <tr>
                 <th>estimate</th>
@@ -35,13 +40,13 @@
                     <input ng-model="project.schedule" ng-value="true" type="radio" />schedule
                 </td>                
                 <td>
-                    trials: <input ng-model="project.trials" size=5 maxlength=5 />
+                    trials: <input ng-model="project.trials" size=5 maxlength=7 />
                 </td>
             </tr>
             <tr>
                 <th>schedule</th>
                 <td>
-                    start date: <input ng-model="project.startDate" name=project id=project size=12 maxlength=12" />
+                    start date: <input ng-model="project.start" name=project id=project size=12 maxlength=12" />
                 </td>
                 <td>
                     capacity: <input ng-model="project.capacity" name=capacity id=capacity size=5 maxlength=10 /> (effort/week)
@@ -49,10 +54,11 @@
             </tr>
             <tr>
                 <th>actions</th>                
-                <td align="right" colspan="2">
+                <td colspan="2">
                     <button ng-click="saveProject()">Save</button>
                     <button>Copy</button>
                     <button>Delete</button>
+                    <span ng-show="status">{{ status }}</span>
                 </td>
             </tr>
         </table>
