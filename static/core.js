@@ -161,6 +161,23 @@ galton.controller('reportController',
                 });
         };
 
+        $scope.copyProject = function () {
+
+            var projectId = $scope.project.id;
+
+            $http.get('/api/project/copy/' + projectId)
+                .success(function (id) {
+
+                    if (id > 0) {
+                        $location.path("/edit/" + id);
+                    }
+                })
+                .error(function (data) {
+                    console.log('Error: ' + data);
+                });
+
+        };
+
         $scope.deleteProject = function () {
 
             var projectId = $scope.project.id;

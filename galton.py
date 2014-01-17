@@ -26,6 +26,7 @@ urls = (
   '/api/project/(\d*)', 'GetProject',
   '/api/project/save', 'SaveProject',
   '/api/project/create', 'CreateProject',
+  '/api/project/copy/(\d*)', 'CopyProject',
   '/api/project/delete/(\d*)', 'DeleteProject',
   '/api/tasks/(\d*)', 'GetTasks',
   '/api/results/(\d*)', 'RunSimulation',
@@ -152,7 +153,53 @@ class CreateProject:
                   description='task 1')
 
         return newId
+    
+    
+class CopyProject:
+    def GET(self, id):
+        try:
+            id = int(id)
+            userid = CurrentUser()
+            
+            q = "select * from projects where id=%d" % (id)
+            for r in db.query(q):
+                description = r.description
 
+            # only allowed to copy published projects and your own projects
+            if r.userid != userid and not r.publish:
+                return 0
+
+            description = "(copy of) " + description
+            
+            now = web.SQLLiteral("DATETIME('now','localtime')")
+            newId = db.insert('projects', 
+                              description=description, 
+                              estimate=r.estimate, 
+                              units=r.units, 
+                              userid=userid, 
+                              publish=False, 
+                              created=now, 
+                              updated=now,
+                              trials=r.trials,
+                              schedule=r.schedule,
+                              start=r.start,
+                              capacity=r.capacity)
+        
+            q = "select * from tasks where project=%d" % (id)
+            with db.transaction():
+                for r in db.query(q):
+                    db.insert('tasks', 
+                              project=newId, 
+                              description=r.description,
+                              estimate=r.estimate, 
+                              risk=r.risk, 
+                              count=r.count, 
+                              include=r.include)
+
+            return newId
+
+        except:
+            return 0
     
 class DeleteProject:
     def GET(self, id):
