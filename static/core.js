@@ -53,7 +53,7 @@ galton.controller('mainController',
     });
 
 galton.controller('reportController',
-    function ($scope, $http, $routeParams) {
+    function ($scope, $http, $routeParams, $location) {
 
         var title;
         var units;
@@ -159,6 +159,23 @@ galton.controller('reportController',
                     console.log('Error: ' + data);
                     $scope.status = 'Error: ' + data;
                 });
+        };
+
+        $scope.deleteProject = function () {
+
+            var projectId = $scope.project.id;
+
+            $http.get('/api/project/delete/' + projectId)
+                .success(function (id) {
+
+                    if (id == projectId) {
+                        $location.path("/");
+                    }
+                })
+                .error(function (data) {
+                    console.log('Error: ' + data);
+                });
+
         };
     });
 

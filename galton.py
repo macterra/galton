@@ -24,10 +24,11 @@ urls = (
 
   '/api/projects', 'GetProjects',
   '/api/project/(\d*)', 'GetProject',
-  '/api/tasks/(\d*)', 'GetTasks',
-  '/api/results/(\d*)', 'RunSimulation',
   '/api/project/save', 'SaveProject',
   '/api/project/create', 'CreateProject',
+  '/api/project/delete/(\d*)', 'DeleteProject',
+  '/api/tasks/(\d*)', 'GetTasks',
+  '/api/results/(\d*)', 'RunSimulation',
 
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
@@ -152,6 +153,21 @@ class CreateProject:
 
         return newId
 
+    
+class DeleteProject:
+    def GET(self, id):
+        try:
+            CheckOwner(id)
+
+            id = int(id)
+               
+            db.query("delete from tasks where project=%d" % (id))
+            db.query("delete from projects where id=%d" % (id))
+
+            return id
+
+        except:
+            return 0
 
 class SaveProject:
     def POST(self):
