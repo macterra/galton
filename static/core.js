@@ -164,6 +164,11 @@ galton.controller('reportController',
         $scope.deleteProject = function () {
 
             var projectId = $scope.project.id;
+            var description = $scope.project.description;
+
+            if (!confirm('Delete project "' + description + '" irreversibly?')) {
+                return;
+            }
 
             $http.get('/api/project/delete/' + projectId)
                 .success(function (id) {
