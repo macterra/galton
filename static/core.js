@@ -45,25 +45,21 @@ galton.controller('reportController',
 
         var title;
         var units;
-
-        var postGetProject = function () {
-
-            // convert ints to booleans for angular
-            $scope.project.publish = !!$scope.project.publish;
-
-            // chart config
-            title = $scope.project.description;
-            units = $scope.project.units;
-
-            $scope.status = "";
-        };
-
+        
         $scope.getProject = function() {
             $http.get('/api/project/' + $routeParams.projectId)
                 .success(function(data) {
                     if (data.length == 1) {
                         $scope.project = data[0];
-                        postGetProject();
+
+                        // convert ints to booleans for angular
+                        $scope.project.publish = !!$scope.project.publish;
+
+                        // chart config
+                        title = $scope.project.description;
+                        units = $scope.project.units;
+
+                        $scope.status = "";
                     }
                 })
                 .error(function(data) {
@@ -130,16 +126,9 @@ galton.controller('reportController',
             console.log('saving...');
             console.log($scope.project);
 
-            $http.post('/api/project/save', $scope.project)
+            $http.post('/api/project/save', { project: $scope.project, tasks: $scope.tasks })
                 .success(function (data) {
-                    if (data.length == 1) {
-                        $scope.project = data[0];
-
-                        postGetProject();
-
-                        // Run the simulation on save
-                        $scope.runSimulation();
-                    }
+                    $scope.resetProject();
                 })
                 .error(function (data) {
                     console.log('Error: ' + data);

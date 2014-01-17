@@ -118,9 +118,13 @@ class RunSimulation:
 class SaveProject:
     def POST(self):
         web.input() # init web.ctx.data
-        p = json.loads(web.ctx.data)
+        data = json.loads(web.ctx.data)
+        p = data['project']
+        tasks = data['tasks']
+
         print web.ctx.data
-        print p, type(p)        
+        print p, type(p)    
+        print tasks, type(tasks)        
 
         id = p['id']
         description = p['description']
@@ -154,9 +158,34 @@ class SaveProject:
                   trials=trials, 
                   capacity=capacity, 
                   updated=now)
+        
+        q = "delete from tasks where project=%s" % (id)
+        db.query(q)
 
-        getProject = GetProject()
-        return getProject.GET(id)
+        for t in tasks:
+            description = t['description']
+            risk = t['risk']
+            include = 1 if t['include'] else 0
+
+            try:
+                count = int(t['count'])
+
+                if count < 1:
+                    count = 1
+            except:
+                count = 1
+
+            try:
+                estimate = float(t['estimate'])
+
+                if estimate < 0:
+                    estimate = 0
+            except:
+                estimate = 1.0
+
+            db.insert('tasks', project=id, description=description, count=count, estimate=estimate, risk=risk, include=include)
+
+        return "yesh"
 
 def CurrentUser():
     try:
