@@ -4,7 +4,7 @@
     
     <table border=1>
         <tr>
-            <th>project</th>
+            <th><a href="#/report/{{ project.id }}">project</a></th>
             <td>
                 title: <input ng-model="project.description" size="20" maxlength="60" ng-change="projectChanged()" />
             </td>
@@ -115,11 +115,17 @@
             </td>
         </tr>
     </table>
-    
-    <input type="checkbox" ng-model="debug"/>show models
-    <table ng-show="debug">
+
+    <input type="checkbox" ng-model="showModels" />show models
+    <input type="checkbox" ng-model="showResults" />show results
+
+    <table ng-show="showModels">
         <tr><td>project</td><td>tasks</td></tr>
         <tr><td><pre>{{project|json}}</pre></td><td><pre>{{tasks|json}}</pre></td></tr>
+    </table>   
+
+    <table ng-show="showResults">
+        <tr><td><pre>{{results|json}}</pre></td></td></tr>
     </table>    
             
     <p />       

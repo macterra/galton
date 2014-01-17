@@ -181,7 +181,7 @@ class SaveProject:
                 if estimate < 0:
                     estimate = 0
             except:
-                estimate = 1.0
+                estimate = 0
 
             db.insert('tasks', project=id, description=description, count=count, estimate=estimate, risk=risk, include=include)
 

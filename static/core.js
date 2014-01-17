@@ -124,15 +124,11 @@ galton.controller('reportController',
         $scope.saveProject = function () {
 
             $scope.status = "saving project...";
-
-            console.log('saving...');
-            console.log($scope.project);
-
+            
             var saveTasks = [];
 
             for (var i in $scope.tasks) {
                 var task = $scope.tasks[i];
-                console.log('remove task ' + task.remove);
 
                 if (!task.remove) {
                     saveTasks.push(task);
@@ -140,12 +136,9 @@ galton.controller('reportController',
             }
             
             if ($scope.newtask.include) {
-                $scope.tasks.push($scope.newtask);
                 saveTasks.push($scope.newtask);
             }
-
-            console.log('saveTasks: ' + saveTasks);
-
+            
             $http.post('/api/project/save', { project: $scope.project, tasks: saveTasks })
                 .success(function (data) {
                     $scope.resetProject();
