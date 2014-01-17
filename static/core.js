@@ -46,20 +46,24 @@ galton.controller('reportController',
         var title;
         var units;
 
+        var postGetProject = function () {
+
+            // convert ints to booleans for angular
+            $scope.project.publish = !!$scope.project.publish;
+
+            // chart config
+            title = $scope.project.description;
+            units = $scope.project.units;
+
+            $scope.status = "";
+        };
+
         $scope.getProject = function() {
             $http.get('/api/project/' + $routeParams.projectId)
                 .success(function(data) {
                     if (data.length == 1) {
                         $scope.project = data[0];
-
-                        console.log('project...');
-                        console.log(data[0]);
-
-                        // chart config
-                        title = $scope.project.description;
-                        units = $scope.project.units;
-
-                        $scope.status = "";
+                        postGetProject();
                     }
                 })
                 .error(function(data) {
@@ -71,6 +75,13 @@ galton.controller('reportController',
             $http.get('/api/tasks/' + $routeParams.projectId)
                 .success(function(data) {
                     $scope.tasks = data;
+
+                    // convert ints to booleans for angular
+                    for (var i in $scope.tasks) {
+                        var task = $scope.tasks[i];
+                        task.include = !!task.include;
+                        console.log(task);
+                    };
 
                     //console.log('tasks...');
                     //console.log(data);
@@ -123,14 +134,8 @@ galton.controller('reportController',
                 .success(function (data) {
                     if (data.length == 1) {
                         $scope.project = data[0];
-                        $scope.status = "project saved";
 
-                        console.log('saved...');
-                        console.log($scope.project);
-                        
-                        // chart config
-                        title = $scope.project.description;
-                        units = $scope.project.units;
+                        postGetProject();
 
                         // Run the simulation on save
                         $scope.runSimulation();
