@@ -1,94 +1,108 @@
 
 <div id="project-editor">
 
-    <form>
-        <table border=1>
-            <tr>
-                <th>project</th>
-                <td>
-                    title: <input ng-model="project.description" size="20" maxlength="60" ng-change="projectChanged()" />
-                </td>
-                <td>
-                    <input ng-model="project.publish" ng-true-value="1" ng-false-value="0" type="checkbox" />publish
-                </td>
-            </tr>
-            <tr>
-                <th>timestamps</th>
-                <td>created: {{ project.created }}</td>
-                <td>updated: {{ project.updated }}</td>
-            </tr>
-            <tr>
-                <th>estimate</th>
-                <td>
-                    type:
-                    <select ng-model="project.estimate" name="type" id="type" ng-change="projectChanged()">
-                        <option value=" mode">
-                        most likely (mode)</option>
-                        <option value="mean">average (mean)</option>
-                        <option value="p50" selected>50/50 (median)</option>
-                        <option value="p80">80% confident</option>
-                        <option value="p90">90% confident</option>
-                    </select>
-                </td>
-                <td>
-                    units: <input ng-model="project.units" size="20" ng-change="projectChanged()" />
-                </td>
-            </tr>
-            <tr>
-                <th>simulation</th>
-                <td>
-                    <input ng-model="project.schedule" ng-value="false" type="radio" ng-change="projectChanged()" />effort
-                    <input ng-model="project.schedule" ng-value="true" type="radio" ng-change="projectChanged()" />schedule
-                </td>                
-                <td>
-                    trials: <input ng-model="project.trials" size=5 maxlength=7 ng-change ="projectChanged()" />
-                </td>
-            </tr>
-            <tr>
-                <th>schedule</th>
-                <td>
-                    start date: <input ng-model="project.start" name=project id=project size=12 maxlength=12" ng-change="projectChanged()" />
-                </td>
-                <td>
-                    capacity: <input ng-model="project.capacity" name=capacity id=capacity size=5 maxlength=10 ng-change="projectChanged()" /> (effort/week)
-                </td>
-            </tr>
-            <tr>
-                <th>tasks</th>
-                <td colspan="2">
-                    <table border=1>
-                        <thead>
-                            <tr>
-                                <th>task</th>
-                                <th>count</th>
-                                <th>estimate ({{ project.estimate }})</th>
-                                <th>risk</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="task in tasks">
-                                <td>{{ task.description }}</td>
-                                <td>{{ task.count }}</td>
-                                <td>{{ task.estimate }}</td>
-                                <td>{{ task.risk }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <th>actions</th>                
-                <td colspan="2">
-                    <button ng-click="saveProject()">Save and Run</button>
-                    <button ng-click="getProject()">Reset</button>
-                    <button>Copy</button>
-                    <button>Delete</button>
-                    <span ng-show="status">{{ status }}</span>
-                </td>
-            </tr>
-        </table>
-    </form>
-        
+    
+    <table border=1>
+        <tr>
+            <th>project</th>
+            <td>
+                title: <input ng-model="project.description" size="20" maxlength="60" ng-change="projectChanged()" />
+            </td>
+            <td>
+                <input ng-model="project.publish" ng-true-value="1" ng-false-value="0" type="checkbox" />publish
+            </td>
+        </tr>
+        <tr>
+            <th>timestamps</th>
+            <td>created: {{ project.created }}</td>
+            <td>updated: {{ project.updated }}</td>
+        </tr>
+        <tr>
+            <th>estimate</th>
+            <td>
+                type:
+                <select ng-model="project.estimate" name="type" id="type" ng-change="projectChanged()">
+                    <option value=" mode">
+                    most likely (mode)</option>
+                    <option value="mean">average (mean)</option>
+                    <option value="p50" selected>50/50 (median)</option>
+                    <option value="p80">80% confident</option>
+                    <option value="p90">90% confident</option>
+                </select>
+            </td>
+            <td>
+                units: <input ng-model="project.units" size="20" ng-change="projectChanged()" />
+            </td>
+        </tr>
+        <tr>
+            <th>simulation</th>
+            <td>
+                <input ng-model="project.schedule" ng-value="false" type="radio" ng-change="projectChanged()" />effort
+                <input ng-model="project.schedule" ng-value="true" type="radio" ng-change="projectChanged()" />schedule
+            </td>                
+            <td>
+                trials: <input ng-model="project.trials" size=5 maxlength=7 ng-change ="projectChanged()" />
+            </td>
+        </tr>
+        <tr>
+            <th>schedule</th>
+            <td>
+                start date: <input ng-model="project.start" name=project id=project size=12 maxlength=12" ng-change="projectChanged()" />
+            </td>
+            <td>
+                capacity: <input ng-model="project.capacity" size=5 maxlength=10 ng-change="projectChanged()" /> (effort/week)
+            </td>
+        </tr>
+        <tr>
+            <th>tasks</th>
+            <td colspan="2">
+                <table border=1>
+                    <thead>
+                        <tr>
+                            <th>task</th>
+                            <th>count</th>
+                            <th>{{ project.estimate }} ({{ project.units }})</th>
+                            <th>risk</th>
+                            <th>include</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="task in tasks">
+                            <td><input ng-model="task.description" size=15 maxlength=30 ng-change="projectChanged()" /></td>
+                            <td><input ng-model="task.count" size=5 maxlength=10 ng-change="projectChanged()" /></td>
+                            <td><input ng-model="task.estimate" size=5 maxlength=10 ng-change="projectChanged()" /></td>                            
+                            <td>
+                                <select ng-model="task.risk" ng-change="projectChanged()">
+                                    <option>none</option>
+                                    <option>low</option>
+                                    <option>medium</option>
+                                    <option>high</option>
+                                    <option>very high</option>
+                                </select>
+                            </td>
+                            <td><input ng-model="task.include" ng-true-value="1" ng-false-value="0" type="checkbox" ng-change="projectChanged()" /></td>  
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>actions</th>                
+            <td colspan="2">
+                <button ng-click="saveProject()">Save and Run</button>
+                <button ng-click="resetProject()">Reset</button>
+                <button>Copy</button>
+                <button>Delete</button>
+                <span ng-show="status">{{ status }}</span>
+            </td>
+        </tr>
+    </table>
+    
+    <table>
+        <tr><td>project</td><td>tasks</td></tr>
+        <tr><td><pre>{{project|json}}</pre></td><td><pre>{{tasks|json}}</pre></td></tr>
+    </table>    
+            
     <p />       
 
     <table border="0">

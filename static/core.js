@@ -99,10 +99,14 @@ galton.controller('reportController',
                 });
         };
 
+        $scope.resetProject = function() {
+            $scope.getProject();
+            $scope.getTasks();
+            $scope.runSimulation();
+        };
+
         // Run project, tasks and run the simulation on entry
-        $scope.getProject();
-        $scope.getTasks();
-        $scope.runSimulation();
+        $scope.resetProject();
 
         $scope.projectChanged = function() {
             $scope.status = "changes pending";
