@@ -7,7 +7,7 @@
                 <th>owner</th>
                 <th>created</th>
                 <th>updated</th>
-                <th>link</th>
+                <th>actions</th>
             </tr>
         </thead>
         <tbody>
@@ -16,8 +16,8 @@
                 <td>{{ project.owner }}</td>
                 <td>{{ project.created }}</td>
                 <td>{{ project.updated }}</td>
-                <td ng-if="project.mine"><a href="#/edit/{{ project.id }}" />edit</a></td>
-                <td ng-if="!project.mine"><a href="#/copy/{{ project.id }}" />copy</a></td>
+                <td ng-if="project.mine"><a href="#/edit/{{ project.id }}" /><button>edit</button></a></td>
+                <td ng-if="!project.mine"><button ng-click="copyProject({{ project.id }})" />copy</button></td>
             </tr>
         </tbody>
     </table>

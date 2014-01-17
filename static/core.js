@@ -50,6 +50,20 @@ galton.controller('mainController',
                     }
                 });
         };
+
+        $scope.copyProject = function (projectId) {
+
+            $http.get('/api/project/copy/' + projectId)
+                .success(function (id) {
+
+                    if (id > 0) {
+                        $location.path("/edit/" + id);
+                    }
+                })
+                .error(function (data) {
+                    console.log('Error: ' + data);
+                });
+        };
     });
 
 galton.controller('reportController',
