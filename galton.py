@@ -27,6 +27,7 @@ urls = (
   '/api/tasks/(\d*)', 'GetTasks',
   '/api/results/(\d*)', 'RunSimulation',
   '/api/project/save', 'SaveProject',
+  '/api/project/create', 'CreateProject',
 
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
@@ -114,6 +115,43 @@ class GetTasks:
 class RunSimulation:
     def GET(self, id):            
         return json.dumps(GetResults(id, 0))
+    
+class CreateProject:
+    def POST(self):
+        web.input() # init web.ctx.data      
+
+        try:
+            data = json.loads(web.ctx.data)  
+            description = data['description'].strip()
+        except:
+            return 0
+
+        if len(description) == 0:
+            return 0
+
+        now = web.SQLLiteral("DATETIME('now','localtime')")
+
+        newId = db.insert('projects', 
+                            description=description, 
+                            estimate='p50', 
+                            units='days', 
+                            userid=CurrentUser(), 
+                            publish=False, 
+                            schedule=False,
+                            created=now, 
+                            updated=now,
+                            trials=10000,
+                            capacity=1)
+        db.insert('tasks', 
+                  project=newId, 
+                  include=True, 
+                  count=1, 
+                  estimate=1.0, 
+                  risk='medium', 
+                  description='task 1')
+
+        return newId
+
 
 class SaveProject:
     def POST(self):

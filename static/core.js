@@ -26,7 +26,7 @@ galton.config(function ($routeProvider)
     });
 
 galton.controller('mainController',
-    function ($scope, $http) {
+    function ($scope, $http, $location) {
         $scope.formData = {};
 
         // when landing on the page, get all todos and show them
@@ -38,6 +38,18 @@ galton.controller('mainController',
             .error(function (data) {
                 console.log('Error: ' + data);
             });
+
+        $scope.createProject = function() {
+            //console.log('create project: ' + $scope.formData);
+            $http.post('/api/project/create', $scope.formData)
+                .success(function(id) {
+                    console.log('create success ' + id);
+
+                    if (id > 0) {
+                        $location.path("/edit/" + id);
+                    }
+                });
+        };
     });
 
 galton.controller('reportController',

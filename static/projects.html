@@ -28,6 +28,6 @@
 <div id="add-project-form">
     <form>
         <button ng-click="createProject()">Create project</button>
-        <input type=text name=desc size=60 maxlength=60 placeholder="new project name" ng-model="formData.text" required />
+        <input type=text size=60 maxlength=60 placeholder="new project name" ng-model="formData.description" required ng-click="createProject()" />
     </form>
 </div>
