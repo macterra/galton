@@ -81,6 +81,8 @@ galton.controller('reportController',
 
                     //console.log('tasks...');
                     //console.log(data);
+
+                    $scope.newtask = { description: 'new task', count: 1, estimate: 1, risk: 'medium' };
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);
@@ -126,7 +128,25 @@ galton.controller('reportController',
             console.log('saving...');
             console.log($scope.project);
 
-            $http.post('/api/project/save', { project: $scope.project, tasks: $scope.tasks })
+            var saveTasks = [];
+
+            for (var i in $scope.tasks) {
+                var task = $scope.tasks[i];
+                console.log('remove task ' + task.remove);
+
+                if (!task.remove) {
+                    saveTasks.push(task);
+                }
+            }
+            
+            if ($scope.newtask.include) {
+                $scope.tasks.push($scope.newtask);
+                saveTasks.push($scope.newtask);
+            }
+
+            console.log('saveTasks: ' + saveTasks);
+
+            $http.post('/api/project/save', { project: $scope.project, tasks: saveTasks })
                 .success(function (data) {
                     $scope.resetProject();
                 })

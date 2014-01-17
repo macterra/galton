@@ -64,13 +64,14 @@
                             <th>{{ project.estimate }} ({{ project.units }})</th>
                             <th>risk</th>
                             <th>include</th>
+                            <th>remove</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="task in tasks">
                             <td><input ng-model="task.description" size=15 maxlength=30 ng-change="projectChanged()" /></td>
                             <td><input ng-model="task.count" size=5 maxlength=10 ng-change="projectChanged()" /></td>
-                            <td><input ng-model="task.estimate" size=5 maxlength=10 ng-change="projectChanged()" /></td>                            
+                            <td><input ng-model="task.estimate" size=5 maxlength=10 ng-change="projectChanged()" /></td>
                             <td>
                                 <select ng-model="task.risk" ng-change="projectChanged()">
                                     <option>none</option>
@@ -80,7 +81,24 @@
                                     <option>very high</option>
                                 </select>
                             </td>
-                            <td><input ng-model="task.include"  type="checkbox" ng-change="projectChanged()" /></td>  
+                            <td><input ng-model="task.include" type="checkbox" ng-change="projectChanged()" /></td>
+                            <td><input ng-model="task.remove" type="checkbox" ng-change="projectChanged()" /></td>
+                        </tr>
+                        <tr>
+                            <td><input ng-model="newtask.description" size=15 maxlength=30 ng-change="projectChanged()" /></td>
+                            <td><input ng-model="newtask.count" size=5 maxlength=10 ng-change="projectChanged()" /></td>
+                            <td><input ng-model="newtask.estimate" size=5 maxlength=10 ng-change="projectChanged()" /></td>
+                            <td>
+                                <select ng-model="newtask.risk" ng-change="projectChanged()">
+                                    <option>none</option>
+                                    <option>low</option>
+                                    <option>medium</option>
+                                    <option>high</option>
+                                    <option>very high</option>
+                                </select>
+                            </td>
+                            <td><input ng-model="newtask.include" type="checkbox" ng-change="projectChanged()" /></td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
