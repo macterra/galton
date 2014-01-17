@@ -1,14 +1,12 @@
 
 <div id="project-report">
-
-    <h1>{{ project.description }}</h1>
     
-    <div ng-if ="project.mine">
-        <a href="#/edit/{{ project.id }}">edit</a> project
+    <div ng-if="project.mine">
+        <a href="#/edit/{{ project.id }}"><button>edit</button></a>{{ project.description }}
     </div>
 
     <div ng-if="!project.mine">
-        <a href="#/copy/{{ project.id }}">copy</a> {{ project.owner }}'s project
+        <button ng-click="copyProject({{ project.id }})" />copy</button>{{ project.description }}
     </div>
 
     <p />
@@ -23,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="task in tasks">
+            <tr ng-repeat="task in tasks | onlyIncluded">
                 <td>{{ task.description }}</td>
                 <td>{{ task.count }}</td>
                 <td>{{ task.estimate }}</td>

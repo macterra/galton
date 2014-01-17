@@ -25,6 +25,22 @@ galton.config(function ($routeProvider)
         });
     });
 
+galton.filter('onlyIncluded', function() {
+    return function(tasks) {
+        var onlyIncluded = [];
+
+        for (var i in tasks) {
+            var task = tasks[i];
+
+            if (task.include) {
+                onlyIncluded.push(task);
+            }
+        }
+
+        return onlyIncluded;
+    };
+});
+
 galton.controller('mainController',
     function ($scope, $http, $location) {
         $scope.formData = {};
