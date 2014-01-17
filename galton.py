@@ -14,14 +14,14 @@ import urllib, urllib2
 import numpy
     
 urls = (
-  '/', 'projectlist',
-  '/ng/', 'angular',
+  '/old', 'projectlist',
   '/login', 'login',
   '/logout', 'logout',
   '/users', 'users',
   '/favicon.ico', 'favicon',
   '/montecarlo', 'montecarlo',
-
+  
+  '/', 'angular',
   '/api/projects', 'GetProjects',
   '/api/project/(\d*)', 'GetProject',
   '/api/project/save', 'SaveProject',
