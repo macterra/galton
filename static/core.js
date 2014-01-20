@@ -230,6 +230,27 @@ galton.controller('reportController',
 
         };
 
+        $scope.runProject = function () {
+
+            $http.post('/api/simulate/project', { project: $scope.project, tasks: $scope.tasks })
+                .success(function (data) {
+                    $scope.results = data;
+
+                    console.log('results...');
+                    console.log(data);
+
+                    if (data.schedule) {
+                        drawSchedule(title, data.schedule);
+                    } else {
+                        drawChart(title, units, data.cumprob);
+                    }
+                })
+                .error(function (data) {
+                    console.log('Error: ' + data);
+                    $scope.status = 'Error: ' + data;
+                });
+        };
+
         $scope.runTask = function(task) {
             console.log('runTask ' + task);
 

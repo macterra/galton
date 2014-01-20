@@ -133,11 +133,13 @@ class SimulateProject:
         web.input() # init web.ctx.data  
         
         try:
-            project = json.loads(web.ctx.data)  
+            data = json.loads(web.ctx.data)        
+            project = Project()
+            project.init(data)
+            results = project.run()
+            return json.dumps(results)
         except:
             return 0
-
-        return "yesh"
 
 class SimulateTask:
     def POST(self):
