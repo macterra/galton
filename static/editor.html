@@ -44,13 +44,13 @@
                 trials: <input ng-model="project.trials" size=5 maxlength=7 ng-change ="projectChanged()" />
             </td>
         </tr>
-        <tr>
+        <tr ng-show="project.schedule">
             <th>schedule</th>
             <td>
                 start date: <input ng-model="project.start" name=project id=project size=12 maxlength=12" ng-change="projectChanged()" />
             </td>
             <td>
-                capacity: <input ng-model="project.capacity" size=5 maxlength=10 ng-change="projectChanged()" /> (effort/week)
+                capacity: <input ng-model="project.capacity" size=5 maxlength=10 ng-change="projectChanged()" /> ({{ project.units }}/week)
             </td>
         </tr>
         <tr>

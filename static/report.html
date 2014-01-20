@@ -6,7 +6,7 @@
     </div>
 
     <div ng-if="!project.mine">
-        <button ng-click="copyProject({{ project.id }})" />copy</button>{{ project.description }}
+        <button ng-click="copyProject({{ project.id }})" />copy</button>{{ project.owner }}'s {{ project.description }}
     </div>
 
     <p />
