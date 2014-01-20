@@ -30,6 +30,8 @@ urls = (
   '/api/project/delete/(\d*)', 'DeleteProject',
   '/api/tasks/(\d*)', 'GetTasks',
   '/api/results/(\d*)', 'RunSimulation',
+  '/api/simulate/project', 'SimulateProject',
+  '/api/simulate/task', 'SimulateTask',
 
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
@@ -115,9 +117,41 @@ class GetTasks:
         return DumpQuery(q)
     
 class RunSimulation:
-    def GET(self, id):            
-        return json.dumps(GetResults(id, 0))
+    def GET(self, id):
+        project = Project()
+        project.read(id)
+        results = project.run()
+        return json.dumps(results)
+        #return json.dumps(GetResults(id, 0))
     
+class SimulateProject:
+    def POST(self):
+        web.input() # init web.ctx.data  
+        
+class SimulateProject:
+    def POST(self):
+        web.input() # init web.ctx.data  
+        
+        try:
+            project = json.loads(web.ctx.data)  
+        except:
+            return 0
+
+        return "yesh"
+
+class SimulateTask:
+    def POST(self):
+        web.input() # init web.ctx.data  
+        
+        try:
+            data = json.loads(web.ctx.data)        
+            project = Project()
+            project.init(data)
+            results = project.run()
+            return json.dumps(results)
+        except:
+            return 0
+
 class CreateProject:
     def POST(self):
         web.input() # init web.ctx.data      
@@ -694,7 +728,70 @@ class montecarlo:
         results = RunMonteCarlo(trials,tasks)    
         return json.dumps(results)       
         
+class Project:
+    def __init__(self):
+        self.trials = 1000
+        self.type = 'p50'
+        self.tasks = []
+        self.schedule = False
+        self.capacity = 1
+
+    def read(self, id):
+        q = "select * from projects where id=%s" % (id)
+        for r in db.query(q):
+            self.type = r.estimate
+            self.trials = r.trials
+            self.schedule = r.schedule
+            self.start = r.start
+            self.capacity = r.capacity
+                   
+        self.tasks = []
+        q = "select * from tasks where project=%s" % (id)
+        for r in db.query(q):
+            if r.include:
+                for i in range(int(r.count)):
+                    task = Task(float(r.estimate), self.type, r.risk)
+                    self.tasks.append(task)
+
+    def init(self, data):
+        p = data['project']
+        self.trials = int(p['trials'])
+        self.type = p['estimate']
         
+        self.tasks = []
+        for t in data['tasks']:
+            if t['include']:
+                for i in range(int(t['count'])):
+                    task = Task(float(t['estimate']), self.type, t['risk'])
+                    self.tasks.append(task)
+
+    def run(self):
+        results = RunMonteCarlo(self.trials, self.tasks)
+
+        if self.schedule:
+            effort, prob = zip(*results["cumprob"])
+                
+            start = self.start
+            cumprob = 0
+            cumeffort = 0
+            week = 0
+            schedule = []
+        
+            while cumprob < 100:            
+                cumprob = numpy.interp(cumeffort, effort, prob, 0, 100)
+                #print week, cumeffort, cumprob           
+                schedule.append([str(start), cumprob])                          
+                
+                cumeffort += self.capacity
+                start += timedelta(7)
+                week += 1
+       
+            #print schedule
+            results["schedule"] = schedule
+
+        return results
+
+
 def GetResults(id, trials):
     q = "select * from projects where id=%s" % (id)
     for r in db.query(q):
