@@ -146,7 +146,7 @@ class SimulateTask:
         try:
             data = json.loads(web.ctx.data)        
             project = Project()
-            project.init(data)
+            project.init(data, True)
             results = project.run()
             return json.dumps(results)
         except:
@@ -753,14 +753,14 @@ class Project:
                     task = Task(float(r.estimate), self.type, r.risk)
                     self.tasks.append(task)
 
-    def init(self, data):
+    def init(self, data, include=False):
         p = data['project']
         self.trials = int(p['trials'])
         self.type = p['estimate']
         
         self.tasks = []
         for t in data['tasks']:
-            if t['include']:
+            if t['include'] or include:
                 for i in range(int(t['count'])):
                     task = Task(float(t['estimate']), self.type, t['risk'])
                     self.tasks.append(task)

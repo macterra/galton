@@ -124,7 +124,7 @@ galton.controller('reportController',
                     //console.log('tasks...');
                     //console.log(data);
 
-                    $scope.newtask = { description: 'new task', count: 1, estimate: 1, risk: 'medium' };
+                    $scope.newtask = { description: 'new task', count: 1, estimate: 1, risk: 'medium', include: false };
                 })
                 .error(function(data) {
                     console.log('Error: ' + data);
@@ -240,10 +240,12 @@ galton.controller('reportController',
                     console.log('results...');
                     console.log(data);
 
+                    var chartTitle = 'task: ' + task.description;
+
                     if (data.schedule) {
-                        drawSchedule(title, data.schedule);
+                        drawSchedule(chartTitle, data.schedule);
                     } else {
-                        drawChart(title, units, data.cumprob);
+                        drawChart(chartTitle, units, data.cumprob);
                     }
                 })
                 .error(function (data) {
