@@ -87,6 +87,12 @@ galton.controller('reportController',
 
         var title;
         var units;
+
+        $scope.taskNone = { description: 'no risk', count: 1, estimate: 10, risk: 'none', include: true };
+        $scope.taskLow = { description: 'low risk', count: 1, estimate: 10, risk: 'low', include: true };
+        $scope.taskMedium = { description: 'medium risk', count: 1, estimate: 10, risk: 'medium', include: true };
+        $scope.taskHigh = { description: 'high risk', count: 1, estimate: 10, risk: 'high', include: true };
+        $scope.taskVeryHigh = { description: 'very high risk', count: 1, estimate: 10, risk: 'very high', include: true };
         
         $scope.getProject = function() {
             $http.get('/api/project/' + $routeParams.projectId)

@@ -131,7 +131,54 @@
     <table ng-show="showResults">
         <tr><td><pre>{{results|json}}</pre></td></td></tr>
     </table>    
-            
+
+    <p />
+    <input type="checkbox" ng-model="showLegend" />Show risk profile legend
+    <table ng-show="showLegend">
+        <tr>
+            <th>risk</th>
+            <th>variance</th>
+            <th>P90/P10</th>
+            <th>P90/P50</th>
+            <th>actions</th>
+        </tr>
+        <tr>
+            <td>none</td>
+            <td>0.001</td>
+            <td>1</td>
+            <td>1</td>
+            <td><button ng-click="runTask(taskNone)">Simulate</button></td>
+        </tr>
+        <tr>
+            <td>low</td>
+            <td>0.27</td>
+            <td>2</td>
+            <td>1.4</td>
+            <td><button ng-click="runTask(taskLow)">Simulate</button></td>
+        </tr>
+        <tr>
+            <td>medium</td>
+            <td>0.54</td>
+            <td>4</td>
+            <td>2</td>
+            <td><button ng-click="runTask(taskMedium)">Simulate</button></td>
+        </tr>
+        <tr>
+            <td>high</td>
+            <td>0.81</td>
+            <td>8</td>
+            <td>2.8</td>
+            <td><button ng-click="runTask(taskHigh)">Simulate</button></td>
+        </tr>
+        <tr>
+            <td>very high</td>
+            <td>1.08</td>
+            <td>16</td>
+            <td>4</td>
+            <td><button ng-click="runTask(taskVeryHigh)">Simulate</button></td>
+        </tr>
+    </table>
+      
     <p />       
 
     <table border="0">
@@ -160,4 +207,6 @@
             </td>
         </tr>
     </table>
+
+
 </div>
