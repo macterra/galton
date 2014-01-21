@@ -137,7 +137,15 @@ galton.controller('reportController',
                 });
         };
 
-        $scope.runSimulation = function() {
+        var resetChart = function () {
+            $scope.results = 0;
+            document.getElementById('graph').innerHTML = 'loading simulation results...';
+        };
+
+        $scope.runSimulation = function () {
+
+            resetChart();
+
             $http.get('/api/results/' + $routeParams.projectId)
                 .success(function(data) {
                     $scope.results = data;
@@ -238,6 +246,8 @@ galton.controller('reportController',
 
         $scope.runProject = function () {
 
+            resetChart();
+
             $http.post('/api/simulate/project', { project: $scope.project, tasks: $scope.tasks })
                 .success(function (data) {
                     $scope.results = data;
@@ -258,7 +268,8 @@ galton.controller('reportController',
         };
 
         $scope.runTask = function(task) {
-            console.log('runTask ' + task);
+
+            resetChart();
 
             $http.post('/api/simulate/task', { project: $scope.project, tasks: [task] })
                 .success(function (data) {
