@@ -759,6 +759,7 @@ class Project:
         p = data['project']
         self.trials = int(p['trials'])
         self.type = p['estimate']
+        self.schedule = p['schedule']
         
         self.tasks = []
         for t in data['tasks']:
@@ -773,7 +774,7 @@ class Project:
         if self.schedule:
             effort, prob = zip(*results["cumprob"])
                 
-            start = self.start
+            start = date.today() #self.start
             cumprob = 0
             cumeffort = 0
             week = 0
