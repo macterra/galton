@@ -14,13 +14,8 @@ import urllib, urllib2
 import numpy
     
 urls = (
-  '/old', 'projectlist',
-  '/login', 'login',
-  '/logout', 'logout',
-  '/users', 'users',
-  '/favicon.ico', 'favicon',
-  '/montecarlo', 'montecarlo',
   
+  # v2 API
   '/', 'angular',
   '/api/projects', 'GetProjects',
   '/api/project/(\d*)', 'GetProject',
@@ -33,6 +28,13 @@ urls = (
   '/api/simulate/project', 'SimulateProject',
   '/api/simulate/task', 'SimulateTask',
 
+  # v1 API
+  '/old', 'projectlist',
+  '/login', 'login',
+  '/logout', 'logout',
+  '/users', 'users',
+  '/favicon.ico', 'favicon',
+  '/montecarlo', 'montecarlo',
   '/projectlist', 'projectlist',
   '/project/(\d*)', 'project',
   '/project/(\d*)/tasks', 'tasks',
@@ -377,7 +379,12 @@ def SessionLogout():
     
 class login:
     def GET(self):
-        return session        
+        info = {}
+
+        for prop in ['email', 'name', 'loggedin', 'userid']:
+            info[prop] = session[prop]
+
+        return json.dumps(info)
         
     def POST(self):
         i = web.input()

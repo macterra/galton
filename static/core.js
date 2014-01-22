@@ -45,6 +45,15 @@ galton.controller('mainController',
     function ($scope, $http, $location) {
         $scope.formData = {};
 
+        $http.get('/login')
+            .success(function (data) {
+                $scope.session = data;
+                console.log(data);
+            })
+            .error(function (data) {
+                console.log('Error: ' + data);
+            });
+
         // when landing on the page, get all todos and show them
         $http.get('/api/projects')
             .success(function (data) {

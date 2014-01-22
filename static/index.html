@@ -23,9 +23,13 @@
     <div style="position:absolute;right:0px;top:0px">
         <a href="https://github.com/macterra/galton"><img src="/static/fork-me-on-github.png" border="0" /></a>
     </div>
-
-    <a class="rpxnow" onclick="return false;" href="https://galton.rpxnow.com/openid/v2/signin?token_url=http%3A//localhost%3A8080/login"> Sign In </a>
-
+    
+    <div ng-show="!session.loggedin">
+        <a class="rpxnow" onclick="return false;" href="https://galton.rpxnow.com/openid/v2/signin?token_url=http%3A//localhost%3A8080/login"> Sign In </a>
+    </div>
+    <div ng-show="session.loggedin">
+        Welcome, {{ session.name }} <a href="/logout">(Sign out)</a>
+    </div>
     <a href="/"><img src="/static/galton.jpg" align="left" border="0" /></a>
 
 
