@@ -92,7 +92,7 @@ class GetProjects:
             select p.*, u.name as owner,            
             case when p.userid=%d then 1 else 0 end as mine
             from projects p left outer join users u on p.userid=u.id
-            where (p.publish=1 or p.userid=%d)
+            where (p.publish=1 or p.userid=%d or p.userid=0)
             order by updated desc
             """ % (user, user)
         return DumpQuery(q)
