@@ -382,7 +382,13 @@ class login:
         info = {}
 
         for prop in ['email', 'name', 'loggedin', 'userid']:
-            info[prop] = session[prop]
+            try:
+                info[prop] = session[prop]
+            except:
+                pass
+            
+        token_url = "%s/login" % (web.ctx.home)
+        info['rpx_url'] = "https://galton.rpxnow.com/openid/v2/signin?token_url=%s" % (web.net.urlquote(token_url))
 
         return json.dumps(info)
         

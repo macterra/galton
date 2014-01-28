@@ -25,10 +25,10 @@
     </div>
     
     <div ng-show="!session.loggedin">
-        <a class="rpxnow" onclick="return false;" href="https://galton.rpxnow.com/openid/v2/signin?token_url=http%3A//localhost%3A8080/login"> Sign In </a>
+        <a class="rpxnow" onclick="return false;" ng-href="{{ session.rpx_url }}"><button>Log In</button></a> using Google, Facebook, Twitter, etc.
     </div>
     <div ng-show="session.loggedin">
-        Welcome, {{ session.name }} <a href="/logout">(Sign out)</a>
+        Welcome, {{ session.name }} <a href="/logout"><button>Log Out</button></a>
     </div>
     <a href="/"><img src="/static/galton.jpg" align="left" border="0" /></a>
 
