@@ -39,7 +39,10 @@
                     <tr> <th width="50">nominal</th> <td width="50" align="right">{{ results.nominal | number:2 }}</td> </tr>
                     <tr> <th>mode</th> <td align="right">{{ results.mode | number:2 }}</td> </tr>
                     <tr> <th>mean</th><td align="right">{{ results.mean | number:2 }}</td> </tr>
+                    <tr> <th>p01</th> <td align="right">{{ results.cumprob[1][0] | number:2 }}</td> </tr>
+                    <tr> <th>p05</th> <td align="right">{{ results.cumprob[5][0] | number:2 }}</td> </tr>
                     <tr> <th>p10</th> <td align="right">{{ results.cumprob[10][0] | number:2 }}</td> </tr>
+                    <tr> <th>p20</th> <td align="right">{{ results.cumprob[20][0] | number:2 }}</td> </tr>
                     <tr> <th>p50</th> <td align="right">{{ results.cumprob[50][0] | number:2 }}</td> </tr>
                     <tr> <th>p80</th> <td align="right">{{ results.cumprob[80][0] | number:2 }}</td> </tr>
                     <tr> <th>p90</th> <td align="right">{{ results.cumprob[90][0] | number:2 }}</td> </tr>
