@@ -25,8 +25,9 @@
     </div>
     
     <div ng-show="!session.loggedin">
-        <a class="rpxnow" onclick="return false;" ng-href="{{ session.rpx_url }}"><button>Log In</button></a> using Google, Facebook, Twitter, etc.
+        <a class="rpxnow" onclick="return false;" ng-href="{{ session.rpx_url }}"><button>Log In</button></a> using Google, Facebook, Twitter, etc. (experimental)
     </div>
+    <p></p>
     <div ng-show="session.loggedin">
         Welcome, {{ session.name }} <a href="/logout"><button>Log Out</button></a>
     </div>
@@ -35,6 +36,7 @@
 
     <h1>Galton/Angular : estimate with confidence</h1>
 
+    <p></p>
     <br clear=all />
     
     <!-- MAIN CONTENT AND INJECTED VIEWS -->

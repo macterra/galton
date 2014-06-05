@@ -119,21 +119,54 @@
             </td>
         </tr>
     </table>
+    
+    <!--
+        <input type="checkbox" ng-model="showModels" />show models
+        <input type="checkbox" ng-model="showResults" />show results
 
-    <input type="checkbox" ng-model="showModels" />show models
-    <input type="checkbox" ng-model="showResults" />show results
+        <table ng-show="showModels">
+            <tr><td>project</td><td>tasks</td></tr>
+            <tr><td><pre>{{project|json}}</pre></td><td><pre>{{tasks|json}}</pre></td></tr>
+        </table>   
 
-    <table ng-show="showModels">
-        <tr><td>project</td><td>tasks</td></tr>
-        <tr><td><pre>{{project|json}}</pre></td><td><pre>{{tasks|json}}</pre></td></tr>
-    </table>   
+        <table ng-show="showResults">
+            <tr><td><pre>{{results|json}}</pre></td></td></tr>
+        </table>    
 
-    <table ng-show="showResults">
-        <tr><td><pre>{{results|json}}</pre></td></td></tr>
-    </table>    
+        -->
 
     <p />
-    <input type="checkbox" ng-model="showLegend" />Show risk profile legend
+         
+
+    <table border="0">
+        <tr>
+            <td>
+                <table border="1">
+                    <tr> <th width="50">nominal</th> <td width="50" align="right">{{ results.nominal | number:2 }}</td> </tr>
+                    <tr> <th>mode</th> <td align="right">{{ results.mode | number:2 }}</td> </tr>
+                    <tr> <th>mean</th><td align="right">{{ results.mean | number:2 }}</td> </tr>
+                    <tr> <th>p10</th> <td align="right">{{ results.cumprob[10][0] | number:2 }}</td> </tr>
+                    <tr> <th>p50</th> <td align="right">{{ results.cumprob[50][0] | number:2 }}</td> </tr>
+                    <tr> <th>p80</th> <td align="right">{{ results.cumprob[80][0] | number:2 }}</td> </tr>
+                    <tr> <th>p90</th> <td align="right">{{ results.cumprob[90][0] | number:2 }}</td> </tr>
+                    <tr> <th>p95</th> <td align="right">{{ results.cumprob[95][0] | number:2 }}</td> </tr>
+                    <tr> <th>p99</th> <td align="right">{{ results.cumprob[99][0] | number:2 }}</td> </tr>
+                    <tr> <th colspan=2>risk metrics</th></tr>
+                    <tr> <th>variance</th> <td align="right">{{ results.risk | number:2 }}</td> </tr>
+                    <tr> <th>p90/p10</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[10][0] | number:2 }}</td> </tr>
+                    <tr> <th>p90/p50</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[50][0] | number:2 }}</td> </tr>
+                    <tr> <th>P(>nom)</th> <td align="right">{{ results.pnom | number:2 }}</td> </tr>
+                </table>
+            </td>
+            <td>
+                <div id="graph">loading simulation results...</div>
+                <div ng-show="results">Monte Carlo simulation took {{ results.simtime | number:2 }}s for {{ results.trials }} iterations</div>
+            </td>
+        </tr>
+    </table>
+
+    <p />    
+
     <table ng-show="showLegend">
         <tr>
             <th>risk</th>
@@ -178,35 +211,6 @@
             <td><button ng-click="runTask(taskVeryHigh)">Simulate</button></td>
         </tr>
     </table>
-      
-    <p />       
 
-    <table border="0">
-        <tr>
-            <td>
-                <table border="1">
-                    <tr> <th width="50">nominal</th> <td width="50" align="right">{{ results.nominal | number:2 }}</td> </tr>
-                    <tr> <th>mode</th> <td align="right">{{ results.mode | number:2 }}</td> </tr>
-                    <tr> <th>mean</th><td align="right">{{ results.mean | number:2 }}</td> </tr>
-                    <tr> <th>p10</th> <td align="right">{{ results.cumprob[10][0] | number:2 }}</td> </tr>
-                    <tr> <th>p50</th> <td align="right">{{ results.cumprob[50][0] | number:2 }}</td> </tr>
-                    <tr> <th>p80</th> <td align="right">{{ results.cumprob[80][0] | number:2 }}</td> </tr>
-                    <tr> <th>p90</th> <td align="right">{{ results.cumprob[90][0] | number:2 }}</td> </tr>
-                    <tr> <th>p95</th> <td align="right">{{ results.cumprob[95][0] | number:2 }}</td> </tr>
-                    <tr> <th>p99</th> <td align="right">{{ results.cumprob[99][0] | number:2 }}</td> </tr>
-                    <tr> <th colspan=2>risk metrics</th></tr>
-                    <tr> <th>variance</th> <td align="right">{{ results.risk | number:2 }}</td> </tr>
-                    <tr> <th>p90/p10</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[10][0] | number:2 }}</td> </tr>
-                    <tr> <th>p90/p50</th> <td align="right">{{ results.cumprob[90][0]/results.cumprob[50][0] | number:2 }}</td> </tr>
-                    <tr> <th>P(>nom)</th> <td align="right">{{ results.pnom | number:2 }}</td> </tr>
-                </table>
-            </td>
-            <td>
-                <div id="graph">loading simulation results...</div>
-                <div ng-show="results">Monte Carlo simulation took {{ results.simtime | number:2 }}s for {{ results.trials }} iterations</div>
-            </td>
-        </tr>
-    </table>
-
-
+    <input type="checkbox" ng-model="showLegend" />Show risk profile legend
 </div>
